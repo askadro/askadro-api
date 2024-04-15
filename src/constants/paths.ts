@@ -1,0 +1,5 @@
+export const JOBS = "jobs"
+export const JOB = "job/:id"
+export const JOB_CREATE = "job_create"
+export const JOB_DELETE = "job_delete/:id"
+export const JOB_UPDATE = "job_update/:id"
