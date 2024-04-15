@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { UsersInterface } from '../interfaces/users.interface';
 import { GetUserInterface } from '../interfaces/get.user.interface';
-
+import { JobsService } from 'src/jobs/jobs.service';
 @Injectable()
 export class UserService {
+  constructor(private jobsService: JobsService) {} // istediğimiz gibi kullanabilecğeim biz job servisi
   users(): UsersInterface[] {
     const users: UsersInterface[] = [];
 

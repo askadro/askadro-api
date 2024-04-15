@@ -8,6 +8,8 @@
 
 @Params("id"), @Query, @Body, @Headers
 
+Eğer bir servisi diğerinden kullanmak istersen module dosyaları üzerinden dışarıda kullanılacağı exports'a kaydetmemiz ve kullanacağımız module de ise onu import ile eklememiz gerekir. Bu şekilde ortak kullanım sağlanır
+
 
 
 
