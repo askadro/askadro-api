@@ -8,6 +8,8 @@ import { AppService } from './app.service';
 import { UserModule } from './users/user.module';
 import { JobsModule } from './jobs/jobs.module';
 import { Job } from './jobs/job.entity';
+import { CompanyModule } from './company/company.module';
+import { TicketsModule } from './tickets/tickets.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { Job } from './jobs/job.entity';
     UserModule,
     RouterModule.register([{ path: 'users', module: UserModule }]),
     JobsModule,
+    CompanyModule,
+    TicketsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
