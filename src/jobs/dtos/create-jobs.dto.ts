@@ -1,6 +1,12 @@
-import { IsString } from "class-validator";
+import { IsNumber, IsString } from 'class-validator';
 
 export class CreateJobsDto {
-    @IsString()
-    content:string
+  @IsString()
+  company: string;
+
+  @IsString()
+  user: string;
+
+  @IsString()
+  time: string;
 }
