@@ -20,7 +20,7 @@ export class JobsController {
   }
 
   @Get('/:id')
-  async getJob(@Param('id') id: number) {
+  async getJob(@Param('id') id: string) {
     const job = await this.jobsService.findOne(id);
     if (!job) {
       throw new NotFoundException('Job not found');
@@ -39,10 +39,12 @@ export class JobsController {
   }
 
   @Delete('/delete/:id')
-  deleteJob(@Param('id') id: number) {
+  deleteJob(@Param('id') id: string) {
     return this.jobsService.delete(id);
   }
 
   @Post('/update/:id')
-  updateJob(id: number) {}
+  updateJob(id: string) {}
 }
+
+

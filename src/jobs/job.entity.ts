@@ -9,8 +9,8 @@ import {
 
 @Entity()
 export class Job {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   company: string;

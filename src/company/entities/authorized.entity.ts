@@ -1,4 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Company } from './company.entity';
 
 @Entity()
@@ -18,6 +24,7 @@ export class Authorized {
   @Column()
   authorizedTitle: string;
 
-  @OneToMany(() => Company, (company) => company.authorized)
-  companyId: Company;
+  @ManyToOne(() => Company, (company: Company) => company.authorized)
+  company: Company;
 }
+ 
