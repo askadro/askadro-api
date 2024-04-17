@@ -14,10 +14,10 @@ export class UsersService {
     try {
       return await this.usersRepository.save({
         Identity: createUserDto.Identity.trim(),
-        first_name: createUserDto.firstName.trim(),
-        last_name: createUserDto.lastName.trim(),
+        firstName: createUserDto.firstName.trim(),
+        lastName: createUserDto.lastName.trim(),
         age: createUserDto.age.trim(),
-        birth_date: createUserDto.birthDate.toDateString(),
+        birthDate: createUserDto.birthDate.toDateString(),
         gender: createUserDto.gender
       });
     } catch (error) {
