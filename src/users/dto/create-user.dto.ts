@@ -1,4 +1,4 @@
-import { IsDate, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsOptional, IsString } from "class-validator";
 import { userGenderEnum } from "../enums/user.gender.enum";
 import { UserStatusEnum } from "../enums/user.status.enum";
 
@@ -11,31 +11,31 @@ export class CreateUserDto {
   @IsString({
     message: "adı bir dize olmalıdır"
   })
-  first_name: string;
+  firstName: string;
 
   @IsString({
     message: "soyadı bir dize olmalıdır"
   })
-  last_name: string;
+  lastName: string;
 
   @IsString({
-    message: 'yaş, belirtilen kısıtlamalara uygun bir sayı olmalıdır'
+    message: "yaş, belirtilen kısıtlamalara uygun bir sayı olmalıdır"
   })
   age: string;
 
   @IsString({
-    message: 'doğum tarihi bir Date örneği olmalıdır'
+    message: "doğum tarihi bir Date örneği olmalıdır"
   })
-  birth_date: Date;
+  birthDate: Date;
 
-  @IsEnum(userGenderEnum,{
-    message:"cinsiyet aşağıdaki değerlerden biri olmalıdır: erkek, kadın, diğer"
+  @IsEnum(userGenderEnum, {
+    message: "cinsiyet aşağıdaki değerlerden biri olmalıdır: erkek, kadın, diğer"
   })
   gender: userGenderEnum;
 
   @IsOptional()
-  @IsEnum(UserStatusEnum,{
-    message:"durumu aşağıdaki değerlerden biri olmalıdır: AKTIF, INAKTIF, SILINMIŞ"
+  @IsEnum(UserStatusEnum, {
+    message: "durumu aşağıdaki değerlerden biri olmalıdır: AKTIF, INAKTIF, SILINMIŞ"
   })
   status: UserStatusEnum;
 

@@ -22,10 +22,10 @@ export class User {
   Identity: string;
 
   @Column()
-  first_name: string;
+  firstName: string;
 
   @Column()
-  last_name: string;
+  lastName: string;
 
   @Column()
   age: string;
@@ -34,7 +34,7 @@ export class User {
     type: "date",
     default: null
   })
-  birth_date: Date;
+  birthDate: Date;
 
   @Column({
     type: "enum",
@@ -53,13 +53,13 @@ export class User {
     type: "timestamp",
     default: null
   })
-  public deleted_at: Date;
+  public deletedAt: Date;
 
   @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
-  public created_at: Date;
+  public createdAt: Date;
 
   @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
-  public updated_at: Date;
+  public updatedAt: Date;
 
   @AfterInsert()
   logInsert() {
