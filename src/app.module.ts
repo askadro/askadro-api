@@ -10,6 +10,8 @@ import { JobsModule } from './jobs/jobs.module';
 import { Job } from './jobs/job.entity';
 import { CompanyModule } from './company/company.module';
 import { TicketsModule } from './tickets/tickets.module';
+import { Authorized } from './company/entities/authorized.entity';
+import { Company } from './company/entities/company.entity';
 
 @Module({
   imports: [
@@ -23,7 +25,7 @@ import { TicketsModule } from './tickets/tickets.module';
       port: 5432,
       password: '24262060',
       username: 'postgres',
-      entities: [Job],
+      entities: [Job, Company, Authorized],
       database: 'askadrovip',
       synchronize: true,
       logging: true,

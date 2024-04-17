@@ -14,7 +14,7 @@ export class JobsService {
     return this.repo.save(job);
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.repo.findOneBy({ id });
   }
 
@@ -26,7 +26,16 @@ export class JobsService {
     return this.repo.find();
   }
 
-  delete(id: number) {
+  async update(id: string, attrs: Partial<Job>) {
+    const job = await this.findOne(id);
+    if (!job) {
+      throw new Error('Job not found');
+    }
+    Object.assign(job, attrs);
+    return this.repo.save(job);
+  }
+
+  delete(id: string) {
     return this.repo
       .createQueryBuilder()
       .delete()
