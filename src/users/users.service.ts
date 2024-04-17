@@ -13,11 +13,11 @@ export class UsersService {
  async create(createUserDto: CreateUserDto) {
     try {
       return await this.usersRepository.save({
-        Identity: createUserDto.Identity,
-        first_name: createUserDto.first_name,
-        last_name: createUserDto.last_name,
-        age: createUserDto.age,
-        birth_date: createUserDto.birth_date,
+        Identity: createUserDto.Identity.trim(),
+        first_name: createUserDto.firstName.trim(),
+        last_name: createUserDto.lastName.trim(),
+        age: createUserDto.age.trim(),
+        birth_date: createUserDto.birthDate.toDateString(),
         gender: createUserDto.gender
       });
     } catch (error) {
