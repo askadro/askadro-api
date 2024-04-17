@@ -11,6 +11,9 @@ import { Authorized } from './company/entities/authorized.entity';
 import { Company } from './company/entities/company.entity';
 import { UsersModule } from './users/users.module';
 import { User } from "./users/entities/user.entity";
+import { ProvincesModule } from './provinces/provinces.module';
+import { Province } from "./provinces/entities/province.entity";
+import { District } from "./provinces/entities/district.entity";
 
 @Module({
   imports: [
@@ -24,7 +27,7 @@ import { User } from "./users/entities/user.entity";
       port: 5432,
       password: '24262060',
       username: 'postgres',
-      entities: [User, Job, Company, Authorized],
+      entities: [User, Job, Company, Authorized,Province,District],
       database: 'askadrovip',
       synchronize: true,
       logging: true,
@@ -34,6 +37,7 @@ import { User } from "./users/entities/user.entity";
     JobsModule,
     CompanyModule,
     TicketsModule,
+    ProvincesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
