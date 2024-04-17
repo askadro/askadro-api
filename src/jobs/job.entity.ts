@@ -1,3 +1,5 @@
+import { Company } from 'src/company/entities/company.entity';
+import { User } from 'src/users/user.entity';
 import {
   Entity,
   Column,
@@ -5,6 +7,7 @@ import {
   AfterInsert,
   AfterUpdate,
   AfterRemove,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity()
@@ -12,14 +15,17 @@ export class Job {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  company: string;
+  @ManyToOne(() => Company, (company) => company.job)
+  company: Company;
 
   @Column()
   user: string;
 
   @Column()
-  time: string;
+  startTime: string; // 00:00 formatında girilecek
+
+  @Column()
+  endTime: string; // 00:00 formatında girilecek
 
   @AfterInsert()
   logInsert() {

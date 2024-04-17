@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { CreateCompanyDto } from './dtos/create-company.dto';
 import { CompanyService } from './company.service';
 import { Company } from './entities/company.entity';
@@ -8,27 +8,27 @@ export class CompanyController {
   constructor(private companyService: CompanyService) {}
 
   @Post('/new')
-  createCompany(@Body() body: CreateCompanyDto) {
-    return this.companyService.create(body);
+  async createCompany(@Body() body: CreateCompanyDto) {
+    return await this.companyService.create(body);
   }
 
   @Get('/all')
-  getCompanies() {
-    return this.companyService.find();
+  async getCompanies() {
+    return await this.companyService.find();
   }
 
   @Get('/:id')
-  getCompany(@Param('id') id: string) {
-    return this.companyService.findOne(id);
+  async getCompany(@Param('id') id: string) {
+    return await this.companyService.findOne(id, { authorized: true });
   }
 
-  @Post('/update/:id')
-  updateCompany(@Body() body: Partial<Company>, @Param('id') id: string) {
-    return this.companyService.update(id, body);
+  @Patch('/update/:id')
+  async updateCompany(@Body() body: Partial<Company>, @Param('id') id: string) {
+    return await this.companyService.update(id, body);
   }
 
-  @Delete('/:id')
-  deleteCompany(@Param('id') id: string) {
-    return this.companyService.remove(id);
+  @Delete('/delete/:id')
+  async deleteCompany(@Param('id') id: string) {
+    return await this.companyService.remove(id);
   }
 }

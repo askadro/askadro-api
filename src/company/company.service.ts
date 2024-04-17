@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Company } from './entities/company.entity';
 import { Repository } from 'typeorm';
 import { Authorized } from './entities/authorized.entity';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class CompanyService {
   constructor(
     @InjectRepository(Company) private comp: Repository<Company>,
     @InjectRepository(Authorized) private auth: Repository<Authorized>,
+    private i18n: I18nService,
   ) {}
 
   async create(body: {
@@ -23,18 +25,17 @@ export class CompanyService {
     timeOfPayment: string;
   }) {
     const company = this.comp.create({
-      city: body.city,
-      name: body.name,
-      phone: body.phone,
-      shortName: body.shortName,
-      location: body.location,
-      registrationNumber: body.registrationNumber,
+      city: body.city.toLowerCase(),
+      name: body.name.toLowerCase(),
+      phone: body.phone.trim(),
+      shortName: body.shortName.toLowerCase(),
+      location: body.location.toLowerCase(),
+      registrationNumber: body.registrationNumber.trim(),
       password: body.password,
-      timeOfPayment: body.timeOfPayment,
+      timeOfPayment: body.timeOfPayment.trim(),
     });
 
     const resultCompany = await this.comp.save(company);
-    // // Yetkilileri şirkete ata
     const authorizeds = body.authorized.map((auth) => {
       const authozed = new Authorized();
       authozed.authorizedEmail = auth.authorizedEmail;
@@ -42,22 +43,22 @@ export class CompanyService {
       authozed.authorizedPhone = auth.authorizedPhone;
       authozed.authorizedTitle = auth.authorizedTitle;
       authozed.company = resultCompany;
-      this.auth.save(authozed);
       return authozed;
     });
 
-    return await this.auth.save(authorizeds);
+    await this.auth.save(authorizeds);
+    return resultCompany;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, relations: object = {}) {
     const auths = await this.comp.findOne({
       where: { id },
-      relations: { authorized: true },
+      relations,
     });
     if (auths) {
       return auths;
     }
-    throw new NotFoundException(id);
+    throw new NotFoundException();
   }
 
   async find() {
@@ -71,16 +72,16 @@ export class CompanyService {
   async update(id: string, attrs: Partial<Company>) {
     const company = await this.findOne(id);
     if (!company) {
-      throw new Error('Job not found');
+      throw new NotFoundException('Job not found');
     }
     Object.assign(company, attrs);
     return this.comp.save(company);
   }
-  
+
   async remove(id: string) {
     const company = await this.findOne(id);
     if (!company) {
-      throw new Error('company not found');
+      throw new NotFoundException();
     }
     return this.comp.remove(company);
   }
