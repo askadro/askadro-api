@@ -21,18 +21,35 @@ export class Job {
   @Column()
   time: string;
 
+  /**
+   * A description of the entire function.
+   *
+   */
+
   @AfterInsert()
+  /**
+   * A description of the entire function.
+   * @return {type} description of return value
+   */
   logInsert() {
-    console.log('Inserted job with ' + this.id);
+    console.log(`Inserted job with id: ${this.id}`);
   }
 
   @AfterUpdate()
+  /**
+   * A description of the entire function.
+   * @return {type} description of return value
+   */
   logUpdate() {
-    console.log(`Updated job with id ${this.id}`);
+    console.log(`Updated job with id: ${this.id}`);
   }
 
   @AfterRemove()
+  /**
+   * @return {type} description of return value
+   */
   logRemove() {
-    console.log('Remover jov witd ', this.id);
+    console.log(`Remove job with id: ${this.id}`);
   }
+
 }
