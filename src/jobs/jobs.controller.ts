@@ -14,29 +14,33 @@ import { JobsService } from './jobs.service';
 export class JobsController {
   constructor(private jobsService: JobsService) {}
 
+  @Post('/new')
+  createJob(@Body() body: CreateJobsDto) {
+    return this.jobsService.create(body);
+  }
+
+
+
+  @Get('/:id')
+  async getJob(@Param('id') id: string) {
+    const job = await this.jobsService.findOne(id);
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
+    return job;
+  }
+
   // @Get("/all")
   // getJobs() {
   //   return this.jobsService.findAll();
   // }
 
-  // @Get('/:id')
-  // async getJob(@Param('id') id: string) {
-  //   const job = await this.jobsService.findOne(id);
-  //   if (!job) {
-  //     throw new NotFoundException('Job not found');
-  //   }
-  //   return job;
-  // }
 
   // @Post('/search')
   // async geJobsWithEmail(@Body() body: { company: string }) {
   //   return this.jobsService.find(body);
   // }
 
-  @Post('/new')
-  createJob(@Body() body: CreateJobsDto) {
-    return this.jobsService.create(body);
-  }
 
   // @Delete('/delete/:id')
   // deleteJob(@Param('id') id: string) {

@@ -1,28 +1,25 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "./entities/user.entity";
-import { Repository } from "typeorm";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private usersRepository: Repository<User>
-  ) { }
- async create(createUserDto: CreateUserDto) {
-    try {
-      return await this.usersRepository.save({
-        Identity: createUserDto.Identity.trim(),
-        firstName: createUserDto.firstName.trim(),
-        lastName: createUserDto.lastName.trim(),
-        age: createUserDto.age.trim(),
-        birthDate: createUserDto.birthDate.toDateString(),
-        gender: createUserDto.gender
-      });
-    } catch (error) {
-      throw new NotFoundException({ message: "User not created" ,error: error});
-    }
+    @InjectRepository(User) private usersRepository: Repository<User>,
+  ) {}
+  async create(createUserDto: any) {
+    const user = await this.usersRepository.create({ 
+      Identity: createUserDto.Identity.trim(),
+      firstName: createUserDto.firstName.trim(),
+      lastName: createUserDto.lastName.trim(),
+      age: createUserDto.age.trim(),
+      birthDate: createUserDto.birthDate,
+      gender: createUserDto.gender,
+    });
+    return await this.usersRepository.save(user);
   }
 
   findAll() {

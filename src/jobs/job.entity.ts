@@ -1,5 +1,5 @@
 import { Company } from 'src/company/entities/company.entity';
-import { User } from 'src/users/user.entity';
+import { User } from 'src/users/entities/user.entity';
 import {
   Entity,
   Column,
@@ -18,14 +18,17 @@ export class Job {
   @ManyToOne(() => Company, (company) => company.job)
   company: Company;
 
-  @Column()
-  user: string;
+  @ManyToOne(() => User, (user) => user.job)
+  user: User;
 
   @Column()
   startTime: string; // 00:00 formatında girilecek
 
   @Column()
   endTime: string; // 00:00 formatında girilecek
+
+  @Column()
+  extraTime: string;
 
   @AfterInsert()
   logInsert() {

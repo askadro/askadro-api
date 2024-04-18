@@ -5,13 +5,20 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { JobsModule } from './jobs/jobs.module';
-import { Job } from './jobs/job.entity';
 import { CompanyModule } from './company/company.module';
 import { TicketsModule } from './tickets/tickets.module';
-import { Authorized } from './company/entities/authorized.entity';
-import { Company } from './company/entities/company.entity';
-import { AcceptLanguageResolver, CookieResolver, HeaderResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
-import * as path from "path";
+import {
+  AcceptLanguageResolver,
+  CookieResolver,
+  HeaderResolver,
+  I18nModule,
+  QueryResolver,
+} from 'nestjs-i18n';
+import * as path from 'path';
+import { UsersModule } from './users/users.module';
+import { ProvincesModule } from './provinces/provinces.module';
+import { Entities } from './entities';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,7 +34,7 @@ import * as path from "path";
         port: configService.get('DB_PORT'),
         password: configService.get('DB_PASSWORD'),
         username: configService.get('DB_USERNAME'),
-        entities: [Job, Company, Authorized],
+        entities: Entities,
         database: configService.get('DB_DATABASE'),
         synchronize: true,
         logging: true,
@@ -36,28 +43,28 @@ import * as path from "path";
     }),
 
     I18nModule.forRoot({
-      fallbackLanguage: "en",
+      fallbackLanguage: 'en',
       fallbacks: {
-        "en-US": "en",
-        "tr-TR": "tr"
+        'en-US': 'en',
+        'tr-TR': 'tr',
       },
       loaderOptions: {
-        path: path.join(__dirname, "/i18n/"),
-        watch: true
+        path: path.join(__dirname, '/i18n/'),
+        watch: true,
       },
       resolvers: [
-        { use: QueryResolver, options: ["lang", "locale", "l"] },
-        new HeaderResolver(["x-custom-lang"]),
+        { use: QueryResolver, options: ['lang', 'locale', 'l'] },
+        new HeaderResolver(['x-custom-lang']),
         AcceptLanguageResolver,
-        // new CookieResolver(["lang", "locale", "l"]) 
-      ]
+        // new CookieResolver(["lang", "locale", "l"])
+      ],
     }),
 
     UsersModule,
-    RouterModule.register([{ path: 'users', module: UserModule }]),
     JobsModule,
     CompanyModule,
     TicketsModule,
+    ProvincesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

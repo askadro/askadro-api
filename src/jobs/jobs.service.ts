@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JobsRepository } from './jobs.repository';
@@ -13,11 +13,10 @@ export class JobsService {
     @InjectRepository(Company) private cmp: Repository<Company>,
   ) {}
 
-  async create(body) {
+  async create(body: CreateJobsDto) {
     console.log(body);
-    const comp = await this.cmp.findOneBy({ id: body.company });
     const job = this.repo.create({
-      company: comp,
+      company: body.company,
       user: body.user,
       startTime: body.startTime,
       endTime: body.endTime,
@@ -25,9 +24,28 @@ export class JobsService {
     return await this.repo.save(job);
   }
 
-  // findOne(id: string) {
-  //   return this.repo.findOneBy({ id });
-  // }
+  async findOne(id: string) {
+    const auths = await this.repo.findOne({
+      where: { id },
+      select: {
+        user: {
+          firstName: true,
+          lastName: true,
+          Identity: true,
+          id: true,
+        },
+        company: {
+          id: true,
+          name: true,
+        },
+      },
+      relations: { user: true, company: true },
+    });
+    if (auths) {
+      return auths;
+    }
+    throw new NotFoundException();
+  }
 
   // find(body) {
   //   return this.repo.findBy(body);

@@ -3,21 +3,26 @@ import {
   IsEmail,
   IsNumber,
   IsObject,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
 import { Company } from 'src/company/entities/company.entity';
+import { User } from 'src/users/entities/user.entity';
 
 export class CreateJobsDto {
   @IsString()
-  company: string;
+  company: Company;
 
   @IsString()
-  user: string;
+  user: User;
 
   @IsString()
   startTime: string; // 00:00 formatında girilecek
 
   @IsString()
   endTime: string; // 00:00 formatında girilecek
+
+  @IsOptional()
+  extraTime: string | undefined;
 }

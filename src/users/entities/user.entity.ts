@@ -4,11 +4,13 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from "typeorm";
 import { userGenderEnum } from "../enums/user.gender.enum";
 import { UserStatusEnum } from "../enums/user.status.enum";
+import { Job } from "src/jobs/job.entity";
 
 @Entity()
 export class User {
@@ -41,6 +43,9 @@ export class User {
     enum: userGenderEnum
   })
   gender: userGenderEnum;
+
+  @OneToMany(() => Job, (job: Job) => job.company)
+  job: Job[];
 
   @Column({
     type: "enum",
