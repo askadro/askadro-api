@@ -6,7 +6,7 @@ import { JobsRepository } from './jobs.repository';
 import { Job } from './job.entity';
 import { Company } from 'src/company/entities/company.entity';
 @Module({
-  imports: [TypeOrmModule.forFeature([Job, Company])],
+  imports: [TypeOrmModule.forFeature([Job])],
   controllers: [JobsController],
   providers: [JobsService, JobsRepository], // constructor da vermemiz gereken parametreler
   exports: [JobsService], // bu service içeriğini diğer modulelerde kullanılabilir yapar

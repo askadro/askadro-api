@@ -25,5 +25,5 @@ export class CreateAuthorizedDto {
   authorizedTitle: string;
 
   @ValidateNested()
-  companyId: Company;
+  company: Company;
 }

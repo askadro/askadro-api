@@ -60,4 +60,7 @@ export class CreateCompanyDto {
   @IsString()
   @Length(1, 2)
   timeOfPayment: string; // ayın ödeme gününü temsil eder
+
+  @IsNumberString()
+  totalWorkingTime: string;
 }
