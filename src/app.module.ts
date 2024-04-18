@@ -19,6 +19,7 @@ import { UsersModule } from './users/users.module';
 import { ProvincesModule } from './provinces/provinces.module';
 import { Entities } from './entities';
 import { ConfigurationModule } from './configuration/configuration.module';
+import { IsUniqueConstraint } from "./utils/validations/unique/is-unique-constraint";
 
 @Module({
   imports: [
@@ -69,6 +70,6 @@ import { ConfigurationModule } from './configuration/configuration.module';
     ConfigurationModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,IsUniqueConstraint],
 })
 export class AppModule {}

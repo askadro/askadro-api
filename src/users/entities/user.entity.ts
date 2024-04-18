@@ -29,9 +29,6 @@ export class User {
   @Column()
   lastName: string;
 
-  @Column()
-  age: string;
-
   @Column({
     type: "date",
     default: null

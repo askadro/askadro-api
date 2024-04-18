@@ -10,12 +10,11 @@ export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
   ) {}
-  async create(createUserDto: any) {
-    const user = await this.usersRepository.create({ 
+  async create(createUserDto: CreateUserDto) {
+    const user = this.usersRepository.create({
       Identity: createUserDto.Identity.trim(),
       firstName: createUserDto.firstName.trim(),
       lastName: createUserDto.lastName.trim(),
-      age: createUserDto.age.trim(),
       birthDate: createUserDto.birthDate,
       gender: createUserDto.gender,
     });
