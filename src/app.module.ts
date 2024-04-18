@@ -1,12 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { JobsModule } from './jobs/jobs.module';
-import { CompanyModule } from './company/company.module';
-import { TicketsModule } from './tickets/tickets.module';
+import * as path from 'path';
 import {
   AcceptLanguageResolver,
   CookieResolver,
@@ -14,10 +9,16 @@ import {
   I18nModule,
   QueryResolver,
 } from 'nestjs-i18n';
-import * as path from 'path';
+
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { JobsModule } from './jobs/jobs.module';
+import { CompanyModule } from './company/company.module';
+import { TicketsModule } from './tickets/tickets.module';
 import { UsersModule } from './users/users.module';
 import { ProvincesModule } from './provinces/provinces.module';
 import { Entities } from './entities';
+import { ConfigurationModule } from './configuration/configuration.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { Entities } from './entities';
     CompanyModule,
     TicketsModule,
     ProvincesModule,
+    ConfigurationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

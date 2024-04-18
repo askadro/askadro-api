@@ -50,6 +50,9 @@ export class Company {
   @Column()
   timeOfPayment: string;
 
+  @Column()
+  totalWorkingTime: string;
+
   @UpdateDateColumn()
   updatedDate: Date;
 
