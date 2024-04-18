@@ -7,6 +7,7 @@ export type IsUniqueConstraintOptions = {
 }
 
 export function IsUnique(options: IsUniqueConstraintOptions, validationOptions?: ValidationOptions) {
+
   return function (object: Object, propertyName: string) {
     registerDecorator({
       name: 'is-unique',
@@ -16,5 +17,6 @@ export function IsUnique(options: IsUniqueConstraintOptions, validationOptions?:
       options: validationOptions,
       validator: IsUniqueConstraint,
     });
+
   };
 }

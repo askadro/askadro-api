@@ -9,8 +9,8 @@ export class IsUniqueConstraint implements ValidatorConstraintInterface {
   constructor(private readonly dataSource: EntityManager) {
   }
   async validate(value: any, args: ValidationArguments) {
-  const {column,tablaName}:IsUniqueConstraintOptions = args.constraints[0];
 
+  const {column,tablaName}:IsUniqueConstraintOptions = args.constraints[0];
 
   const exists = await this.dataSource
     .getRepository(tablaName)

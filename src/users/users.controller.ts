@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from "@nestjs/common";
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from "./entities/user.entity";
 
 @Controller('users')
 export class UsersController {
@@ -10,7 +11,6 @@ export class UsersController {
   @Post("/create")
   create(@Body() createUserDto: CreateUserDto) {
     console.log(`createUserDto: `, createUserDto);
-    // console.log(`createUserDto age: ${createUserDto?.age}`);
     return this.usersService.create(createUserDto);
   }
 
@@ -19,18 +19,23 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get('/job/users')
+ async userJobFindAll() {
+    return await this.usersService.userJobFindAll();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+    return this.usersService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Patch('/update/:id')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
+    return this.usersService.update(id, updateUserDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @Delete('/delete/:id?soft=true')
+  async remove(@Param('id') id: string,@Query("soft") soft: string) {
+    return await this.usersService.remove(id,soft);
   }
 }
