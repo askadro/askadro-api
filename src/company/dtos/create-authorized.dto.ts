@@ -14,7 +14,7 @@ export class CreateAuthorizedDto {
   authorizedPerson: string; // ad soyad
 
   @IsString()
-  @IsMobilePhone('tr-TR')
+  @IsMobilePhone('tr-TR') // telefon numarasının tr standartlarına uygun olması validation işlemi
   authorizedPhone: string;
 
   @IsString()

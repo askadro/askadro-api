@@ -32,7 +32,7 @@ export class CreateCompanyDto {
   name: string;
 
   @IsString()
-  @IsMobilePhone("tr-TR")
+  @IsMobilePhone("tr-TR")  // telefon numarasının tr standartlarına uygun olması validation işlemi
   phone: string;
 
   @IsOptional()
