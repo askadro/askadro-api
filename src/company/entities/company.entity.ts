@@ -1,4 +1,5 @@
 import {
+  BeforeInsert,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
@@ -12,6 +13,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Authorized } from './authorized.entity';
+import { Job } from 'src/jobs/job.entity';
 
 @Entity()
 export class Company {
@@ -24,7 +26,7 @@ export class Company {
   @Column()
   phone: string;
 
-  @Column()
+  @Column({ nullable: true })
   shortName: string;
 
   @Column()
@@ -33,13 +35,11 @@ export class Company {
   @Column()
   location: string; // semt
 
-  // @JoinTable({
-  //   name: 'company_authorized', // Bağlantı tablosu adı
-  //   joinColumn: { name: 'company_id' },
-  //   inverseJoinColumn: { name: 'authorized_id' },
-  // })
-  @OneToMany(() => Authorized, (auth: Authorized) => auth.company) // OneToMany -> ManyToMany
+  @OneToMany(() => Authorized, (auth: Authorized) => auth.company) // OneToMany -> ManyToOne
   authorized: Authorized[];
+
+  @OneToMany(() => Job, (job: Job) => job.company)
+  job: Job[];
 
   @Column()
   registrationNumber: string; // sicil numarası
@@ -58,4 +58,12 @@ export class Company {
 
   @CreateDateColumn()
   createdDate: Date;
+
+  @BeforeInsert()
+  setDefault() {
+    this.password = this.registrationNumber;
+    if (!this.shortName && this.name) {
+      this.shortName = this.name.substring(0, 3).toUpperCase(); // Use substring for clarity
+    }
+  }
 }

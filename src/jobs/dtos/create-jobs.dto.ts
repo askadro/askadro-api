@@ -1,4 +1,12 @@
-import { IsArray, IsEmail, IsNumber, IsObject, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEmail,
+  IsNumber,
+  IsObject,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { Company } from 'src/company/entities/company.entity';
 
 export class CreateJobsDto {
   @IsString()
@@ -8,5 +16,8 @@ export class CreateJobsDto {
   user: string;
 
   @IsString()
-  time: string;
+  startTime: string; // 00:00 formatında girilecek
+
+  @IsString()
+  endTime: string; // 00:00 formatında girilecek
 }
