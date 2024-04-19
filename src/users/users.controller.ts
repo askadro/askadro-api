@@ -14,6 +14,11 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get(USERS.deletedUsers)
+  deletedUsers() {
+    return this.usersService.deletedUsers();
+  }
+
   @Get(USERS.userJob)
   async userJobFindOne(@Param('id') id: string): Promise<User> {
     return await this.usersService.userJobFindOne(id);

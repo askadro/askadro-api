@@ -9,19 +9,7 @@ import { Repository, UpdateResult } from "typeorm";
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>
-  ) {
-  }
-
-  async create(createUserDto: CreateUserDto) {
-    const user = this.usersRepository.create({
-      Identity: createUserDto.Identity.trim(),
-      firstName: createUserDto.firstName.trim(),
-      lastName: createUserDto.lastName.trim(),
-      birthDate: createUserDto.birthDate,
-      gender: createUserDto.gender
-    });
-    return await this.usersRepository.save(user);
-  }
+  ) {  }
 
   async findAll(relations: object = {}) {
     const users = await this.usersRepository.find({
@@ -29,12 +17,26 @@ export class UsersService {
     });
 
     if (!users) {
-
       throw new NotFoundException("users not found");
-
     }
 
     return users;
+  }
+
+  async deletedUsers():Promise<User[]> {
+    const users: User[] = await this.usersRepository.find({
+      withDeleted: true
+    });
+
+    const deletedUsers: User[] = users.filter(user => user.deletedAt !== null);
+
+    if (!deletedUsers.length) {
+
+      throw new NotFoundException("deleted users not found");
+
+    }
+
+    return deletedUsers;
   }
 
   async userJobFindOne(id: string) {
@@ -69,11 +71,11 @@ export class UsersService {
   }
 
   async findOne(id: string, relations: object = {}): Promise<User> {
-    const user: User= await this.usersRepository.findOne({
+    const user: User = await this.usersRepository.findOne({
       where: {
         id: id
       },
-      relations,
+      relations
     });
 
     if (!user) {
@@ -81,6 +83,17 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async create(createUserDto: CreateUserDto) {
+    const user = this.usersRepository.create({
+      Identity: createUserDto.Identity.trim(),
+      firstName: createUserDto.firstName.trim(),
+      lastName: createUserDto.lastName.trim(),
+      birthDate: createUserDto.birthDate,
+      gender: createUserDto.gender
+    });
+    return await this.usersRepository.save(user);
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
@@ -96,7 +109,7 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  async remove(id: string, soft: string):Promise<User> {
+  async remove(id: string, soft: string): Promise<User> {
     const user = await this.findOne(id);
 
     if (!user) {
@@ -109,7 +122,7 @@ export class UsersService {
       if (!softDelete.affected) {
         throw new NotFoundException("user not found");
       }
-      return user
+      return user;
     }
     return await this.usersRepository.remove(user);
 
