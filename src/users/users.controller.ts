@@ -33,7 +33,7 @@ export class UsersController {
     console.log(`createUserDto: `, createUserDto);
     return this.usersService.create(createUserDto);
   }
-
+ 
   @Patch(USERS.userUpdate)
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
     return this.usersService.update(id, updateUserDto);

@@ -35,7 +35,7 @@ export class Company {
   @Column()
   location: string; // semt
 
-  @OneToMany(() => Authorized, (auth: Authorized) => auth.company) // OneToMany -> ManyToOne
+  @OneToMany(() => Authorized, (auth: Authorized) => auth.company)
   authorized: Authorized[];
 
   @OneToMany(() => Job, (job: Job) => job.company)
