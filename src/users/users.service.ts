@@ -68,13 +68,19 @@ export class UsersService {
     return jobUser;
   }
 
-  async findOne(id: string, relations: object = {}) {
-    return await this.usersRepository.findOne({
+  async findOne(id: string, relations: object = {}): Promise<User> {
+    const user: User= await this.usersRepository.findOne({
       where: {
         id: id
       },
       relations,
     });
+
+    if (!user) {
+      throw new NotFoundException("user not found");
+    }
+
+    return user;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
