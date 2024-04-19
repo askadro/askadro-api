@@ -41,7 +41,7 @@ export class User {
   })
   gender: userGenderEnum;
 
-  @OneToMany(() => Job, (job: Job) => job.company)
+  @OneToMany(() => Job, (job: Job) => job.user)
   job: Job[];
 
   @Column({

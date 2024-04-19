@@ -3,7 +3,7 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./entities/user.entity";
-import { Repository } from "typeorm";
+import { Repository, UpdateResult } from "typeorm";
 
 @Injectable()
 export class UsersService {
@@ -37,16 +37,35 @@ export class UsersService {
     return users;
   }
 
-  async userJobFindAll() {
-    const jobUsers = await this.usersRepository.find({
-      relations: ["job"]
+  async userJobFindOne(id: string) {
+    const jobUser = await this.usersRepository.findOne({
+      where: {
+        id
+      },
+      select: {
+        job: {
+          id: true,
+          startTime: true,
+          extraTime: true,
+          endTime: true,
+          company: {
+            id: true,
+            name: true
+          }
+        }
+      },
+      relations: {
+        job: {
+          company: true
+        }
+      }
     });
 
-    if (!jobUsers) {
-      throw new NotFoundException("job users not found");
+    if (!jobUser) {
+      throw new NotFoundException("job user not found");
     }
 
-    return jobUsers
+    return jobUser;
   }
 
   async findOne(id: string, relations: object = {}) {
@@ -54,7 +73,7 @@ export class UsersService {
       where: {
         id: id
       },
-      relations
+      relations,
     });
   }
 
@@ -71,7 +90,7 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  async remove(id: string,soft: string) {
+  async remove(id: string, soft: string):Promise<User> {
     const user = await this.findOne(id);
 
     if (!user) {
@@ -79,9 +98,15 @@ export class UsersService {
     }
 
     if (soft === "true") {
-      return await this.usersRepository.softDelete(id);
+      const softDelete = await this.usersRepository.softDelete(id);
+
+      if (!softDelete.affected) {
+        throw new NotFoundException("user not found");
+      }
+      return user
     }
     return await this.usersRepository.remove(user);
 
   }
 }
+

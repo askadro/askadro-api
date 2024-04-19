@@ -5,7 +5,7 @@ import { Injectable } from "@nestjs/common";
 
 @ValidatorConstraint({ name: "IsUniqueConstraint", async: true })
 @Injectable()
-export class IsUniqueConstraint implements ValidatorConstraintInterface {
+export class _IsUniqueConstraint implements ValidatorConstraintInterface {
   constructor(private readonly dataSource: EntityManager) {
   }
   async validate(value: any, args: ValidationArguments) {

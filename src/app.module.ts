@@ -19,7 +19,7 @@ import { UsersModule } from './users/users.module';
 import { ProvincesModule } from './provinces/provinces.module';
 import { Entities } from './entities';
 import { ConfigurationModule } from './configuration/configuration.module';
-import { IsUniqueConstraint } from "./utils/validations/unique/is-unique-constraint";
+import { IsUniqueConstraint } from "./utils/validations";
 
 @Module({
   imports: [
