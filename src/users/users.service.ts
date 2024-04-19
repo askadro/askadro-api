@@ -1,40 +1,131 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { User } from "./entities/user.entity";
+import { Repository, UpdateResult } from "typeorm";
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private usersRepository: Repository<User>,
-  ) {}
-  async create(createUserDto: any) {
-    const user = await this.usersRepository.create({ 
+    @InjectRepository(User) private usersRepository: Repository<User>
+  ) {  }
+
+  async findAll(relations: object = {}) {
+    const users = await this.usersRepository.find({
+      relations
+    });
+
+    if (!users) {
+      throw new NotFoundException("users not found");
+    }
+
+    return users;
+  }
+
+  async deletedUsers():Promise<User[]> {
+    const users: User[] = await this.usersRepository.find({
+      withDeleted: true
+    });
+
+    const deletedUsers: User[] = users.filter(user => user.deletedAt !== null);
+
+    if (!deletedUsers.length) {
+
+      throw new NotFoundException("deleted users not found");
+
+    }
+
+    return deletedUsers;
+  }
+
+  async userJobFindOne(id: string) {
+    const jobUser = await this.usersRepository.findOne({
+      where: {
+        id
+      },
+      select: {
+        job: {
+          id: true,
+          startTime: true,
+          extraTime: true,
+          endTime: true,
+          company: {
+            id: true,
+            name: true
+          }
+        }
+      },
+      relations: {
+        job: {
+          company: true
+        }
+      }
+    });
+
+    if (!jobUser) {
+      throw new NotFoundException("job user not found");
+    }
+
+    return jobUser;
+  }
+
+  async findOne(id: string, relations: object = {}): Promise<User> {
+    const user: User = await this.usersRepository.findOne({
+      where: {
+        id: id
+      },
+      relations
+    });
+
+    if (!user) {
+      throw new NotFoundException("user not found");
+    }
+
+    return user;
+  }
+
+  async create(createUserDto: CreateUserDto) {
+    const user = this.usersRepository.create({
       Identity: createUserDto.Identity.trim(),
       firstName: createUserDto.firstName.trim(),
       lastName: createUserDto.lastName.trim(),
-      age: createUserDto.age.trim(),
       birthDate: createUserDto.birthDate,
-      gender: createUserDto.gender,
+      gender: createUserDto.gender
     });
     return await this.usersRepository.save(user);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+
+    const user = await this.findOne(id);
+
+    if (!user) {
+      throw new NotFoundException("user not found");
+    }
+
+    Object.assign(user, updateUserDto);
+
+    return this.usersRepository.save(user);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
+  async remove(id: string, soft: string): Promise<User> {
+    const user = await this.findOne(id);
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+    if (!user) {
+      throw new NotFoundException("user not found");
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    if (soft === "true") {
+      const softDelete = await this.usersRepository.softDelete(id);
+
+      if (!softDelete.affected) {
+        throw new NotFoundException("user not found");
+      }
+      return user;
+    }
+    return await this.usersRepository.remove(user);
+
   }
 }
+

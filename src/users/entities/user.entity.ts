@@ -29,9 +29,6 @@ export class User {
   @Column()
   lastName: string;
 
-  @Column()
-  age: string;
-
   @Column({
     type: "date",
     default: null
@@ -44,7 +41,7 @@ export class User {
   })
   gender: userGenderEnum;
 
-  @OneToMany(() => Job, (job: Job) => job.company)
+  @OneToMany(() => Job, (job: Job) => job.user)
   job: Job[];
 
   @Column({
