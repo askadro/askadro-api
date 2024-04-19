@@ -12,14 +12,14 @@ import {
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { JobsModule } from './jobs/jobs.module';
-import { CompanyModule } from './company/company.module';
-import { TicketsModule } from './tickets/tickets.module';
-import { UsersModule } from './users/users.module';
-import { ProvincesModule } from './provinces/provinces.module';
 import { Entities } from './entities';
 import { ConfigurationModule } from './configuration/configuration.module';
 import { IsUniqueConstraint } from "./utils/validations";
+import { UsersModule } from "./modules/users/users.module";
+import { JobsModule } from "./modules/jobs/jobs.module";
+import { CompanyModule } from "./modules/company/company.module";
+import { TicketsModule } from "./modules/tickets/tickets.module";
+import { ProvincesModule } from "./modules/provinces/provinces.module";
 
 @Module({
   imports: [
