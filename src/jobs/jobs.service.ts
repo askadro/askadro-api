@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateJobsDto } from './dtos/create-jobs.dto';
 import { Job } from './job.entity';
+import { UpdateJobDto } from './dtos/update-jobs.dto';
 
 @Injectable()
 export class JobsService {
@@ -22,18 +23,6 @@ export class JobsService {
   async findOne(id: string) {
     const job = await this.repo.findOne({
       where: { id },
-      // select: {
-      //   user: {
-      //     firstName: true,
-      //     lastName: true,
-      //     Identity: true,
-      //     id: true,
-      //   },
-      //   company: {
-      //     id: true,
-      //     name: true,
-      //   },
-      // },
       relations: { user: true, company: true },
     });
     if (job) {
@@ -63,7 +52,7 @@ export class JobsService {
     });
   }
 
-  async update(id: string, attrs: Partial<Job>) {
+  async update(id: string, attrs: UpdateJobDto) {
     const job = await this.findOne(id);
     if (!job) {
       throw new Error('Job not found');
@@ -80,14 +69,13 @@ export class JobsService {
     return this.repo.remove(job);
   }
 
-  async filter(body: Partial<Job>) {
+  async filter(body: UpdateJobDto) {
     const filteredJobs = await this.repo.find({
       where: {
         user: body.user,
         company: body.company,
         startTime: body.startTime,
         endTime: body.endTime,
-        id: body.id,
       },
     });
     return filteredJobs;
