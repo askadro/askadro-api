@@ -11,17 +11,18 @@ import {
 import { CreateJobsDto } from './dtos/create-jobs.dto';
 import { JobsService } from './jobs.service';
 import { Job } from './job.entity';
+import { path } from '@/constants/paths';
 
-@Controller('jobs')
+@Controller(path.job.main)
 export class JobsController {
   constructor(private jobsService: JobsService) {}
 
-  @Post('/new')
+  @Post(path.job.create)
   createJob(@Body() body: CreateJobsDto): Promise<Job> {
     return this.jobsService.create(body);
   }
 
-  @Get('/:id')
+  @Get(path.job.getOneJob)
   async getJob(@Param('id') id: string): Promise<Job> {
     const job = await this.jobsService.findOne(id);
     if (!job) {
@@ -30,22 +31,22 @@ export class JobsController {
     return job;
   }
 
-  @Get('')
+  @Get(path.job.getJobs)
   getJobs(): Promise<Job[]> {
     return this.jobsService.find();
   }
 
-  @Patch('/update/:id')
+  @Patch(path.job.updateJob)
   updateJob(@Param('id') id: string, @Body() body: Partial<Job>) {
     return this.jobsService.update(id, body);
   }
 
-  @Delete('/delete/:id')
+  @Delete(path.job.deleteJob)
   deleteJob(@Param('id') id: string) {
     return this.jobsService.remove(id);
   }
 
-  @Post("/filter/job")
+  @Post(path.job.filterJob)
   filterJob(@Body() body:Partial<Job>){
     return this.jobsService.filter(body)
   }

@@ -1,14 +1,9 @@
 import {
-  IsArray,
-  IsEmail,
-  IsNumber,
-  IsObject,
   IsOptional,
   IsString,
-  ValidateNested,
 } from 'class-validator';
-import { Company } from 'src/company/entities/company.entity';
-import { User } from 'src/users/entities/user.entity';
+import { Company } from '../../company/entities/company.entity';
+import { User } from '../../users/entities/user.entity';
 
 export class CreateJobsDto {
   @IsString()

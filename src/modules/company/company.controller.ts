@@ -1,40 +1,41 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { CreateCompanyDto } from './dtos/create-company.dto';
 import { CompanyService } from './company.service';
-import { Company } from './entities/company.entity';
 import { CreateAuthorizedDto } from './dtos/create-authorized.dto';
 import { UpdateCompanyDto } from './dtos/update-company.dto';
+import { path } from '@/constants/paths';
 
-@Controller('company')
+
+@Controller(path.company.main)
 export class CompanyController {
   constructor(private companyService: CompanyService) {}
 
-  @Post('/new')
+  @Post(path.company.create)
   async createCompany(@Body() body: CreateCompanyDto) {
     return await this.companyService.create(body);
   }
 
-  @Post('/new-authorized')
+  @Post(path.company.addAuthorized)
   async createAuthorized(@Body() body: CreateAuthorizedDto[]) {
     return await this.companyService.createAuthorized(body);
   }
 
-  @Get('/all')
+  @Get(path.company.getCompanies)
   async getCompanies() {
     return await this.companyService.find();
   }
 
-  @Get('/:id')
+  @Get(path.company.getOneCompany)
   async getCompany(@Param('id') id: string) {
     return await this.companyService.findOne(id, { authorized: true });
   }
 
-  @Patch('/update/:id')
+  @Patch(path.company.updateCompany)
   async updateCompany(@Body() body: UpdateCompanyDto, @Param('id') id: string) {
     return await this.companyService.update(id, body);
   }
 
-  @Delete('/delete/:id')
+  @Delete(path.company.deleteCompany)
   async deleteCompany(@Param('id') id: string) {
     return await this.companyService.remove(id);
   }
