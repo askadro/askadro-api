@@ -1,7 +1,8 @@
 import { IsByteLength, IsEnum, IsOptional, IsString } from 'class-validator';
 import { userGenderEnum } from '../enums/user.gender.enum';
 import { UserStatusEnum } from '../enums/user.status.enum';
-import { IsUnique } from '../../utils/validations';
+import { IsUnique } from '../../../utils/validations';
+
 
 export class CreateUserDto {
   @IsString({

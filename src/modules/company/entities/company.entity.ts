@@ -4,16 +4,12 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Authorized } from './authorized.entity';
-import { Job } from 'src/jobs/job.entity';
+import { Job } from '../../jobs/job.entity';
 
 @Entity()
 export class Company {

@@ -6,20 +6,22 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from "typeorm";
-import { userGenderEnum } from "../enums/user.gender.enum";
-import { UserStatusEnum } from "../enums/user.status.enum";
-import { Job } from "src/jobs/job.entity";
+  UpdateDateColumn,
+} from 'typeorm';
+import { userGenderEnum } from '../enums/user.gender.enum';
+import { UserStatusEnum } from '../enums/user.status.enum';
+import { Job } from 'src/modules/jobs/job.entity';
+import { Ticket } from '@/modules/tickets/ticket.entity';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id: string;
+
 
   @Column({
     length: 11,
-    unique: true
+    unique: true,
   })
   Identity: string;
 
@@ -30,37 +32,41 @@ export class User {
   lastName: string;
 
   @Column({
-    type: "date",
-    default: null
+    type: 'date',
+    default: null,
   })
   birthDate: Date;
 
   @Column({
-    type: "enum",
-    enum: userGenderEnum
+    type: 'enum',
+    enum: userGenderEnum,
   })
   gender: userGenderEnum;
 
   @OneToMany(() => Job, (job: Job) => job.user)
   job: Job[];
 
+  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.user)
+  ticket: Ticket[];
+
+
   @Column({
-    type: "enum",
+    type: 'enum',
     enum: UserStatusEnum,
-    default: UserStatusEnum.ACTIVE
+    default: UserStatusEnum.ACTIVE,
   })
   status: UserStatusEnum;
 
   @DeleteDateColumn({
-    type: "timestamp",
-    default: null
+    type: 'timestamp',
+    default: null,
   })
   public deletedAt: Date;
 
-  @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
   public createdAt: Date;
 
-  @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', onUpdate: 'CURRENT_TIMESTAMP(6)' })
   public updatedAt: Date;
 
   @AfterInsert()
