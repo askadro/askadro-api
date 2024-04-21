@@ -1,10 +1,8 @@
-import { User } from './modules/users/entities/user.entity';
-import { Company } from './modules/company/entities/company.entity';
-import { Authorized } from './modules/company/entities/authorized.entity';
-import { Job } from './modules/jobs/job.entity';
-import { Province } from './modules/provinces/entities/province.entity';
-import { District } from './modules/provinces/entities/district.entity';
-import { Ticket } from '@/modules/tickets/ticket.entity';
+import { Authorized } from './company/entities/authorized.entity';
+import { Company } from './company/entities/company.entity';
+import { Job } from './jobs/job.entity';
+import { District } from './provinces/entities/district.entity';
+import { Province } from './provinces/entities/province.entity';
+import { User } from './users/entities/user.entity';
 
-
-export const Entities = [User, Company, Authorized, Job, Province, District,Ticket];
+export const Entities = [User, Company, Authorized, Job, Province, District];

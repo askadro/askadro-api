@@ -1,3 +1,5 @@
+import { Company } from 'src/company/entities/company.entity';
+import { User } from 'src/users/entities/user.entity';
 import {
   Entity,
   Column,
@@ -7,8 +9,6 @@ import {
   AfterRemove,
   ManyToOne,
 } from 'typeorm';
-import { Company } from '../company/entities/company.entity';
-import { User } from '../users/entities/user.entity';
 
 @Entity()
 export class Job {

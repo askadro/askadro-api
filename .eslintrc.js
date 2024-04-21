@@ -22,9 +22,4 @@ module.exports = {
   //   '@typescript-eslint/explicit-module-boundary-types': 'off',
   //   '@typescript-eslint/no-explicit-any': 'off',
   // },
-  "parser": 'babel-eslint',
-  "parserOptions": {
-    "sourceType": "module",
-    "ecmaVersion": 2020
-  }
 };

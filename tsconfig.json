@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "commonjs",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -16,14 +16,6 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false,
-    "moduleResolution": "Node",
-    "paths": {
-      "@constants": ["src/constants/*"],
-      "@/*": ["src/*"],
-      "@enums": ["src/enums/*"],
-      "@utils": ["src/utils/*"],
-      "@modules": ["src/modules/*"]
-    }
+    "noFallthroughCasesInSwitch": false
   }
 }
