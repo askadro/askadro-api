@@ -3,7 +3,7 @@ import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
-  Entity,
+  Entity, Index,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -14,10 +14,11 @@ import { Job } from 'src/modules/jobs/job.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 
 @Entity()
+@Index(["firstName", "lastName"])
+
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
 
   @Column({
     length: 11,

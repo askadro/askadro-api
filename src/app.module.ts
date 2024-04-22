@@ -20,6 +20,7 @@ import { JobsModule } from "./modules/jobs/jobs.module";
 import { CompanyModule } from "./modules/company/company.module";
 import { TicketsModule } from "./modules/tickets/tickets.module";
 import { ProvincesModule } from "./modules/provinces/provinces.module";
+import { PersonalCompanyModule } from './personal-company/personal-company.module';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { ProvincesModule } from "./modules/provinces/provinces.module";
     TicketsModule,
     ProvincesModule,
     ConfigurationModule,
+    PersonalCompanyModule,
   ],
   controllers: [AppController],
   providers: [AppService,IsUniqueConstraint],

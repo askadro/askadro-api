@@ -1,60 +1,86 @@
-/*
-export const JOBS = "jobs"
-export const JOB = "job/:id"
-export const JOB_CREATE = "job_create"
-export const JOB_DELETE = "job_delete/:id"
-export const JOB_UPDATE = "job_update/:id"
-*/
-
-export const path = {
-  job:{
-    main:"jobs",
-    create:"/new",
-    getOneJob:"/:id",
-    getJobs:"/",
-    updateJob:"/update/:id",
-    deleteJob:"/delete/:id",
-    filterJob:"/filter/all",
-    searchJob:"/search",
+export const path:{
+  job: {
+    main: string,
+    create: string,
+    getOneJob: string,
+    getJobs: string,
+    updateJob: string,
+    deleteJob: string,
+    filterJob: string,
+    searchJob: string,
   },
-  company:{
-    main:"companies",
-    create:"/new",
-    getOneCompany:"/:id",
-    getCompanies:"",
-    updateCompany:"/update/:id",
-    deleteCompany:"/delete/:id",
-    filterCompany:"/filter/all",
-    searchCompany:"/search/all",
-    addAuthorized: '/new-authorized'
+  company: {
+    main: string,
+    create: string,
+    getOneCompany: string,
+    getCompanies: string,
+    updateCompany: string,
+    deleteCompany: string,
+    filterCompany: string,
+    searchCompany: string,
+    addAuthorized: string,
   },
-  ticket:{
-    main:"tickets",
-    create:"/new",
-    getOneTicket:"/:id",
-    getTickets:"/tickets/all",
-    crateCompanyTicket:"/crate-company-ticket",
-    updateTicket:"/update/:id",
-    deleteTicket:"/delete/:id",
-    filterTicket:"/filter/all",
+  ticket: {
+    main: string,
+    create: string,
+    getOneTicket: string,
+    getTickets: string,
+    crateCompanyTicket: string,
+    updateTicket: string,
+    deleteTicket: string,
+    filterTicket: string,
+  },
+  users: {
+    main: string,
+    deletedUsers: string,
+    user: string,
+    userSearch: string,
+    userJob: string,
+    userCreate: string,
+    userDelete: string,
+    userUpdate: string
   }
-}
+} = {
+  job: {
+    main: 'jobs',
+    create: '/new',
+    getOneJob: '/:id',
+    getJobs: '/',
+    updateJob: '/update/:id',
+    deleteJob: '/delete/:id',
+    filterJob: '/filter/all',
+    searchJob: '/search',
+  },
+  company: {
+    main: 'companies',
+    create: '/new',
+    getOneCompany: '/:id',
+    getCompanies: '',
+    updateCompany: '/update/:id',
+    deleteCompany: '/delete/:id',
+    filterCompany: '/filter/all',
+    searchCompany: '/search/all',
+    addAuthorized: '/new-authorized',
+  },
+  ticket: {
+    main: 'tickets',
+    create: '/new',
+    getOneTicket: '/:id',
+    getTickets: '/tickets/all',
+    crateCompanyTicket: '/crate-company-ticket',
+    updateTicket: '/update/:id',
+    deleteTicket: '/delete/:id',
+    filterTicket: '/filter/all',
+  },
+  users: {
+    main: '',
+    deletedUsers: '/deleted-users',
+    user: 'user/:id',
+    userSearch: 'user-search/:query',
+    userJob: 'job/:id',
+    userCreate: 'create',
+    userDelete: 'delete/:id',
+    userUpdate: 'update/:id',
 
-export const USERS:{
-  users: string,
-  deletedUsers: string,
-  user: string,
-  userJob: string,
-  userCreate: string,
-  userDelete: string,
-  userUpdate: string
-}={
-  users: "",
-  deletedUsers: "/deleted-users",
-  user: "user/:id",
-  userJob: "job/:id",
-  userCreate: "create",
-  userDelete: "delete/:id",
-  userUpdate: "update/:id"
-
-}
+  }
+};
