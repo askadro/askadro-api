@@ -37,6 +37,8 @@ export const path:{
     userSearch: string,
     userJob: string,
     userCreate: string,
+    userAddressCreate: string,
+    userAddressUpdate: string,
     userDelete: string,
     userUpdate: string
   }
@@ -81,6 +83,7 @@ export const path:{
     userCreate: 'create',
     userDelete: 'delete/:id',
     userUpdate: 'update/:id',
-
+    userAddressCreate: 'user-address-create/:id',
+    userAddressUpdate: 'user-address-update/:userAddressId',
   }
 };

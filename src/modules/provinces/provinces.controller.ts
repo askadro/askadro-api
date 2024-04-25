@@ -1,8 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from "@nestjs/common";
-import { ProvincesService } from "./provinces.service";
-import { CreateProvinceDto } from "./dto/create-province.dto";
-import { UpdateProvinceDto } from "./dto/update-province.dto";
-import { firstValueFrom } from "rxjs";
+import { Controller, Get, Post } from '@nestjs/common';
+import { ProvincesService } from './provinces.service';
 
 @Controller("provinces")
 export class ProvincesController {

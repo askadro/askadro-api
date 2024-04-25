@@ -1,10 +1,14 @@
 import {
-  AfterInsert, AfterRemove, AfterUpdate,
+  AfterInsert,
+  AfterRemove,
+  AfterUpdate,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
-  Entity, Index,
+  Entity,
+  Index,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -12,6 +16,7 @@ import { userGenderEnum } from '../enums/user.gender.enum';
 import { UserStatusEnum } from '../enums/user.status.enum';
 import { Job } from 'src/modules/jobs/job.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
+import { UserAddress } from '@/modules/users/entities/user.address.entity';
 
 @Entity()
 @Index(["firstName", "lastName"])
@@ -50,6 +55,8 @@ export class User {
   @OneToMany(() => Ticket, (ticket: Ticket) => ticket.user)
   ticket: Ticket[];
 
+  @OneToOne(() => UserAddress, (userAddress) => userAddress.user)
+  userAddress: UserAddress;
 
   @Column({
     type: 'enum',
