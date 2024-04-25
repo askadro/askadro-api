@@ -2,25 +2,13 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as path from 'path';
-import {
-  AcceptLanguageResolver,
-  CookieResolver,
-  HeaderResolver,
-  I18nModule,
-  QueryResolver,
-} from 'nestjs-i18n';
+import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Entities } from './entities';
-import { ConfigurationModule } from './configuration/configuration.module';
-import { IsUniqueConstraint } from "./utils/validations";
-import { UsersModule } from "./modules/users/users.module";
-import { JobsModule } from "./modules/jobs/jobs.module";
-import { CompanyModule } from "./modules/company/company.module";
-import { TicketsModule } from "./modules/tickets/tickets.module";
-import { ProvincesModule } from "./modules/provinces/provinces.module";
-import { PersonalCompanyModule } from './personal-company/personal-company.module';
+import { IsUniqueConstraint } from './utils/validations';
+import { modules } from '@/modules';
 
 @Module({
   imports: [
@@ -62,14 +50,7 @@ import { PersonalCompanyModule } from './personal-company/personal-company.modul
         // new CookieResolver(["lang", "locale", "l"])
       ],
     }),
-
-    UsersModule,
-    JobsModule,
-    CompanyModule,
-    TicketsModule,
-    ProvincesModule,
-    ConfigurationModule,
-    PersonalCompanyModule,
+    ...modules,
   ],
   controllers: [AppController],
   providers: [AppService,IsUniqueConstraint],
