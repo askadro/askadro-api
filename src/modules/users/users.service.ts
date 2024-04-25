@@ -3,13 +3,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { IsNull, Not, Repository, UpdateResult } from 'typeorm';
-
+import { IsNull, Like, Not, Repository } from 'typeorm';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
-  ) {}
+  ) {
+  }
 
   async findAll(relations: object = {}) {
     const users = await this.usersRepository.find({
@@ -30,6 +30,10 @@ export class UsersService {
       },
       withDeleted: true,
     });
+
+    if (!users) {
+      throw new NotFoundException('users not found');
+    }
     return users;
   }
 
@@ -111,5 +115,15 @@ export class UsersService {
       return user;
     }
     return await this.usersRepository.remove(user);
+  }
+
+ async userSearch(query: string) {
+    const users=await this.usersRepository.createQueryBuilder("user").where("CONCAT(user.firstName, ' ', user.lastName) ilike :fullName", { fullName: `%${query}%` }).getMany();
+
+    if (!users) {
+      throw new NotFoundException('users not found');
+    }
+
+    return users
   }
 }

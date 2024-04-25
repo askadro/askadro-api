@@ -2,7 +2,7 @@ import { registerDecorator, ValidationOptions } from 'class-validator';
 import { IsUniqueConstraint } from "../index";
 
 export type IsUniqueConstraintOptions = {
-  tablaName: string;
+  tableName: string;
   column: string;
 }
 

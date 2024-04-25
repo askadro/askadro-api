@@ -10,11 +10,11 @@ export class _IsUniqueConstraint implements ValidatorConstraintInterface {
   }
   async validate(value: any, args: ValidationArguments) {
 
-  const {column,tablaName}:IsUniqueConstraintOptions = args.constraints[0];
+  const {column,tableName}:IsUniqueConstraintOptions = args.constraints[0];
 
   const exists = await this.dataSource
-    .getRepository(tablaName)
-    .createQueryBuilder(tablaName)
+    .getRepository(tableName)
+    .createQueryBuilder(tableName)
     .where({
       [column]: value
     }).getExists();

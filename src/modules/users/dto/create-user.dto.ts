@@ -13,7 +13,7 @@ export class CreateUserDto {
   })
   @IsUnique(
     {
-      tablaName: 'user',
+      tableName: 'user',
       column: 'Identity',
     },
     {
