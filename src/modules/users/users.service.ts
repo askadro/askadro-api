@@ -177,7 +177,20 @@ export class UsersService {
 
   }
 
-  updateAddress(id: string, updateAddressUserDto: UpdateAddressUserDto) {
+  async updateAddress(id: string, updateAddressUserDto: UpdateAddressUserDto): Promise<Address> {
+    const userAddress: Address = await this.addressRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
 
+    if (!userAddress) {
+      throw new NotFoundException('user address not found');
+    }
+
+    Object.assign(userAddress, updateAddressUserDto);
+
+
+    return this.addressRepository.save(userAddress);
   }
 }
