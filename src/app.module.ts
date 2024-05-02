@@ -3,12 +3,13 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as path from 'path';
 import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
-
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Entities } from './entities';
 import { IsUniqueConstraint } from './utils/validations';
 import { modules } from '@/modules';
+import { AsMailerModule } from '@/modules/as-mailer/as-mailer.module';
+import { AsMailerService } from '@/modules/as-mailer/as-mailer.service';
 
 @Module({
   imports: [
@@ -32,7 +33,6 @@ import { modules } from '@/modules';
       }),
       inject: [ConfigService],
     }),
-
     I18nModule.forRoot({
       fallbackLanguage: 'en',
       fallbacks: {
@@ -50,9 +50,10 @@ import { modules } from '@/modules';
         // new CookieResolver(["lang", "locale", "l"])
       ],
     }),
+    AsMailerModule,
     ...modules,
   ],
   controllers: [AppController],
-  providers: [AppService,IsUniqueConstraint],
+  providers: [AppService, IsUniqueConstraint, AsMailerService],
 })
 export class AppModule {}
