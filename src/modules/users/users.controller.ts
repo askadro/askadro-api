@@ -5,7 +5,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { path } from '@/constants/paths';
 import { CreateAddressUserDto } from '@/modules/users/dto/create-address-user.dto';
-import { UpdateAddressUserDto } from '@/modules/users/dto/update-address-user.dto';
+import { UserAddress } from '@/modules/users/entities/user.address.entity';
+import { Address } from '@/modules/addresses/entities/address.entity';
 
 
 @Controller('users')
@@ -55,13 +56,13 @@ export class UsersController {
   }
 
   @Post(path.users.userAddressCreate)
-  createAddress(@Param('id') id: string, @Body() createAddressUserDto: CreateAddressUserDto) {
+  createAddress(@Param('id') id: string, @Body() createAddressUserDto: CreateAddressUserDto): Promise<UserAddress> {
     return this.usersService.createAddress(id, createAddressUserDto);
   }
 
   @Patch(path.users.userAddressUpdate)
-  updateAddress(@Param('id') id: string, @Body() updateAddressUserDto: UpdateAddressUserDto) {
-    return this.usersService.updateAddress(id, updateAddressUserDto);
+  async updateAddress(@Param('userAddressId') id: string, @Body() updateAddressUserDto: Body): Promise<Address> {
+    return await this.usersService.updateAddress(id, updateAddressUserDto);
   }
 
   @Patch(path.users.userUpdate)
