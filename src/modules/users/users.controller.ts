@@ -51,8 +51,8 @@ export class UsersController {
   }
 
   @Post(path.users.userCreate)
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  create(@Body() body: { user: CreateUserDto, address: CreateAddressUserDto }) {
+    return this.usersService.create(body);
   }
 
   @Post(path.users.userAddressCreate)

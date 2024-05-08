@@ -92,7 +92,8 @@ export class UsersService {
     return user;
   }
 
-  async create(createUserDto: CreateUserDto) {
+  async create(body: { user: CreateUserDto, address: CreateAddressUserDto }): Promise<User> {
+    const { user: createUserDto, address: createAddressUserDto } = body;
     const user = this.usersRepository.create({
       Identity: createUserDto.Identity?.trim(),
       firstName: createUserDto.firstName?.trim(),
@@ -100,7 +101,14 @@ export class UsersService {
       birthDate: createUserDto.birthDate,
       gender: createUserDto.gender,
     });
-    return await this.usersRepository.save(user);
+
+
+    const userSave: User = await this.usersRepository.save(user);
+
+    if (userSave) {
+      await this.createAddress(userSave.id, createAddressUserDto);
+    }
+    return userSave;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
