@@ -12,7 +12,7 @@ import {
 import { User } from '@/modules/users/entities/user.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
 
-@Entity('user_addresses')
+@Entity('user_address')
 export class UserAddress {
   @PrimaryGeneratedColumn('uuid')
   id: string;
