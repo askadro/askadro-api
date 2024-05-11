@@ -94,19 +94,20 @@ export class UsersService {
 
   async create(body: { user: CreateUserDto, address: CreateAddressUserDto }) {
     const { user: createUserDto, address: createAddressUserDto } = body;
-    const user = this.usersRepository.create({
+    const user: User = this.usersRepository.create({
       Identity: createUserDto.Identity?.trim(),
       firstName: createUserDto.firstName?.trim(),
       lastName: createUserDto.lastName?.trim(),
       birthDate: createUserDto.birthDate,
       gender: createUserDto.gender,
-      IBAN: createUserDto.IBAN?.trim(),
+      iban: createUserDto.iban?.trim(),
     });
 
 
     const userSave: User = await this.usersRepository.save(user);
 
     if (!userSave) {
+      throw new NotFoundException('user not found');
     }
 
     const addressSave: UserAddress = await this.createAddress(userSave.id, createAddressUserDto);

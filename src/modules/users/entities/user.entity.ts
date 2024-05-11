@@ -40,9 +40,8 @@ export class User {
   @Column({
     unique: true,
     nullable: true,
-    length: 34,
   })
-  IBAN: string;
+  iban: string;
 
   @Column({
     type: 'date',

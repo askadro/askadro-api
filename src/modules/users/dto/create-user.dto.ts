@@ -42,14 +42,14 @@ export class CreateUserDto {
   })
   @IsUnique({
     tableName: 'user',
-    column: 'IBAN',
+    column: 'iban',
   }, {
     message: 'bu IBAN numarası zaten kayıtlı',
   })
   @Length(20, 34, {
     message: 'IBAN numarası 20-34 haneli olmalıdır',
   })
-  IBAN: string;
+  iban: string;
 
   @IsEnum(userGenderEnum, {
     message:
