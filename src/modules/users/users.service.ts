@@ -10,16 +10,83 @@ import { UserAddress } from '@/modules/users/entities/user.address.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { Province } from '@/modules/provinces/entities/province.entity';
 import { District } from '@/modules/provinces/entities/district.entity';
+import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import { Auth } from '@/auth/entities/auth.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
+    @InjectRepository(Auth) private authRepository: Repository<Auth>,
     @InjectRepository(UserAddress) private userAddressRepository: Repository<UserAddress>,
     @InjectRepository(Address) private addressRepository: Repository<Address>,
     @InjectRepository(Province) private provinceRepository: Repository<Province>,
     @InjectRepository(District) private districtRepository: Repository<District>,
   ) {
+  }
+
+  async create(body: { auth?: CreateAuthDto, user: CreateUserDto, address: CreateAddressUserDto }) {
+    const {
+      auth: createAuthDto,
+      user: createUserDto,
+      address: createAddressUserDto,
+    } = body;
+    const user: User = this.usersRepository.create({
+      Identity: createUserDto.Identity?.trim(),
+      firstName: createUserDto.firstName?.trim(),
+      lastName: createUserDto.lastName?.trim(),
+      birthDate: createUserDto.birthDate,
+      gender: createUserDto.gender,
+      iban: createUserDto.iban?.trim(),
+    });
+
+    const userSave: User = await this.usersRepository.save(user);
+
+    if (!userSave) {
+      throw new NotFoundException('user not found');
+    }
+
+    let authSave: Auth;
+    if (createAuthDto) {
+      const auth = this.authRepository.create({
+        authId: userSave,
+        ...createAuthDto,
+      });
+      authSave = await this.authRepository.save(auth);
+    }
+
+    const addressSave: UserAddress = await this.createAddress(userSave.id, createAddressUserDto);
+
+    return {
+      User: userSave,
+      Address: addressSave.address,
+      Auth: authSave || null,
+    };
+  }
+
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new NotFoundException('user not found');
+    }
+    Object.assign(user, updateUserDto);
+    return this.usersRepository.save(user);
+  }
+
+  async remove(id: string, soft: string): Promise<User> {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new NotFoundException('user not found');
+    }
+    if (soft === 'true') {
+      const softDelete = await this.usersRepository.softDelete(id);
+
+      if (!softDelete.affected) {
+        throw new NotFoundException('user not found');
+      }
+      return user;
+    }
+    return await this.usersRepository.remove(user);
   }
 
   async findAll(relations: object = {}) {
@@ -90,56 +157,6 @@ export class UsersService {
       throw new NotFoundException('user not found');
     }
     return user;
-  }
-
-  async create(body: { user: CreateUserDto, address: CreateAddressUserDto }) {
-    const { user: createUserDto, address: createAddressUserDto } = body;
-    const user: User = this.usersRepository.create({
-      Identity: createUserDto.Identity?.trim(),
-      firstName: createUserDto.firstName?.trim(),
-      lastName: createUserDto.lastName?.trim(),
-      birthDate: createUserDto.birthDate,
-      gender: createUserDto.gender,
-      iban: createUserDto.iban?.trim(),
-    });
-
-
-    const userSave: User = await this.usersRepository.save(user);
-
-    if (!userSave) {
-      throw new NotFoundException('user not found');
-    }
-
-    const addressSave: UserAddress = await this.createAddress(userSave.id, createAddressUserDto);
-
-    return {
-      User: userSave, Address: addressSave.address,
-    };
-  }
-
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(id);
-    if (!user) {
-      throw new NotFoundException('user not found');
-    }
-    Object.assign(user, updateUserDto);
-    return this.usersRepository.save(user);
-  }
-
-  async remove(id: string, soft: string): Promise<User> {
-    const user = await this.findOne(id);
-    if (!user) {
-      throw new NotFoundException('user not found');
-    }
-    if (soft === 'true') {
-      const softDelete = await this.usersRepository.softDelete(id);
-
-      if (!softDelete.affected) {
-        throw new NotFoundException('user not found');
-      }
-      return user;
-    }
-    return await this.usersRepository.remove(user);
   }
 
   async userSearch(query: string) {
@@ -213,5 +230,9 @@ export class UsersService {
 
 
     return this.addressRepository.save(userAddress);
+  }
+
+  async userAuthFindOne(email: string): Promise<Auth> {
+    return await this.authRepository.findOne({ where: { email: email } });
   }
 }
