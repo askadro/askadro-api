@@ -7,6 +7,7 @@ import { District } from './modules/provinces/entities/district.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { UserAddress } from '@/modules/users/entities/user.address.entity';
+import { Auth } from '@/auth/entities/auth.entity';
 
 
 export const Entities: [
@@ -18,7 +19,8 @@ export const Entities: [
   District: typeof District,
   Ticket: typeof Ticket,
   Address: typeof Address,
-  UserAddress: typeof UserAddress
+  UserAddress: typeof UserAddress,
+  Auth: typeof Auth,
 ] = [
   User,
   Company,
@@ -29,4 +31,5 @@ export const Entities: [
   Ticket,
   Address,
   UserAddress,
+  Auth,
 ];

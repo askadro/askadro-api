@@ -6,6 +6,7 @@ import { ProvincesModule } from '@/modules/provinces/provinces.module';
 import { ConfigurationModule } from '@/configuration/configuration.module';
 import { AddressesModule } from '@/modules/addresses/addresses.module';
 import { Authorized } from '@/modules/company/entities/authorized.entity';
+import { AuthModule } from '@/auth/auth.module';
 
 export const modules: [
   UsersModule: typeof UsersModule,
@@ -15,7 +16,8 @@ export const modules: [
   ProvincesModule: typeof ProvincesModule,
   ConfigurationModule: typeof ConfigurationModule,
   AddressesModule: typeof AddressesModule,
-  Authorized: typeof Authorized
+  Authorized: typeof Authorized,
+  AuthModule: typeof AuthModule
 ] = [
   UsersModule,
   JobsModule,
@@ -25,4 +27,5 @@ export const modules: [
   ConfigurationModule,
   AddressesModule,
   Authorized,
+  AuthModule,
 ];

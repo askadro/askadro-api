@@ -17,6 +17,7 @@ import { UserStatusEnum } from '../enums/user.status.enum';
 import { Job } from 'src/modules/jobs/job.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { UserAddress } from '@/modules/users/entities/user.address.entity';
+import { Auth } from '@/auth/entities/auth.entity';
 
 @Entity()
 @Index(['firstName', 'lastName'])
@@ -63,6 +64,9 @@ export class User {
 
   @OneToOne(() => UserAddress, (userAddress) => userAddress.user)
   userAddress: UserAddress;
+
+  @OneToOne(() => Auth, (auth) => auth.authId)
+  auth: Auth;
 
   @Column({
     type: 'enum',
