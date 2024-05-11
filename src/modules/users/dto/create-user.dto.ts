@@ -1,4 +1,4 @@
-import { IsByteLength, IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsByteLength, IsEnum, IsIBAN, IsOptional, IsString, Length } from 'class-validator';
 import { userGenderEnum } from '../enums/user.gender.enum';
 import { UserStatusEnum } from '../enums/user.status.enum';
 import { IsUnique } from '../../../utils/validations';
@@ -36,6 +36,20 @@ export class CreateUserDto {
     message: 'doğum tarihi bir Date örneği olmalıdır',
   })
   birthDate: Date;
+
+  @IsIBAN({
+    message: 'Geçerli bir IBAN numarası olmalıdır',
+  })
+  @IsUnique({
+    tableName: 'user',
+    column: 'iban',
+  }, {
+    message: 'bu IBAN numarası zaten kayıtlı',
+  })
+  @Length(20, 34, {
+    message: 'IBAN numarası 20-34 haneli olmalıdır',
+  })
+  iban: string;
 
   @IsEnum(userGenderEnum, {
     message:

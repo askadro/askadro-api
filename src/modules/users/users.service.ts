@@ -92,23 +92,29 @@ export class UsersService {
     return user;
   }
 
-  async create(body: { user: CreateUserDto, address: CreateAddressUserDto }): Promise<User> {
+  async create(body: { user: CreateUserDto, address: CreateAddressUserDto }) {
     const { user: createUserDto, address: createAddressUserDto } = body;
-    const user = this.usersRepository.create({
+    const user: User = this.usersRepository.create({
       Identity: createUserDto.Identity?.trim(),
       firstName: createUserDto.firstName?.trim(),
       lastName: createUserDto.lastName?.trim(),
       birthDate: createUserDto.birthDate,
       gender: createUserDto.gender,
+      iban: createUserDto.iban?.trim(),
     });
 
 
     const userSave: User = await this.usersRepository.save(user);
 
-    if (userSave) {
-      await this.createAddress(userSave.id, createAddressUserDto);
+    if (!userSave) {
+      throw new NotFoundException('user not found');
     }
-    return userSave;
+
+    const addressSave: UserAddress = await this.createAddress(userSave.id, createAddressUserDto);
+
+    return {
+      User: userSave, Address: addressSave.address,
+    };
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
@@ -159,12 +165,19 @@ export class UsersService {
       },
     });
 
-    const district: District = await this.districtRepository.findOne({
+    if (!province) {
+      throw new NotFoundException('province not found');
+    }
 
+    const district: District = await this.districtRepository.findOne({
       where: {
         id: createAddressUserDto.district,
       },
     });
+
+    if (!district) {
+      throw new NotFoundException('district not found');
+    }
 
     const address: Address = this.addressRepository.create({
       city: province,

@@ -19,7 +19,7 @@ import { Ticket } from '@/modules/tickets/ticket.entity';
 import { UserAddress } from '@/modules/users/entities/user.address.entity';
 
 @Entity()
-@Index(["firstName", "lastName"])
+@Index(['firstName', 'lastName'])
 
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -36,6 +36,12 @@ export class User {
 
   @Column()
   lastName: string;
+
+  @Column({
+    unique: true,
+    nullable: true,
+  })
+  iban: string;
 
   @Column({
     type: 'date',
