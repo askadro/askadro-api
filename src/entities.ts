@@ -8,6 +8,7 @@ import { Ticket } from '@/modules/tickets/ticket.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { UserAddress } from '@/modules/users/entities/user.address.entity';
 import { Auth } from '@/auth/entities/auth.entity';
+import { CompanyAddress } from '@/modules/company/entities/company.address.entity';
 
 
 export const Entities: [
@@ -20,6 +21,7 @@ export const Entities: [
   Ticket: typeof Ticket,
   Address: typeof Address,
   UserAddress: typeof UserAddress,
+  CompanyAddress: typeof CompanyAddress,
   Auth: typeof Auth,
 ] = [
   User,
@@ -31,5 +33,6 @@ export const Entities: [
   Ticket,
   Address,
   UserAddress,
+  CompanyAddress,
   Auth,
 ];

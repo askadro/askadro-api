@@ -1,16 +1,4 @@
-import {
-  IsArray,
-  IsEnum,
-  IsMobilePhone,
-  IsNumberString,
-  IsOptional,
-  IsString,
-  Length,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
-import { Authorized } from '../entities/authorized.entity';
-import { Cities } from '@/enums/cities';
+import { IsMobilePhone, IsNumberString, IsOptional, IsString, Length, MaxLength, MinLength } from 'class-validator';
 
 export class CreateCompanyDto {
   @IsString()
@@ -33,15 +21,6 @@ export class CreateCompanyDto {
   @Length(3)
   shortName: string | undefined;
 
-  @IsString()
-  @IsEnum(Cities)
-  city: string;
-
-  @IsString()
-  location: string; // semt
-
-  @IsArray()
-  authorized: Authorized[];
 
   @IsNumberString()
   registrationNumber: string;// sicil numarası
