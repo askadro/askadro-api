@@ -6,6 +6,8 @@ import { UpdateCompanyDto } from './dtos/update-company.dto';
 import { path } from '@/constants/paths';
 import { CreateAddressUserDto } from '@/modules/users/dto/create-address-user.dto';
 import { CompanyCreate } from '@/decorators/company/create.decorator';
+import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import { Bcrypt } from '@/utils/bcrypt';
 
 
 @Controller(path.company.main)
@@ -18,8 +20,13 @@ export class CompanyController {
   async createCompany(@Body() body: {
     company: CreateCompanyDto,
     authorized?: CreateAuthorizedDto,
-    address?: CreateAddressUserDto
+    address?: CreateAddressUserDto,
+    auth?: CreateAuthDto
   }) {
+    if (body.auth) {
+      body.auth.password = Bcrypt.hash(body.auth.password);
+    }
+
     return await this.companyService.create(body);
   }
 

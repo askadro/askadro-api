@@ -14,7 +14,18 @@ export class CreateAuthDto {
   }, {
     message: 'bu email adresi zaten kayıtlı',
   })
+  @IsOptional()
   email: string;
+
+  @IsString({
+    message: 'username bir String olmalıdır',
+  })
+  @IsUnique({
+    column: 'username',
+    tableName: 'auths',
+  })
+  @IsOptional()
+  username: string;
 
   @IsString({
     message: 'sifre bir String olmalıdır',

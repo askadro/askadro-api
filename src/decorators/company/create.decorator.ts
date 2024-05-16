@@ -8,10 +8,16 @@ export class CompanyCreate implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map(data => {
-        if (data.Address) {
+        if ((data.Address && data.Address.company)) {
           delete data.Address.company;
         }
+
+        if ((data.Authorized && data.Authorized.company)) {
+          delete data.Authorized.company;
+        }
+
         return data;
+
       }),
     );
   }
