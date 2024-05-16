@@ -1,17 +1,20 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseInterceptors } from '@nestjs/common';
 import { CreateCompanyDto } from './dtos/create-company.dto';
 import { CompanyService } from './company.service';
 import { CreateAuthorizedDto } from './dtos/create-authorized.dto';
 import { UpdateCompanyDto } from './dtos/update-company.dto';
 import { path } from '@/constants/paths';
 import { CreateAddressUserDto } from '@/modules/users/dto/create-address-user.dto';
+import { CompanyCreate } from '@/decorators/company/create.decorator';
 
 
 @Controller(path.company.main)
 export class CompanyController {
-  constructor(private companyService: CompanyService) {}
+  constructor(private companyService: CompanyService) {
+  }
 
   @Post(path.company.create)
+  @UseInterceptors(CompanyCreate)
   async createCompany(@Body() body: {
     company: CreateCompanyDto,
     authorized?: CreateAuthorizedDto,

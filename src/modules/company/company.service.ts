@@ -44,19 +44,17 @@ export class CompanyService {
     let authorized: Authorized = null;
     if (createAuthorized) {
       authorized = await this.createAuthorized({ ...createAuthorized, company: resultCompany });
-      delete authorized.company;
     }
 
     let address: CompanyAddress = null;
     if (createAddress) {
       address = await this.createAddress(resultCompany.id, createAddress);
-      delete address.company;
     }
 
     return {
       Company: resultCompany,
       Authorized: authorized,
-      Address: address?.address,
+      Address: address,
     };
   }
 
@@ -138,8 +136,6 @@ export class CompanyService {
   //
   //   return this.addressRepository.save(userAddress);
   // }
-
-
 
 
   async findOne(id: string, relations: object = {}) {
