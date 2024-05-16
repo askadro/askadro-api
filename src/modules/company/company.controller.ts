@@ -4,6 +4,7 @@ import { CompanyService } from './company.service';
 import { CreateAuthorizedDto } from './dtos/create-authorized.dto';
 import { UpdateCompanyDto } from './dtos/update-company.dto';
 import { path } from '@/constants/paths';
+import { CreateAddressUserDto } from '@/modules/users/dto/create-address-user.dto';
 
 
 @Controller(path.company.main)
@@ -11,12 +12,16 @@ export class CompanyController {
   constructor(private companyService: CompanyService) {}
 
   @Post(path.company.create)
-  async createCompany(@Body() body: CreateCompanyDto) {
+  async createCompany(@Body() body: {
+    company: CreateCompanyDto,
+    authorized?: CreateAuthorizedDto,
+    address?: CreateAddressUserDto
+  }) {
     return await this.companyService.create(body);
   }
 
   @Post(path.company.addAuthorized)
-  async createAuthorized(@Body() body: CreateAuthorizedDto[]) {
+  async createAuthorized(@Body() body: CreateAuthorizedDto) {
     return await this.companyService.createAuthorized(body);
   }
 

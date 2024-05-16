@@ -15,6 +15,7 @@ import { Province } from '@/modules/provinces/entities/province.entity';
 import { District } from '@/modules/provinces/entities/district.entity';
 import { AddressStatusEnum } from '@/modules/addresses/enums/address.status.enum';
 import { UserAddress } from '@/modules/users/entities/user.address.entity';
+import { CompanyAddress } from '@/modules/company/entities/company.address.entity';
 
 @Entity('addresses')
 export class Address {
@@ -31,6 +32,9 @@ export class Address {
 
   @OneToOne(() => UserAddress, (userAddress) => userAddress.address)
   userAddress: UserAddress;
+
+  @OneToOne(() => CompanyAddress, (companyAddress) => companyAddress.address)
+  companyAddress: CompanyAddress;
 
   @Column({
     type: 'text',

@@ -5,11 +5,13 @@ import {
   DeleteDateColumn,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Authorized } from './authorized.entity';
 import { Job } from '../../jobs/job.entity';
+import { CompanyAddress } from '@/modules/company/entities/company.address.entity';
 
 @Entity()
 export class Company {
@@ -25,14 +27,11 @@ export class Company {
   @Column({ nullable: true })
   shortName: string;
 
-  @Column()
-  city: string;
-
-  @Column()
-  location: string; // semt
+  @OneToOne(() => CompanyAddress, (companyAddress) => companyAddress.company)
+  companyAddress: CompanyAddress;
 
   @OneToMany(() => Authorized, (auth: Authorized) => auth.company)
-  authorized: Authorized[];
+  authorized: Authorized;
 
   @OneToMany(() => Job, (job: Job) => job.company)
   job: Job[];
