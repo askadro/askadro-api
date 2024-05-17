@@ -13,6 +13,8 @@ import { CreateAddressCompanyDto } from '@/modules/company/dtos/create-address-c
 import { Province } from '@/modules/provinces/entities/province.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { District } from '@/modules/provinces/entities/district.entity';
+import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import { Auth } from '@/auth/entities/auth.entity';
 
 @Injectable()
 export class CompanyService {
@@ -22,13 +24,24 @@ export class CompanyService {
     @InjectRepository(Address) private addressRepository: Repository<Address>,
     @InjectRepository(Province) private provinceRepository: Repository<Province>,
     @InjectRepository(District) private districtRepository: Repository<District>,
-    @InjectRepository(Authorized) private auth: Repository<Authorized>,
+    @InjectRepository(Authorized) private authorizedRepository: Repository<Authorized>,
+    @InjectRepository(Auth) private authRepository: Repository<Auth>,
     private i18n: I18nService,
   ) {
   }
 
-  async create(body: { company: CreateCompanyDto, authorized?: CreateAuthorizedDto, address?: CreateAddressUserDto }) {
-    const { company: createCompany, authorized: createAuthorized, address: createAddress } = body;
+  async create(body: {
+    company: CreateCompanyDto,
+    authorized?: CreateAuthorizedDto,
+    address?: CreateAddressUserDto
+    auth?: CreateAuthDto
+  }) {
+    const {
+      company: createCompany,
+      authorized: createAuthorized,
+      address: createAddress,
+      auth: createAuth,
+    } = body;
     const companyCreate = this.comp.create({
       name: createCompany.name?.toLowerCase(),
       phone: createCompany.phone?.trim(),
@@ -44,19 +57,23 @@ export class CompanyService {
     let authorized: Authorized = null;
     if (createAuthorized) {
       authorized = await this.createAuthorized({ ...createAuthorized, company: resultCompany });
-      delete authorized.company;
     }
 
     let address: CompanyAddress = null;
     if (createAddress) {
       address = await this.createAddress(resultCompany.id, createAddress);
-      delete address.company;
+    }
+
+    let authors: Auth = null;
+    if (createAuth) {
+      authors = await this.authRepository.save(createAuth);
     }
 
     return {
       Company: resultCompany,
       Authorized: authorized,
-      Address: address?.address,
+      Address: address,
+      Auth: authors,
     };
   }
 
@@ -68,7 +85,7 @@ export class CompanyService {
     authorized.authorizedTitle = body.authorizedTitle;
     authorized.company = body.company;
 
-    return await this.auth.save(authorized);
+    return await this.authorizedRepository.save(authorized);
   }
 
 
@@ -138,8 +155,6 @@ export class CompanyService {
   //
   //   return this.addressRepository.save(userAddress);
   // }
-
-
 
 
   async findOne(id: string, relations: object = {}) {

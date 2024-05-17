@@ -23,8 +23,15 @@ export class Auth {
   @JoinColumn({ name: 'auth_id' })
   authId: User;
 
-  @Column()
+  @Column({
+    default: null,
+  })
   email: string;
+
+  @Column({
+    default: null,
+  })
+  username: string;
 
   @Column()
   password: string;
