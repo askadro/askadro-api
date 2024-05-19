@@ -7,7 +7,7 @@ import { UserAddress } from '@/modules/users/entities/user.address.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { Province } from '@/modules/provinces/entities/province.entity';
 import { District } from '@/modules/provinces/entities/district.entity';
-import { Auth } from '@/auth/entities/auth.entity';
+import { Auth } from '@/modules/auth/entities/auth.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, UserAddress, Address, Province, District, Auth])],

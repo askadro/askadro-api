@@ -10,8 +10,9 @@ import { UserAddress } from '@/modules/users/entities/user.address.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { Province } from '@/modules/provinces/entities/province.entity';
 import { District } from '@/modules/provinces/entities/district.entity';
-import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
-import { Auth } from '@/auth/entities/auth.entity';
+import { Auth } from '@/modules/auth/entities/auth.entity';
+import { CreateAuthDto } from '@/modules/auth/dto/create-auth.dto';
+
 
 @Injectable()
 export class UsersService {

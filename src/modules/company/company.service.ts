@@ -13,8 +13,8 @@ import { CreateAddressCompanyDto } from '@/modules/company/dtos/create-address-c
 import { Province } from '@/modules/provinces/entities/province.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { District } from '@/modules/provinces/entities/district.entity';
-import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
-import { Auth } from '@/auth/entities/auth.entity';
+import { Auth } from '@/modules/auth/entities/auth.entity';
+import { CreateAuthDto } from '@/modules/auth/dto/create-auth.dto';
 
 @Injectable()
 export class CompanyService {

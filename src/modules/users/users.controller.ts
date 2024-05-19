@@ -7,8 +7,8 @@ import { path } from '@/constants/paths';
 import { CreateAddressUserDto } from '@/modules/users/dto/create-address-user.dto';
 import { UserAddress } from '@/modules/users/entities/user.address.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
-import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
 import { Bcrypt } from '@/utils/bcrypt';
+import { CreateAuthDto } from '@/modules/auth/dto/create-auth.dto';
 
 
 @Controller('users')

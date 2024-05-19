@@ -7,8 +7,8 @@ import { District } from './modules/provinces/entities/district.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { UserAddress } from '@/modules/users/entities/user.address.entity';
-import { Auth } from '@/auth/entities/auth.entity';
 import { CompanyAddress } from '@/modules/company/entities/company.address.entity';
+import { Auth } from '@/modules/auth/entities/auth.entity';
 
 
 export const Entities: [

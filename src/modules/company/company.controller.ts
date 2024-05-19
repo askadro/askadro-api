@@ -6,8 +6,8 @@ import { UpdateCompanyDto } from './dtos/update-company.dto';
 import { path } from '@/constants/paths';
 import { CreateAddressUserDto } from '@/modules/users/dto/create-address-user.dto';
 import { CompanyCreate } from '@/decorators/company/create.decorator';
-import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
 import { Bcrypt } from '@/utils/bcrypt';
+import { CreateAuthDto } from '@/modules/auth/dto/create-auth.dto';
 
 
 @Controller(path.company.main)
