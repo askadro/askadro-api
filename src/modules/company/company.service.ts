@@ -79,7 +79,6 @@ export class CompanyService {
 
   async createAuthorized(body: CreateAuthorizedDto) {
     const authorized = new Authorized();
-    authorized.authorizedEmail = body.authorizedEmail;
     authorized.authorizedPerson = body.authorizedPerson;
     authorized.authorizedPhone = body.authorizedPhone;
     authorized.authorizedTitle = body.authorizedTitle;

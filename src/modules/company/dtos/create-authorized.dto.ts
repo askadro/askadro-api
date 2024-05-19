@@ -1,11 +1,4 @@
-import {
-  IsEmail,
-  IsMobilePhone,
-  IsString,
-  Length,
-  MinLength,
-  ValidateNested,
-} from 'class-validator';
+import { IsMobilePhone, IsString, Length, ValidateNested } from 'class-validator';
 import { Company } from '../entities/company.entity';
 
 export class CreateAuthorizedDto {
@@ -16,10 +9,6 @@ export class CreateAuthorizedDto {
   @IsString()
   @IsMobilePhone('tr-TR') // telefon numarasının tr standartlarına uygun olması validation işlemi
   authorizedPhone: string;
-
-  @IsString()
-  @IsEmail()
-  authorizedEmail: string;
 
   @IsString()
   authorizedTitle: string;

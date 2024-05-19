@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Company } from './company.entity';
 
 @Entity()
@@ -17,9 +11,6 @@ export class Authorized {
 
   @Column()
   authorizedPhone: string;
-
-  @Column()
-  authorizedEmail: string;
 
   @Column()
   authorizedTitle: string;
