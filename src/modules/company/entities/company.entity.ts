@@ -3,7 +3,7 @@ import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
-  Entity,
+  Entity, JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -11,7 +11,8 @@ import {
 } from 'typeorm';
 import { Authorized } from './authorized.entity';
 import { Job } from '../../jobs/job.entity';
-import { CompanyAddress } from '@/modules/company/entities/company.address.entity';
+import { Ticket } from '@/modules/tickets/ticket.entity';
+import { Address } from '@/modules/addresses/entities/address.entity';
 
 @Entity()
 export class Company {
@@ -27,14 +28,16 @@ export class Company {
   @Column({ nullable: true })
   shortName: string;
 
-  @OneToOne(() => CompanyAddress, (companyAddress) => companyAddress.company)
-  companyAddress: CompanyAddress;
 
   @OneToMany(() => Authorized, (auth: Authorized) => auth.company)
   authorized: Authorized;
 
   @OneToMany(() => Job, (job: Job) => job.company)
   job: Job[];
+
+  @OneToOne(() => Address, address => address.company)
+  @JoinColumn({ name: 'addressId' })
+  address: Address;
 
   @Column()
   registrationNumber: string; // sicil numarası
@@ -56,6 +59,9 @@ export class Company {
 
   @CreateDateColumn()
   createdDate: Date;
+
+  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.companyId )
+  tickets:Ticket[]
 
   @BeforeInsert()
   setDefault() {

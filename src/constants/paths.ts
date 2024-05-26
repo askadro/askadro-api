@@ -41,6 +41,7 @@ export const path:{
     userAddressUpdate: string,
     userDelete: string,
     userUpdate: string
+    update_auth:string
   }
 } = {
   job: {
@@ -85,5 +86,6 @@ export const path:{
     userUpdate: 'update/:id',
     userAddressCreate: 'user-address-create/:id',
     userAddressUpdate: 'user-address-update/:userAddressId',
+    update_auth:"update/auth/:userId"
   }
 };

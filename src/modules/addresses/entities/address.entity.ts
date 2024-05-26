@@ -1,75 +1,39 @@
-import {
-  AfterInsert,
-  AfterRemove,
-  AfterUpdate,
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { AddressStatusEnum } from '@/modules/addresses/enums/address.status.enum';
 import { Province } from '@/modules/provinces/entities/province.entity';
 import { District } from '@/modules/provinces/entities/district.entity';
-import { AddressStatusEnum } from '@/modules/addresses/enums/address.status.enum';
-import { UserAddress } from '@/modules/users/entities/user.address.entity';
-import { CompanyAddress } from '@/modules/company/entities/company.address.entity';
+import { User } from '@/modules/users/entities/user.entity';
+import { Company } from '@/modules/company/entities/company.entity';
 
 @Entity('addresses')
 export class Address {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => Province)
-  @JoinColumn({ name: 'provinceId' })
-  city: Province;
+  @ManyToOne(() => Province)
+  provinceId: Province;
 
-  @OneToOne(() => District)
-  @JoinColumn({ name: 'districtId' })
-  district: District;
+  @ManyToOne(() => District)
+  districtId: District;
 
-  @OneToOne(() => UserAddress, (userAddress) => userAddress.address)
-  userAddress: UserAddress;
+  @ManyToOne(() => User, user => user.address)
+  user: User;
 
-  @OneToOne(() => CompanyAddress, (companyAddress) => companyAddress.address)
-  companyAddress: CompanyAddress;
+  @ManyToOne(() => Company, company => company.address)
+  company: Company;
 
   @Column({
     type: 'text',
     nullable: true,
   })
-  address: string;
+  addressDetail: string;
 
   @Column({
     type: 'enum',
     enum: AddressStatusEnum,
+    default:AddressStatusEnum.ACTIVE
   })
   addressStatus: AddressStatusEnum;
 
-  @UpdateDateColumn()
-  updatedDate: Date;
-
-  @DeleteDateColumn()
-  deletedDate: Date;
-
-  @CreateDateColumn()
-  createdDate: Date;
-
-  @AfterInsert()
-  logInsert() {
-    console.log(`Insert Addresses with ${this.id}`);
-  }
-
-  @AfterUpdate()
-  logUpdate() {
-    console.log(`Updated Addresses with id ${this.id}`);
-  }
-
-  @AfterRemove()
-  logRemove() {
-    console.log(`Remove Addresses with id: ${this.id}`);
-  }
-
+  // Diğer sütunlar ve dekoratörler...
 }

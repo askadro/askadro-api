@@ -1,4 +1,6 @@
 import {
+  IsArray,
+  IsDate,
   IsNumber,
 
   IsString,
@@ -7,17 +9,24 @@ import { User } from '@/modules/users/entities/user.entity';
 
 export class CreateTicketDto {
   @IsString()
-  creator: User;
+  userId:User
 
-  @IsNumber()
-  waiter: number;
+  @IsString()
+  companyId:string
 
-  @IsNumber()
-  cleaner: number;
+  @IsDate()
+  enterHour:Date
 
-  @IsNumber()
-  hostess: number;
+  @IsArray()
+  staffs:User[]
 
-  @IsNumber()
-  chef: number;
+  @IsDate()
+  exitHour:Date
+
+  @IsDate()
+  ticketDate:Date
+
+  @IsString()
+  ticket_notes:string
+
 }

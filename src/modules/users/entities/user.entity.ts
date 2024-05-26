@@ -6,7 +6,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  Index,
+  Index, JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -16,8 +16,8 @@ import { userGenderEnum } from '../enums/user.gender.enum';
 import { UserStatusEnum } from '../enums/user.status.enum';
 import { Job } from 'src/modules/jobs/job.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
-import { UserAddress } from '@/modules/users/entities/user.address.entity';
 import { Auth } from '@/auth/entities/auth.entity';
+import { Address } from '@/modules/addresses/entities/address.entity';
 
 @Entity()
 @Index(['firstName', 'lastName'])
@@ -31,6 +31,10 @@ export class User {
     unique: true,
   })
   Identity: string;
+
+  @OneToOne(() => Address, address => address.user)
+  @JoinColumn({ name: 'addressId' })
+  address: Address;
 
   @Column()
   firstName: string;
@@ -59,13 +63,11 @@ export class User {
   @OneToMany(() => Job, (job: Job) => job.user)
   job: Job[];
 
-  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.user)
+  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.userId)
   ticket: Ticket[];
 
-  @OneToOne(() => UserAddress, (userAddress) => userAddress.user)
-  userAddress: UserAddress;
-
-  @OneToOne(() => Auth, (auth) => auth.authId)
+  @OneToOne(() => Auth, (auth) => auth.user)
+  @JoinColumn({ name: 'authId' })
   auth: Auth;
 
   @Column({

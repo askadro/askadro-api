@@ -1,4 +1,6 @@
 import { IsMobilePhone, IsNumberString, IsOptional, IsString, Length, MaxLength, MinLength } from 'class-validator';
+import { CreateAddressDto } from '@/modules/addresses/dto/create-address.dto';
+import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
 
 export class CreateCompanyDto {
   @IsString()
@@ -35,4 +37,10 @@ export class CreateCompanyDto {
 
   @IsNumberString()
   totalWorkingTime: string;
+
+  @IsOptional()
+  address?: CreateAddressDto;
+
+  @IsOptional()
+  company_auth?:CreateAuthDto
 }

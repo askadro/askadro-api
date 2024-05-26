@@ -2,6 +2,8 @@ import { IsByteLength, IsEnum, IsIBAN, IsOptional, IsString, Length } from 'clas
 import { userGenderEnum } from '../enums/user.gender.enum';
 import { UserStatusEnum } from '../enums/user.status.enum';
 import { IsUnique } from '../../../utils/validations';
+import { CreateAddressDto } from '@/modules/addresses/dto/create-address.dto';
+import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
 
 
 export class CreateUserDto {
@@ -37,9 +39,6 @@ export class CreateUserDto {
   })
   birthDate: Date;
 
-  @IsIBAN({
-    message: 'Geçerli bir IBAN numarası olmalıdır',
-  })
   @IsUnique({
     tableName: 'user',
     column: 'iban',
@@ -63,4 +62,10 @@ export class CreateUserDto {
   })
   @IsOptional()
   status: UserStatusEnum;
+
+  @IsOptional()
+  address?: CreateAddressDto;
+
+  @IsOptional()
+  user_auth?:CreateAuthDto
 }

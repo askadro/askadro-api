@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { Repository } from 'typeorm';
+import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
 
 @Injectable()
 export class AddressesService {
@@ -12,9 +13,14 @@ export class AddressesService {
   ) {
   }
 
-  create(createAddressDto: CreateAddressDto) {
-    return 'This action adds a new address';
+  async create(body: CreateAddressDto) {
+    const address = this.addressRepository.create(body);
+    if(!address) {
+      throw new BadRequestException('Adres oluşturulurken bir hata oluştu.');
+    }
+    return await this.addressRepository.save(address);
   }
+
 
   findAll() {
     return this.addressRepository.find();

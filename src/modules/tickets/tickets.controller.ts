@@ -10,7 +10,7 @@ export class TicketsController {
 
   @Post(path.ticket.create)
   async createTicket(@Body() body: CreateTicketDto) {
-    // return await this.ticketService.create(body);
+    return await this.ticketService.create(body);
   }
 
   @Get(path.ticket.getTickets)

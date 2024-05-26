@@ -12,6 +12,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '@/modules/users/entities/user.entity';
+import { Company } from '@/modules/company/entities/company.entity';
+import { DEFAULT_PW } from '@/constants/app';
 
 @Entity('auths')
 export class Auth {
@@ -19,93 +21,84 @@ export class Auth {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => User, (user: User) => user.id)
-  @JoinColumn({ name: 'auth_id' })
-  authId: User;
+  @OneToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @OneToOne(() => Company, { nullable: true })
+  @JoinColumn({ name: 'company_id' })
+  company: Company;
 
   @Column({
     default: null,
+    nullable: true,
   })
   email: string;
 
   @Column({
     default: null,
+    nullable: true,
   })
   username: string;
 
-  @Column()
+  @Column({
+    default:DEFAULT_PW
+  })
   password: string;
 
-  @Column(
-    {
-      nullable: true,
-    },
-  )
+  @Column({
+    nullable: true,
+  })
   salt?: string;
 
-  @Column(
-    {
-      nullable: true,
-    },
-  )
+  @Column({
+    nullable: true,
+  })
   refreshToken?: string;
 
-  @Column(
-    {
-      nullable: true,
-    },
-  )
+  @Column({
+    type: 'timestamp',
+    nullable: true,
+  })
   refreshTokenExpiryTime?: Date;
 
   @DeleteDateColumn({
     type: 'timestamp',
     default: null,
   })
-  public deletedAt: Date;
+  deletedAt: Date;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
-  public createdAt: Date;
+  createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', onUpdate: 'CURRENT_TIMESTAMP(6)' })
-  public updatedAt: Date;
-
-  default() {
-    return {
-      deletedAt: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-  }
-
+  updatedAt: Date;
 
   @AfterInsert()
-  @BeforeInsert()
   logInsert() {
-    this.logInfo('Inserted Auth with ');
+    this.logInfo('Inserted Auth with');
   }
 
   @AfterUpdate()
-  @BeforeInsert()
   logUpdate() {
-    this.logInfo('Updated Auth with ');
+    this.logInfo('Updated Auth with');
   }
 
-  @AfterInsert()
   @BeforeInsert()
   logDelete() {
-    this.logInfo('Deleted Auth with ');
+    this.logInfo('Deleted Auth with');
   }
 
   logInfo(infoMessage: string) {
-    console.log(this);
-    console.log(`${infoMessage} ${this.id}`);
-    console.log(`${infoMessage} ${this.email}`);
-    console.log(`${infoMessage} ${this.password}`);
-    console.log(`${infoMessage} ${this.salt}`);
-    console.log(`${infoMessage} ${this.refreshToken}`);
-    console.log(`${infoMessage} ${this.refreshTokenExpiryTime}`);
-    console.log(`${infoMessage} ${this.deletedAt}`);
-    console.log(`${infoMessage} ${this.createdAt}`);
-    console.log(`${infoMessage} ${this.updatedAt}`);
+    console.log(`${infoMessage} id: ${this.id}`);
+    console.log(`${infoMessage} email: ${this.email}`);
+    console.log(`${infoMessage} username: ${this.username}`);
+    console.log(`${infoMessage} password: ${this.password}`);
+    console.log(`${infoMessage} salt: ${this.salt}`);
+    console.log(`${infoMessage} refreshToken: ${this.refreshToken}`);
+    console.log(`${infoMessage} refreshTokenExpiryTime: ${this.refreshTokenExpiryTime}`);
+    console.log(`${infoMessage} deletedAt: ${this.deletedAt}`);
+    console.log(`${infoMessage} createdAt: ${this.createdAt}`);
+    console.log(`${infoMessage} updatedAt: ${this.updatedAt}`);
   }
 }

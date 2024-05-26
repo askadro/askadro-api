@@ -1,5 +1,7 @@
 import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
 import { IsUnique } from '@/utils/validations';
+import { User } from '@/modules/users/entities/user.entity';
+import { Company } from '@/modules/company/entities/company.entity';
 
 export class CreateAuthDto {
   @IsString({
@@ -15,7 +17,7 @@ export class CreateAuthDto {
     message: 'bu email adresi zaten kayıtlı',
   })
   @IsOptional()
-  email: string;
+  email?: string;
 
   @IsString({
     message: 'username bir String olmalıdır',
@@ -52,4 +54,16 @@ export class CreateAuthDto {
     message: 'refreshTokenExpiryTime bir Date olmalıdır',
   })
   refreshTokenExpiryTime?: Date;
+
+  @IsOptional()
+  @IsString({
+    message: 'Şirket id si olmalı',
+  })
+  company:Company
+
+  @IsOptional()
+  @IsString({
+    message: 'User id si olmalı',
+  })
+  user:User
 }

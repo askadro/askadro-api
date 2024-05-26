@@ -1,67 +1,95 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { IsNull, Not, Repository } from 'typeorm';
-import { CreateAddressUserDto } from '@/modules/users/dto/create-address-user.dto';
-import { UpdateAddressUserDto } from '@/modules/users/dto/update-address-user.dto';
-import { UserAddress } from '@/modules/users/entities/user.address.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
-import { Province } from '@/modules/provinces/entities/province.entity';
-import { District } from '@/modules/provinces/entities/district.entity';
-import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
 import { Auth } from '@/auth/entities/auth.entity';
+import { UpdateAuthDto } from '@/auth/dto/update-auth.dto';
+import { AuthService } from '@/auth/auth.service';
+import { AddressesService } from '@/modules/addresses/addresses.service';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private usersRepository: Repository<User>,
+    @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Auth) private authRepository: Repository<Auth>,
-    @InjectRepository(UserAddress) private userAddressRepository: Repository<UserAddress>,
     @InjectRepository(Address) private addressRepository: Repository<Address>,
-    @InjectRepository(Province) private provinceRepository: Repository<Province>,
-    @InjectRepository(District) private districtRepository: Repository<District>,
+    private readonly authService: AuthService,
+    private readonly addressService: AddressesService,
+
   ) {
   }
 
-  async create(body: { auth?: CreateAuthDto, user: CreateUserDto, address: CreateAddressUserDto }) {
-    const {
-      auth: createAuthDto,
-      user: createUserDto,
-      address: createAddressUserDto,
-    } = body;
-    const user: User = this.usersRepository.create({
-      Identity: createUserDto.Identity?.trim(),
-      firstName: createUserDto.firstName?.trim(),
-      lastName: createUserDto.lastName?.trim(),
-      birthDate: createUserDto.birthDate,
-      gender: createUserDto.gender,
-      iban: createUserDto.iban?.trim(),
-    });
 
-    const userSave: User = await this.usersRepository.save(user);
+  async create(body: CreateUserDto) {
+    const { user_auth, address, ...userData } = body;
 
-    if (!userSave) {
-      throw new NotFoundException('user not found');
+    let addressEntity: Address = null;
+    let authEntity: Auth = null;
+    let user: User = null;
+
+    // Kullanıcıyı oluştur
+    try {
+      user = this.userRepository.create(userData);
+      user = await this.userRepository.save(user);
+    } catch (error) {
+      // Kullanıcı oluşturulurken bir hata oluştu
+      throw new BadRequestException('Kullanıcı oluşturulurken bir hata oluştu.');
     }
 
-    let authSave: Auth;
-    if (createAuthDto) {
-      const auth = this.authRepository.create({
-        authId: userSave,
-        ...createAuthDto,
-      });
-      authSave = await this.authRepository.save(auth);
+    // Address varsa oluştur ve user id'sini ata
+    if (address) {
+    addressEntity =  await this.addressService.create({...address, user: user});
     }
 
-    const addressSave: UserAddress = await this.createAddress(userSave.id, createAddressUserDto);
+    // Auth varsa oluştur ve user id'sini ata
+    if (user_auth) {
+    authEntity =  await this.authService.create({ ...user_auth, user: user })
+    }
 
+    if (authEntity || addressEntity) {
+      const updatedUser: Partial<User> = {};
+      if (authEntity) {
+        updatedUser.auth = authEntity;
+      }
+      if (addressEntity) {
+        updatedUser.address = addressEntity;
+      }
+      try {
+      await this.update(user.id,updatedUser)
+      } catch (error) {
+        // Kullanıcı güncellenirken bir hata oluştu
+        throw new BadRequestException('Kullanıcı güncellenirken bir hata oluştu.');
+      }
+    }
+
+    // Kullanıcı, Address ve Auth entity'lerini başarıyla oluşturduysak, kullanıcıyı geri döndür
     return {
-      User: userSave,
-      Address: addressSave.address,
-      Auth: authSave || null,
+      user:user,
+      address:addressEntity,
+      auth:authEntity
     };
+  }
+
+
+  async findUserOnlyOwnData(id:string){
+    return await this.userRepository.findOne({where:{id:id}});
+  }
+
+  async getUserById(id: string): Promise<User> {
+    const user = await this.userRepository.findOne(
+      {
+        where: {
+          id: id,
+        },
+        relations: ['address', 'address.provinceId', 'address.districtId', 'auth'],
+      });
+    if (!user) {
+      throw new NotFoundException('Kullanıcı bulunamadı.');
+    }
+    return user;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
@@ -70,7 +98,7 @@ export class UsersService {
       throw new NotFoundException('user not found');
     }
     Object.assign(user, updateUserDto);
-    return this.usersRepository.save(user);
+    return this.userRepository.save(user);
   }
 
   async remove(id: string, soft: string): Promise<User> {
@@ -79,18 +107,18 @@ export class UsersService {
       throw new NotFoundException('user not found');
     }
     if (soft === 'true') {
-      const softDelete = await this.usersRepository.softDelete(id);
+      const softDelete = await this.userRepository.softDelete(id);
 
       if (!softDelete.affected) {
         throw new NotFoundException('user not found');
       }
       return user;
     }
-    return await this.usersRepository.remove(user);
+    return await this.userRepository.remove(user);
   }
 
   async findAll(relations: object = {}) {
-    const users = await this.usersRepository.find({
+    const users = await this.userRepository.find({
       relations,
     });
 
@@ -102,7 +130,7 @@ export class UsersService {
   }
 
   async deletedUsers(): Promise<User[]> {
-    const users: User[] = await this.usersRepository.find({
+    const users: User[] = await this.userRepository.find({
       where: {
         deletedAt: Not(IsNull()),
       },
@@ -116,7 +144,7 @@ export class UsersService {
   }
 
   async userJobFindOne(id: string) {
-    const jobUser = await this.usersRepository.findOne({
+    const jobUser = await this.userRepository.findOne({
       where: {
         id,
       },
@@ -147,7 +175,7 @@ export class UsersService {
   }
 
   async findOne(id: string, relations: object = {}): Promise<User> {
-    const user: User = await this.usersRepository.findOne({
+    const user: User = await this.userRepository.findOne({
       where: {
         id: id,
       },
@@ -160,7 +188,7 @@ export class UsersService {
   }
 
   async userSearch(query: string) {
-    const users = await this.usersRepository.createQueryBuilder('user').where('CONCAT(user.firstName, \' \', user.lastName) ilike :fullName', { fullName: `%${query}%` }).getMany();
+    const users = await this.userRepository.createQueryBuilder('user').where('CONCAT(user.firstName, \' \', user.lastName) ilike :fullName', { fullName: `%${query}%` }).getMany();
 
     if (!users) {
       throw new NotFoundException('users not found');
@@ -169,70 +197,28 @@ export class UsersService {
     return users;
   }
 
-  async createAddress(id: string, createAddressUserDto: CreateAddressUserDto) {
-    const user: User = await this.findOne(id);
-
+  async updateUserAuth(userId: string, authData:UpdateAuthDto): Promise<User> {
+    const user = await this.userRepository.findOne({where:{id:userId}});
     if (!user) {
-      throw new NotFoundException('user not found');
+      throw new NotFoundException('Kullanıcı bulunamadı.');
+    }
+    console.log("auth: ",authData);
+    if (!authData) {
+      throw new BadRequestException('Yetkilendirme bilgisi eksik.');
     }
 
-    const province: Province = await this.provinceRepository.findOne({
-      where: {
-        id: createAddressUserDto.city,
-      },
-    });
+    const auth = await this.authRepository.findOne({ where: { user: user } });
 
-    if (!province) {
-      throw new NotFoundException('province not found');
+    if (!auth) {
+      throw new NotFoundException('Yetkilendirme bilgisi bulunamadı.');
     }
 
-    const district: District = await this.districtRepository.findOne({
-      where: {
-        id: createAddressUserDto.district,
-      },
-    });
-
-    if (!district) {
-      throw new NotFoundException('district not found');
+    try {
+      this.authRepository.merge(auth, authData);
+      await this.authRepository.save(auth);
+      return user;
+    } catch (error) {
+      throw new BadRequestException('Yetkilendirme bilgisi güncellenirken bir hata oluştu.');
     }
-
-    const address: Address = this.addressRepository.create({
-      city: province,
-      district: district,
-      address: createAddressUserDto.address,
-      addressStatus: createAddressUserDto.addressStatus,
-    });
-
-    const addressSave: Address = await this.addressRepository.save(address);
-
-
-    const userAddress: UserAddress = this.userAddressRepository.create({
-      user: user,
-      address: addressSave,
-    });
-
-    return await this.userAddressRepository.save(userAddress);
-
-  }
-
-  async updateAddress(id: string, updateAddressUserDto: UpdateAddressUserDto): Promise<Address> {
-    const userAddress: Address = await this.addressRepository.findOne({
-      where: {
-        id: id,
-      },
-    });
-
-    if (!userAddress) {
-      throw new NotFoundException('user address not found');
-    }
-
-    Object.assign(userAddress, updateAddressUserDto);
-
-
-    return this.addressRepository.save(userAddress);
-  }
-
-  async userAuthFindOne(email: string): Promise<Auth> {
-    return await this.authRepository.findOne({ where: { email: email } });
   }
 }

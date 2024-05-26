@@ -1,20 +1,18 @@
- version: "3.9"
+version: "3.9"
 
 volumes:
   nestjs-crm-postgres: {}
 
 services:
   postgres:
-    container_name: postgres
-    image: postgres:16rc1-alpine
+    container_name: crm-postgres
+    image: postgres
     ports:
-      - '5432:5432'
+      - '5431:5432'
     volumes:
       - nestjs-crm-postgres:/data/postgres
     env_file:
       - docker.env
-    networks:
-      - backend
 
 # services:
 

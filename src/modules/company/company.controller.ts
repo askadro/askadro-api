@@ -1,12 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseInterceptors } from '@nestjs/common';
 import { CreateCompanyDto } from './dtos/create-company.dto';
 import { CompanyService } from './company.service';
-import { CreateAuthorizedDto } from './dtos/create-authorized.dto';
 import { UpdateCompanyDto } from './dtos/update-company.dto';
 import { path } from '@/constants/paths';
-import { CreateAddressUserDto } from '@/modules/users/dto/create-address-user.dto';
 import { CompanyCreate } from '@/decorators/company/create.decorator';
-import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
 import { Bcrypt } from '@/utils/bcrypt';
 
 
@@ -17,23 +14,24 @@ export class CompanyController {
 
   @Post(path.company.create)
   @UseInterceptors(CompanyCreate)
-  async createCompany(@Body() body: {
-    company: CreateCompanyDto,
-    authorized?: CreateAuthorizedDto,
-    address?: CreateAddressUserDto,
-    auth?: CreateAuthDto
-  }) {
-    if (body.auth) {
-      body.auth.password = Bcrypt.hash(body.auth.password);
+  async createCompany(@Body() body: CreateCompanyDto) {
+    // {
+    //   company: CreateCompanyDto,
+    //     authorized?: CreateAuthorizedDto,
+    //     address?: CreateAddressUserDto,
+    //     auth?: CreateAuthDto
+    // }
+    if (body.company_auth) {
+      body.company_auth.password = Bcrypt.hash(body.company_auth.password);
     }
 
     return await this.companyService.create(body);
   }
 
-  @Post(path.company.addAuthorized)
-  async createAuthorized(@Body() body: CreateAuthorizedDto) {
-    return await this.companyService.createAuthorized(body);
-  }
+  // @Post(path.company.addAuthorized)
+  // async createAuthorized(@Body() body: CreateAuthorizedDto) {
+  //   return await this.companyService.createAuthorized(body);
+  // }
 
   @Get(path.company.getCompanies)
   async getCompanies() {

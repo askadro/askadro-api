@@ -10,7 +10,7 @@ import { Company } from './company.entity';
 @Entity()
 export class Authorized {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column()
   authorizedPerson: string;
