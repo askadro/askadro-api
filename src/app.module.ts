@@ -10,6 +10,8 @@ import { IsUniqueConstraint } from './utils/validations';
 import { modules } from '@/modules';
 import { AsMailerModule } from '@/modules/as-mailer/as-mailer.module';
 import { AsMailerService } from '@/modules/as-mailer/as-mailer.service';
+import { CommonService } from '@/modules/common/common.service';
+import { CommonModule } from './modules/common/common.module';
 
 @Module({
   imports: [
@@ -28,7 +30,7 @@ import { AsMailerService } from '@/modules/as-mailer/as-mailer.service';
         username: configService.get('DB_USERNAME'),
         entities: Entities,
         database: configService.get('DB_DATABASE'),
-        synchronize: true,
+        synchronize: true, // prod da false olmalı
         logging: true,
       }),
       inject: [ConfigService],
@@ -52,6 +54,7 @@ import { AsMailerService } from '@/modules/as-mailer/as-mailer.service';
     }),
     AsMailerModule,
     ...modules,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService, IsUniqueConstraint, AsMailerService],

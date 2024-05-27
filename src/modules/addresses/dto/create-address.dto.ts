@@ -1,36 +1,27 @@
-import { IsOptional, IsString, IsEnum, IsUUID } from 'class-validator';
-import { AddressStatusEnum } from '@/modules/addresses/enums/address.status.enum';
-import { Company } from '@/modules/company/entities/company.entity';
-import { User } from '@/modules/users/entities/user.entity';
-import { Province } from '@/modules/provinces/entities/province.entity';
-import { District } from '@/modules/provinces/entities/district.entity';
+import { IsNotEmpty, IsOptional, IsString, ValidateIf, IsUUID } from 'class-validator';
 
 export class CreateAddressDto {
-  @IsOptional()
+  @ValidateIf(o => !o.companyId)
+  @IsNotEmpty()
   @IsUUID()
-  provinceId: Province;
+  @IsOptional()
+  userId?: string;
 
-  @IsOptional()
+  @ValidateIf(o => !o.userId)
+  @IsNotEmpty()
   @IsUUID()
-  districtId: District;
+  @IsOptional()
+  companyId?: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  provinceId: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  districtId: string;
 
   @IsOptional()
   @IsString()
-  addressDetail: string;
-
-  @IsEnum(AddressStatusEnum)
-  addressStatus: AddressStatusEnum;
-
-  @IsOptional()
-  @IsString({
-    message: 'Şirket id si olmalı',
-  })
-  company:Company
-
-  @IsOptional()
-  @IsString({
-    message: 'User id si olmalı',
-  })
-  user:User
-
+  addressDetail?: string;
 }

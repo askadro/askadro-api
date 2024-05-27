@@ -1,10 +1,10 @@
-import { IsByteLength, IsEnum, IsIBAN, IsOptional, IsString, Length } from 'class-validator';
+import { IsByteLength, IsEnum, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 import { userGenderEnum } from '../enums/user.gender.enum';
 import { UserStatusEnum } from '../enums/user.status.enum';
 import { IsUnique } from '../../../utils/validations';
 import { CreateAddressDto } from '@/modules/addresses/dto/create-address.dto';
 import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
-
+import { Type } from 'class-transformer';
 
 export class CreateUserDto {
   @IsString({
@@ -16,13 +16,13 @@ export class CreateUserDto {
   @IsUnique(
     {
       tableName: 'user',
-      column: 'Identity',
+      column: 'identity',
     },
     {
       message: 'bu kimlik numarası zaten kayıtlı',
     },
   )
-  Identity: string;
+  identity: string;
 
   @IsString({
     message: 'adı bir dize olmalıdır',
@@ -51,21 +51,23 @@ export class CreateUserDto {
   iban: string;
 
   @IsEnum(userGenderEnum, {
-    message:
-      'cinsiyet aşağıdaki değerlerden biri olmalıdır: erkek, kadın, diğer',
+    message: 'cinsiyet aşağıdaki değerlerden biri olmalıdır: erkek, kadın, diğer',
   })
   gender: userGenderEnum;
 
   @IsEnum(UserStatusEnum, {
-    message:
-      'durumu aşağıdaki değerlerden biri olmalıdır: AKTIF, INAKTIF, SILINMIŞ',
+    message: 'durumu aşağıdaki değerlerden biri olmalıdır: AKTIF, INAKTIF, SILINMIŞ',
   })
   @IsOptional()
   status: UserStatusEnum;
 
   @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateAddressDto)
   address?: CreateAddressDto;
 
   @IsOptional()
-  user_auth?:CreateAuthDto
+  @ValidateNested()
+  @Type(() => CreateAuthDto)
+  auth?: CreateAuthDto;
 }

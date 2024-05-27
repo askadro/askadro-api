@@ -11,26 +11,23 @@ import { District } from "./district.entity";
 
 @Entity()
 export class Province {
-
   @PrimaryGeneratedColumn("uuid")
-  id: string
+  id: string;
 
   @Column()
-  name: string
+  name: string;
 
-  @OneToMany(()=>District,(district)=>district)
-  districts:District[]
+  @OneToMany(() => District, district => district.province)
+  districts: District[];
 
+  @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+  createdAt: Date;
 
+  @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+  updatedAt: Date;
 
-  @CreateDateColumn({type: "timestamp",default:()=>"CURRENT_TIMESTAMP(6)"})
-  createdAt: Date
-
-  @UpdateDateColumn({type: "timestamp",default:()=>"CURRENT_TIMESTAMP(6)"})
-  updatedAt: Date
-
-  @DeleteDateColumn({type: "timestamp",default: null})
-  deletedAt: Date
+  @DeleteDateColumn({ type: "timestamp", nullable: true })
+  deletedAt: Date;
 
   @AfterInsert()
   logInsert() {

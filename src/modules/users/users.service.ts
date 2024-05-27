@@ -18,84 +18,50 @@ export class UsersService {
     @InjectRepository(Address) private addressRepository: Repository<Address>,
     private readonly authService: AuthService,
     private readonly addressService: AddressesService,
-
   ) {
   }
 
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const { address, auth, ...userData } = createUserDto;
 
-  async create(body: CreateUserDto) {
-    const { user_auth, address, ...userData } = body;
+    // Create user entity
+    const user = this.userRepository.create(userData);
 
-    let addressEntity: Address = null;
-    let authEntity: Auth = null;
-    let user: User = null;
-
-    // Kullanıcıyı oluştur
-    try {
-      user = this.userRepository.create(userData);
-      user = await this.userRepository.save(user);
-    } catch (error) {
-      // Kullanıcı oluşturulurken bir hata oluştu
-      throw new BadRequestException('Kullanıcı oluşturulurken bir hata oluştu.');
-    }
-
-    // Address varsa oluştur ve user id'sini ata
+    // Create and associate address if provided
     if (address) {
-    addressEntity =  await this.addressService.create({...address, user: user});
+      user.address = await this.addressService.create({ ...address,userId: user.id });
     }
 
-    // Auth varsa oluştur ve user id'sini ata
-    if (user_auth) {
-    authEntity =  await this.authService.create({ ...user_auth, user: user })
+    // Create and associate auth if provided
+    if (auth) {
+      user.auth = await this.authService.create({ ...auth,userId:user.id });
     }
 
-    if (authEntity || addressEntity) {
-      const updatedUser: Partial<User> = {};
-      if (authEntity) {
-        updatedUser.auth = authEntity;
-      }
-      if (addressEntity) {
-        updatedUser.address = addressEntity;
-      }
-      try {
-      await this.update(user.id,updatedUser)
-      } catch (error) {
-        // Kullanıcı güncellenirken bir hata oluştu
-        throw new BadRequestException('Kullanıcı güncellenirken bir hata oluştu.');
-      }
-    }
-
-    // Kullanıcı, Address ve Auth entity'lerini başarıyla oluşturduysak, kullanıcıyı geri döndür
-    return {
-      user:user,
-      address:addressEntity,
-      auth:authEntity
-    };
+    // Save the user entity which will cascade save address and auth if they exist
+    return await this.userRepository.save(user);
   }
 
-
-  async findUserOnlyOwnData(id:string){
-    return await this.userRepository.findOne({where:{id:id}});
+  async findUserOnlyOwnData(id: string) {
+    return await this.userRepository.findOne({ where: { id: id } });
   }
 
   async getUserById(id: string): Promise<User> {
-    const user = await this.userRepository.findOne(
-      {
-        where: {
-          id: id,
-        },
-        relations: ['address', 'address.provinceId', 'address.districtId', 'auth'],
-      });
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['address', 'address.province', 'address.district', 'auth'],
+    });
+
     if (!user) {
       throw new NotFoundException('Kullanıcı bulunamadı.');
     }
     return user;
   }
 
+
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(id);
+    const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
-      throw new NotFoundException('user not found');
+      throw new NotFoundException('Kullanıcı bulunamadı.');
     }
     Object.assign(user, updateUserDto);
     return this.userRepository.save(user);
@@ -104,13 +70,13 @@ export class UsersService {
   async remove(id: string, soft: string): Promise<User> {
     const user = await this.findOne(id);
     if (!user) {
-      throw new NotFoundException('user not found');
+      throw new NotFoundException('Kullanıcı bulunamadı.');
     }
     if (soft === 'true') {
       const softDelete = await this.userRepository.softDelete(id);
 
       if (!softDelete.affected) {
-        throw new NotFoundException('user not found');
+        throw new NotFoundException('Kullanıcı bulunamadı.');
       }
       return user;
     }
@@ -123,7 +89,7 @@ export class UsersService {
     });
 
     if (!users) {
-      throw new NotFoundException('users not found');
+      throw new NotFoundException('Kullanıcılar bulunamadı.');
     }
 
     return users;
@@ -138,7 +104,7 @@ export class UsersService {
     });
 
     if (!users) {
-      throw new NotFoundException('users not found');
+      throw new NotFoundException('Kullanıcılar bulunamadı.');
     }
     return users;
   }
@@ -168,7 +134,7 @@ export class UsersService {
     });
 
     if (!jobUser) {
-      throw new NotFoundException('job user not found');
+      throw new NotFoundException('Job user bulunamadı.');
     }
 
     return jobUser;
@@ -182,27 +148,29 @@ export class UsersService {
       relations,
     });
     if (!user) {
-      throw new NotFoundException('user not found');
+      throw new NotFoundException('Kullanıcı bulunamadı.');
     }
     return user;
   }
 
   async userSearch(query: string) {
-    const users = await this.userRepository.createQueryBuilder('user').where('CONCAT(user.firstName, \' \', user.lastName) ilike :fullName', { fullName: `%${query}%` }).getMany();
+    const users = await this.userRepository.createQueryBuilder('user')
+      .where('CONCAT(user.firstName, \' \', user.lastName) ilike :fullName', { fullName: `%${query}%` })
+      .getMany();
 
     if (!users) {
-      throw new NotFoundException('users not found');
+      throw new NotFoundException('Kullanıcılar bulunamadı.');
     }
 
     return users;
   }
 
-  async updateUserAuth(userId: string, authData:UpdateAuthDto): Promise<User> {
-    const user = await this.userRepository.findOne({where:{id:userId}});
+  async updateUserAuth(userId: string, authData: UpdateAuthDto): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('Kullanıcı bulunamadı.');
     }
-    console.log("auth: ",authData);
+
     if (!authData) {
       throw new BadRequestException('Yetkilendirme bilgisi eksik.');
     }

@@ -37,7 +37,7 @@ export class JobsService {
         user: {
           firstName: true,
           lastName: true,
-          Identity: true,
+          identity: true,
           id: true,
         },
         company: {

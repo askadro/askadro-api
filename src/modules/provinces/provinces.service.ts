@@ -1,19 +1,18 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { HttpService } from "@nestjs/axios";
-import { firstValueFrom } from "rxjs";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Province } from "./entities/province.entity";
-import { Repository } from "typeorm";
-import { District } from "./entities/district.entity";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Province } from './entities/province.entity';
+import { Repository } from 'typeorm';
+import { District } from './entities/district.entity';
 
 @Injectable()
 export class ProvincesService {
   constructor(
     private readonly httpService: HttpService,
     @InjectRepository(Province) private provincesRepository: Repository<Province>,
-    @InjectRepository(District) private districtRepository: Repository<District>
-  ) {
-  }
+    @InjectRepository(District) private districtRepository: Repository<District>,
+  ) {}
 
   async create() {
     try {
@@ -51,11 +50,24 @@ export class ProvincesService {
     }
   }
 
-  provinceFindAll() {
+  async findAllProvinces() {
     return this.provincesRepository.find();
   }
 
-  districtFindAll() {
+  async findAllDistricts() {
     return this.districtRepository.find();
   }
+
+  async findDistrictsByProvince(provinceId: string) {
+    const province = await this.provincesRepository.findOne({
+      where: { id: provinceId },
+      relations: ['districts'],
+    });
+    if (!province) {
+      throw new NotFoundException('Province not found');
+    }
+    return province.districts;
+  }
 }
+
+

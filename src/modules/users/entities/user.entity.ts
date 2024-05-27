@@ -1,40 +1,52 @@
 import {
-  AfterInsert,
-  AfterRemove,
-  AfterUpdate,
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
-  Index, JoinColumn,
-  OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  JoinColumn,
+  OneToMany,
+  Index,
+  DeleteDateColumn,
+  CreateDateColumn,
   UpdateDateColumn,
+  AfterInsert,
+  AfterUpdate,
+  AfterRemove,
+  Relation,
 } from 'typeorm';
-import { userGenderEnum } from '../enums/user.gender.enum';
-import { UserStatusEnum } from '../enums/user.status.enum';
-import { Job } from 'src/modules/jobs/job.entity';
+import { userGenderEnum } from '@/modules/users/enums/user.gender.enum';
+import { UserStatusEnum } from '@/modules/users/enums/user.status.enum';
+import { Job } from '@/modules/jobs/job.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { Auth } from '@/auth/entities/auth.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
 
 @Entity()
 @Index(['firstName', 'lastName'])
-
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @OneToMany(() => Job, (job: Job) => job.user)
+  job: Job[];
+
+  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.user)
+  ticket: Ticket[];
+
+  @OneToOne(() => Auth, {  nullable: true })
+  @JoinColumn()
+  auth: Auth;
+
+  @OneToOne(() => Address, (address: Address) => address.user, { nullable: true })
+  @JoinColumn()
+  address: Address;
+
 
   @Column({
     length: 11,
     unique: true,
   })
-  Identity: string;
-
-  @OneToOne(() => Address, address => address.user)
-  @JoinColumn({ name: 'addressId' })
-  address: Address;
+  identity: string;
 
   @Column()
   firstName: string;
@@ -59,16 +71,6 @@ export class User {
     enum: userGenderEnum,
   })
   gender: userGenderEnum;
-
-  @OneToMany(() => Job, (job: Job) => job.user)
-  job: Job[];
-
-  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.userId)
-  ticket: Ticket[];
-
-  @OneToOne(() => Auth, (auth) => auth.user)
-  @JoinColumn({ name: 'authId' })
-  auth: Auth;
 
   @Column({
     type: 'enum',

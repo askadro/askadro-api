@@ -15,8 +15,8 @@ export class UsersController {
 
   @Post(path.users.userCreate)
   async create(@Body() body: CreateUserDto) {
-    if (body.user_auth) {
-      body.user_auth.password = Bcrypt.hash(body.user_auth.password);
+    if (body.auth) {
+      body.auth.password = Bcrypt.hash(body.auth.password);
     }
 
     return this.usersService.create(body);

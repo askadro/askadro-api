@@ -1,23 +1,27 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, Param, Post } from '@nestjs/common';
 import { ProvincesService } from './provinces.service';
 
-@Controller("provinces")
+@Controller('provinces')
 export class ProvincesController {
-  constructor(private readonly provincesService: ProvincesService) {
-  }
+  constructor(private readonly provincesService: ProvincesService) {}
 
   @Post("/create")
-  create() {
+  async createProvinces() {
     return this.provincesService.create();
   }
 
   @Get()
-  provinceFindAll() {
-    return this.provincesService.provinceFindAll();
-  }
-  @Get("/districts")
-  findAll() {
-    return this.provincesService.districtFindAll();
+  async findAllProvinces() {
+    return this.provincesService.findAllProvinces();
   }
 
+  @Get('districts')
+  async findAllDistricts() {
+    return this.provincesService.findAllDistricts();
+  }
+
+  @Get(':id/district')
+  async findDistrictsByProvince(@Param('id') id: string) {
+    return this.provincesService.findDistrictsByProvince(id);
+  }
 }

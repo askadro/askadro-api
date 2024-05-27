@@ -59,11 +59,11 @@ export class CreateAuthDto {
   @IsString({
     message: 'Şirket id si olmalı',
   })
-  company:Company
+  companyId:string
 
   @IsOptional()
   @IsString({
     message: 'User id si olmalı',
   })
-  user:User
+  userId:string
 }

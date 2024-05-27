@@ -5,10 +5,9 @@ import { UpdateAddressDto } from './dto/update-address.dto';
 
 @Controller('addresses')
 export class AddressesController {
-  constructor(private readonly addressesService: AddressesService) {
-  }
+  constructor(private readonly addressesService: AddressesService) {}
 
-  @Post()
+  @Post("/new")
   create(@Body() createAddressDto: CreateAddressDto) {
     return this.addressesService.create(createAddressDto);
   }
@@ -20,18 +19,16 @@ export class AddressesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.addressesService.findOne(+id);
+    return this.addressesService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAddressDto: UpdateAddressDto) {
-    return this.addressesService.update(+id, updateAddressDto);
+    return this.addressesService.update(id, updateAddressDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.addressesService.remove(+id);
+    return this.addressesService.remove(id);
   }
-
-
 }

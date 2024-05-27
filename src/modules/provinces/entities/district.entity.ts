@@ -10,29 +10,26 @@ import {
 } from "typeorm";
 import { Province } from "./province.entity";
 
-@Entity({
-  name: 'districts'
-
-})
+@Entity()
 export class District {
 
   @PrimaryGeneratedColumn("uuid")
-  id: string
+  id: string;
 
   @Column()
-  name: string
+  name: string;
 
-  @ManyToOne(()=>Province,(province)=>province)
-  province:Province
+  @ManyToOne(() => Province, province => province.districts)
+  province: Province;
 
-  @CreateDateColumn({type: "timestamp",default:()=>"CURRENT_TIMESTAMP(6)"})
-  createdAt: Date
+  @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+  createdAt: Date;
 
-  @UpdateDateColumn({type: "timestamp",default:()=>"CURRENT_TIMESTAMP(6)"})
-  updatedAt: Date
+  @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+  updatedAt: Date;
 
-  @DeleteDateColumn({type: "timestamp",default: null})
-  deletedAt: Date
+  @DeleteDateColumn({ type: "timestamp", nullable: true })
+  deletedAt: Date;
 
   @AfterInsert()
   logInsert() {

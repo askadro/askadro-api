@@ -9,7 +9,7 @@ export class Ticket {
   id: string;
 
   @OneToOne(() => User, (user) => user.ticket)
-  userId: User;
+  user: User;
 
   @OneToOne(() => Company, (Company) => Company.tickets)
   companyId:Company
