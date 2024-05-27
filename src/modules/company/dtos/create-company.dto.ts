@@ -1,6 +1,17 @@
-import { IsMobilePhone, IsNumberString, IsOptional, IsString, Length, MaxLength, MinLength } from 'class-validator';
+import {
+  IsMobilePhone,
+  IsNumberString,
+  IsOptional,
+  IsString,
+  Length,
+  MaxLength,
+  MinLength,
+  ValidateNested,
+} from 'class-validator';
 import { CreateAddressDto } from '@/modules/addresses/dto/create-address.dto';
 import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import { CreateAuthorizedDto } from '@/modules/company/dtos/create-authorized.dto';
+import { Type } from 'class-transformer';
 
 export class CreateCompanyDto {
   @IsString()
@@ -27,10 +38,6 @@ export class CreateCompanyDto {
   @IsNumberString()
   registrationNumber: string;// sicil numarası
 
-  @IsOptional()
-  @IsString()
-  password: string | undefined;
-
   @IsString()
   @Length(1, 2)
   timeOfPayment: string; // ayın ödeme gününü temsil eder
@@ -39,8 +46,17 @@ export class CreateCompanyDto {
   totalWorkingTime: string;
 
   @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateAddressDto)
   address?: CreateAddressDto;
 
   @IsOptional()
-  company_auth?:CreateAuthDto
+  @ValidateNested()
+  @Type(() => CreateAuthDto)
+  auth?:CreateAuthDto
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateAuthorizedDto)
+  authorized?:CreateAuthorizedDto[]
 }

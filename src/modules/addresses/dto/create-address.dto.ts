@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsOptional, IsString, ValidateIf, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, ValidateIf, IsUUID, IsEnum } from 'class-validator';
+import { AddressStatusEnum } from '@/modules/addresses/enums/address.status.enum';
 
 export class CreateAddressDto {
   @ValidateIf(o => !o.companyId)
@@ -24,4 +25,8 @@ export class CreateAddressDto {
   @IsOptional()
   @IsString()
   addressDetail?: string;
+
+  @IsOptional()
+  @IsEnum(AddressStatusEnum)
+  addressStatus?: AddressStatusEnum;
 }

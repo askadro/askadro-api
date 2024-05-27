@@ -10,142 +10,77 @@ import { Province } from '@/modules/provinces/entities/province.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { District } from '@/modules/provinces/entities/district.entity';
 import { Auth } from '@/auth/entities/auth.entity';
+import { AuthService } from '@/auth/auth.service';
+import { AddressesService } from '@/modules/addresses/addresses.service';
+import { CreateAuthorizedDto } from '@/modules/company/dtos/create-authorized.dto';
+import { UpdateAuthorizedDto } from '@/modules/company/dtos/update-authorized.dto';
+import { User } from '@/modules/users/entities/user.entity';
 
 @Injectable()
 export class CompanyService {
   constructor(
     @InjectRepository(Company) private comp: Repository<Company>,
-    @InjectRepository(Address) private addressRepository: Repository<Address>,
-    @InjectRepository(Province) private provinceRepository: Repository<Province>,
-    @InjectRepository(District) private districtRepository: Repository<District>,
     @InjectRepository(Authorized) private authorizedRepository: Repository<Authorized>,
-    @InjectRepository(Auth) private authRepository: Repository<Auth>,
-    private i18n: I18nService,
+    private readonly authService: AuthService,
+    private readonly addressService: AddressesService,
   ) {
   }
 
   async create(body: CreateCompanyDto) {
-    const {company_auth,address,...companyData} = body
-  //   const {
-  //     company: createCompany,
-  //     authorized: createAuthorized,
-  //     address: createAddress,
-  //     auth: createAuth,
-  //   } = body;
-  //   const companyCreate = this.comp.create({
-  //     name: createCompany.name?.toLowerCase(),
-  //     phone: createCompany.phone?.trim(),
-  //     shortName: createCompany.shortName?.toLowerCase(),
-  //     registrationNumber: createCompany.registrationNumber?.trim(),
-  //     password: createCompany.password,
-  //     timeOfPayment: createCompany.timeOfPayment?.trim(),
-  //     totalWorkingTime: createCompany.totalWorkingTime?.trim(),
-  //   });
-  //
-  //   const resultCompany = await this.comp.save(companyCreate);
-  //
-  //   let authorized: Authorized = null;
-  //   if (createAuthorized) {
-  //     authorized = await this.createAuthorized({ ...createAuthorized, company: resultCompany });
-  //   }
-  //
-  //   let address: CompanyAddress = null;
-  //   if (createAddress) {
-  //     address = await this.createAddress(resultCompany.id, createAddress);
-  //   }
-  //
-  //   let authors: Auth = null;
-  //   if (createAuth) {
-  //     authors = await this.authRepository.save(createAuth);
-  //   }
-  //
-  //   return {
-  //     Company: resultCompany,
-  //     Authorized: authorized,
-  //     Address: address,
-  //     Auth: authors,
-  //   };
-  // }
-  //
-  // async createAuthorized(body: CreateAuthorizedDto) {
-  //   const authorized = new Authorized();
-  //   authorized.authorizedEmail = body.authorizedEmail;
-  //   authorized.authorizedPerson = body.authorizedPerson;
-  //   authorized.authorizedPhone = body.authorizedPhone;
-  //   authorized.authorizedTitle = body.authorizedTitle;
-  //   authorized.company = body.company;
-  //
-  //   return await this.authorizedRepository.save(authorized);
+    const { auth, address, authorized, ...companyData } = body;
+    let authEntity: Auth = null;
+    let companyEntity: Company = null;
+    let addressEntity: Address = null;
+
+    const company = this.comp.create(companyData);
+    companyEntity = await this.comp.save(company);
+
+    if (address) {
+      addressEntity = await this.addressService.create({ ...address, companyId: companyEntity.id });
+    }
+
+    if (auth) {
+      authEntity = await this.authService.create({ ...auth, companyId: companyEntity.id });
+    }
+
+    if (authorized && Array.isArray(authorized)) {
+      company.authorized = await Promise.all(
+        authorized.map(authData => this.createAuthorized({ ...authData, companyId: companyEntity.id })),
+      );
+    }
+
+    return await this.comp.save({ ...companyEntity,address:addressEntity,auth:authEntity, });
   }
 
+  async createAuthorized(authorized: CreateAuthorizedDto): Promise<Authorized> {
+    const { companyId, authorizedPerson, authorizedTitle, authorizedPhone, authorizedEmail } = authorized;
+    const authCompany = await this.comp.findOne({ where: { id: companyId } });
+    const authorizes = new Authorized();
+    authorizes.company = authCompany;
+    authorizes.authorizedTitle = authorizedTitle;
+    authorizes.authorizedPhone = authorizedPhone;
+    authorizes.authorizedPerson = authorizedPerson;
+    authorizes.authorizedEmail = authorizedEmail;
 
-  // async createAddress(id: string, createAddressCompanyDto: CreateAddressCompanyDto) {
-  //   const company = await this.comp.findOne({
-  //     where: {
-  //       id: id,
-  //     },
-  //   });
-  //
-  //   if (!company) {
-  //     throw new NotFoundException('company not found');
-  //   }
-  //
-  //   const province: Province = await this.provinceRepository.findOne({
-  //     where: {
-  //       id: createAddressCompanyDto.city,
-  //     },
-  //   });
-  //
-  //   if (!province) {
-  //     throw new NotFoundException('province not found');
-  //   }
-  //
-  //   const district: District = await this.districtRepository.findOne({
-  //     where: {
-  //       id: createAddressCompanyDto.district,
-  //     },
-  //   });
-  //
-  //   if (!district) {
-  //     throw new NotFoundException('district not found');
-  //   }
-  //
-  //   const address: Address = this.addressRepository.create({
-  //     city: province,
-  //     district: district,
-  //     address: createAddressCompanyDto.address,
-  //     addressStatus: createAddressCompanyDto.addressStatus,
-  //   });
-  //
-  //   const addressSave: Address = await this.addressRepository.save(address);
-  //
-  //
-  //   const companyAddress: CompanyAddress = this.companyAddressRepository.create({
-  //     company: company,
-  //     address: addressSave,
-  //   });
-  //
-  //   return await this.companyAddressRepository.save(companyAddress);
-  //
-  // }
+    return await this.authorizedRepository.save(authorizes);
+  }
 
-  // async updateAddress(id: string, updateAddressUserDto: UpdateAddressUserDto): Promise<Address> {
-  //   const userAddress: Address = await this.addressRepository.findOne({
-  //     where: {
-  //       id: id,
-  //     },
-  //   });
-  //
-  //   if (!userAddress) {
-  //     throw new NotFoundException('user address not found');
-  //   }
-  //
-  //   Object.assign(userAddress, updateAddressUserDto);
-  //
-  //
-  //   return this.addressRepository.save(userAddress);
-  // }
+  async updateAuthorized(id: string, authorized: UpdateAuthorizedDto): Promise<Authorized> {
+    const authorize = await this.findAuthorized(id);
+    if (!authorize) {
+      throw new NotFoundException('Authorize not found');
+    }
+    Object.assign(authorize, authorized);
+    return this.authorizedRepository.save(authorize);
+  }
 
+  async findAuthorized(id: string) {
+    const authorize = await this.authorizedRepository.findOne({ where: { id } });
+    if (!authorize) {
+      throw new NotFoundException();
+    }
+    return authorize;
+  }
 
   async findOne(id: string, relations: object = {}) {
     const auths = await this.comp.findOne({

@@ -1,32 +1,31 @@
-import {
-  IsArray,
-  IsDate,
-  IsNumber,
-
-  IsString,
-} from 'class-validator';
-import { User } from '@/modules/users/entities/user.entity';
+import { IsString, IsUUID, IsArray, ValidateNested, IsDate } from 'class-validator';
+import { Type } from 'class-transformer';
+import { CreateJobsDto } from '@/modules/jobs/dtos/create-jobs.dto';
 
 export class CreateTicketDto {
   @IsString()
-  userId:User
+  enterTime: string;
 
   @IsString()
-  companyId:string
+  exitTime: string;
 
+  @IsString()
   @IsDate()
-  enterHour:Date
+  ticketDate: Date;
+
+  @IsString()
+  ticketNotes: string;
+
+  @IsUUID()
+  @IsString()
+  userId: string;
+
+  @IsUUID()
+  @IsString()
+  companyId: string;
 
   @IsArray()
-  staffs:User[]
-
-  @IsDate()
-  exitHour:Date
-
-  @IsDate()
-  ticketDate:Date
-
-  @IsString()
-  ticket_notes:string
-
+  @ValidateNested({ each: true })
+  @Type(() => CreateJobsDto)
+  jobs: CreateJobsDto[];
 }

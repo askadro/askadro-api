@@ -8,24 +8,27 @@ export class Ticket {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => User, (user) => user.ticket)
+  @ManyToOne(() => User, (user) => user.ticket)
   user: User;
 
-  @OneToOne(() => Company, (Company) => Company.tickets)
-  companyId:Company
+  @ManyToOne(() => Company, (Company) => Company.ticket)
+  company:Company
 
-  @ManyToOne(() => Job, (job) => job.user)
-  job: Job[];
-
-  @Column()
-  enterHour:string
+  @OneToMany(() => Job, (job) => job.ticket, { cascade: true })
+  jobs: Job[];
 
   @Column()
-  exitHour:string
+  enterTime:string
+
+  @Column()
+  exitTime:string
 
   @Column()
   ticketDate:Date
 
-  @Column()
-  ticket_notes:string
+  @Column('text')
+  ticketNotes:string
+
+  @Column({default:"active" })
+  status:string
 }

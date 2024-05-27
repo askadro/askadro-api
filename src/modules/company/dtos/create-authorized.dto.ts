@@ -1,7 +1,7 @@
 import {
   IsEmail,
-  IsMobilePhone,
-  IsString,
+  IsMobilePhone, IsOptional,
+  IsString, IsUUID,
   Length,
   MinLength,
   ValidateNested,
@@ -24,6 +24,8 @@ export class CreateAuthorizedDto {
   @IsString()
   authorizedTitle: string;
 
-  @ValidateNested()
-  company: Company;
+  @IsString()
+  @IsUUID()
+  @IsOptional()
+  companyId:string
 }

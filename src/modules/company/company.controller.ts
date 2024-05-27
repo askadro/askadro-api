@@ -5,6 +5,7 @@ import { UpdateCompanyDto } from './dtos/update-company.dto';
 import { path } from '@/constants/paths';
 import { CompanyCreate } from '@/decorators/company/create.decorator';
 import { Bcrypt } from '@/utils/bcrypt';
+import { UpdateAuthorizedDto } from '@/modules/company/dtos/update-authorized.dto';
 
 
 @Controller(path.company.main)
@@ -15,18 +16,14 @@ export class CompanyController {
   @Post(path.company.create)
   @UseInterceptors(CompanyCreate)
   async createCompany(@Body() body: CreateCompanyDto) {
-    // {
-    //   company: CreateCompanyDto,
-    //     authorized?: CreateAuthorizedDto,
-    //     address?: CreateAddressUserDto,
-    //     auth?: CreateAuthDto
-    // }
-    if (body.company_auth) {
-      body.company_auth.password = Bcrypt.hash(body.company_auth.password);
+    if (body.auth) {
+      body.auth.password = Bcrypt.hash(body.auth.password);
     }
 
     return await this.companyService.create(body);
   }
+
+
 
   // @Post(path.company.addAuthorized)
   // async createAuthorized(@Body() body: CreateAuthorizedDto) {
@@ -40,7 +37,7 @@ export class CompanyController {
 
   @Get(path.company.getOneCompany)
   async getCompany(@Param('id') id: string) {
-    return await this.companyService.findOne(id, { authorized: true });
+    return await this.companyService.findOne(id, { authorized: true,address:true,auth:true });
   }
 
   @Patch(path.company.updateCompany)
@@ -51,5 +48,11 @@ export class CompanyController {
   @Delete(path.company.deleteCompany)
   async deleteCompany(@Param('id') id: string) {
     return await this.companyService.remove(id);
+  }
+
+  ///@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  @Patch("/authorized/update/:id")
+  updateAuthorized(@Param('id') id: string, @Body() authorized: UpdateAuthorizedDto) {
+    return this.companyService.updateAuthorized(id,authorized)
   }
 }

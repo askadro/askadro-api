@@ -31,4 +31,10 @@ export class AddressesController {
   remove(@Param('id') id: string) {
     return this.addressesService.remove(id);
   }
+
+  //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  @Patch('/update/:id')
+  updateAddress(@Param('id') id: string, @Body() updateAddressDto: UpdateAddressDto) {
+    return this.addressesService.updateAddress(id, updateAddressDto);
+  }
 }

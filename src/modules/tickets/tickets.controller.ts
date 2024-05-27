@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { path } from '@/constants/paths';
 import { TicketsService } from './tickets.service';
 import { CreateTicketDto } from './dtos/create-ticket.dto';
@@ -13,9 +13,14 @@ export class TicketsController {
     return await this.ticketService.create(body);
   }
 
-  @Get(path.ticket.getTickets)
-  async getTickets(@Body() tickets: TicketsService) {
-    // return await this.ticketService.find();
+  @Get(path.ticket.getOneTicket)
+  async getTickets(@Param("id") id: string ) {
+     return await this.ticketService.getTicket(id);
+  }
+
+  @Patch("/update/:id")
+  updateTicket(@Param("id") id: string,body:CreateTicketDto) {
+    return this.ticketService.updateTicket(id,body)
   }
 
   /*

@@ -69,7 +69,7 @@ export const path:{
     main: 'tickets',
     create: '/new',
     getOneTicket: '/:id',
-    getTickets: '/tickets/all',
+    getTickets: '/all',
     crateCompanyTicket: '/crate-company-ticket',
     updateTicket: '/update/:id',
     deleteTicket: '/delete/:id',

@@ -13,6 +13,8 @@ import { Authorized } from './authorized.entity';
 import { Job } from '../../jobs/job.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
+import { CreateAuthorizedDto } from '@/modules/company/dtos/create-authorized.dto';
+import { Auth } from '@/auth/entities/auth.entity';
 
 @Entity()
 export class Company {
@@ -28,16 +30,19 @@ export class Company {
   @Column({ nullable: true })
   shortName: string;
 
+  @OneToMany(() => Authorized, (authorized: Authorized) => authorized.company)
+  authorized: Authorized[];
 
-  @OneToMany(() => Authorized, (auth: Authorized) => auth.company)
-  authorized: Authorized;
+  @OneToOne(() => Auth, {  nullable: true })
+  @JoinColumn()
+  auth: Auth;
+
+  @OneToOne(() => Address, (address: Address) => address.user, { nullable: true })
+  @JoinColumn()
+  address: Address;
 
   @OneToMany(() => Job, (job: Job) => job.company)
   job: Job[];
-
-  @OneToOne(() => Address, address => address.company)
-  @JoinColumn({ name: 'addressId' })
-  address: Address;
 
   @Column()
   registrationNumber: string; // sicil numarası
@@ -60,8 +65,8 @@ export class Company {
   @CreateDateColumn()
   createdDate: Date;
 
-  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.companyId )
-  tickets:Ticket[]
+  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.company )
+  ticket:Ticket[]
 
   @BeforeInsert()
   setDefault() {

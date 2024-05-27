@@ -23,22 +23,24 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const { address, auth, ...userData } = createUserDto;
-
+    let addressEntity: Address = null;
+    let authEntity: Auth = null;
+    let userEntity: User = null;
     // Create user entity
     const user = this.userRepository.create(userData);
-
+    userEntity = await this.userRepository.save(user);
     // Create and associate address if provided
     if (address) {
-      user.address = await this.addressService.create({ ...address,userId: user.id });
+      addressEntity = await this.addressService.create({ ...address, userId: userEntity.id });
     }
 
     // Create and associate auth if provided
     if (auth) {
-      user.auth = await this.authService.create({ ...auth,userId:user.id });
+      authEntity = await this.authService.create({ ...auth, userId: userEntity.id });
     }
 
     // Save the user entity which will cascade save address and auth if they exist
-    return await this.userRepository.save(user);
+    return await this.userRepository.save({ ...user, address: addressEntity, auth: authEntity });
   }
 
   async findUserOnlyOwnData(id: string) {
@@ -56,7 +58,6 @@ export class UsersService {
     }
     return user;
   }
-
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id } });
@@ -117,9 +118,9 @@ export class UsersService {
       select: {
         job: {
           id: true,
-          startTime: true,
+          enterTime: true,
           extraTime: true,
-          endTime: true,
+          exitTime: true,
           company: {
             id: true,
             name: true,

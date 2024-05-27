@@ -9,14 +9,14 @@ import { AuthService } from '@/auth/auth.service';
 import { AddressesService } from '@/modules/addresses/addresses.service';
 import { Province } from '@/modules/provinces/entities/province.entity';
 import { District } from '@/modules/provinces/entities/district.entity';
-import { AddressesModule } from '@/modules/addresses/addresses.module';
 import { CommonService } from '@/modules/common/common.service';
 import { Company } from '@/modules/company/entities/company.entity';
+import { CommonModule } from '@/modules/common/common.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Address, Auth,Province,District,Company]),AddressesModule],
+  imports: [TypeOrmModule.forFeature([User, Address, Auth,Province,District,Company]),CommonModule],
   controllers: [UsersController],
-  providers: [UsersService,AuthService,CommonService],
+  providers: [UsersService,CommonService,AuthService,AddressesService],
   exports: [UsersService],
 })
 export class UsersModule {}

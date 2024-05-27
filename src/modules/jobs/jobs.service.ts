@@ -4,17 +4,20 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateJobsDto } from './dtos/create-jobs.dto';
 import { Job } from './job.entity';
 import { UpdateJobDto } from './dtos/update-jobs.dto';
+import { CommonService } from '@/modules/common/common.service';
 
 @Injectable()
 export class JobsService {
-  constructor(@InjectRepository(Job) private repo: Repository<Job>) {}
+  constructor(@InjectRepository(Job) private repo: Repository<Job>,
+              private readonly commonService: CommonService,) {}
 
   async create(body: CreateJobsDto) {
+    const {user,company} = await this.commonService.findUserOrCompany(body.userId,body.companyId)
     const job = this.repo.create({
-      company: body.company,
-      user: body.user,
-      startTime: body.startTime,
-      endTime: body.endTime,
+      company: company,
+      user: user,
+      enterTime: body.enterTime,
+      exitTime: body.exitTime,
       extraTime: body.extraTime,
     });
     return await this.repo.save(job);
@@ -71,12 +74,12 @@ export class JobsService {
 
   async filter(body: UpdateJobDto) {
     const filteredJobs = await this.repo.find({
-      where: {
-        user: body.user,
-        company: body.company,
-        startTime: body.startTime,
-        endTime: body.endTime,
-      },
+      // where: {
+      //   user: body.userId,
+      //   company: body.company,
+      //   enterTime: body.enterTime,
+      //   exitTime: body.exitTime,
+      // },
     });
     return filteredJobs;
   }

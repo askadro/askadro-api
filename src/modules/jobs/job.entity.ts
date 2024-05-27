@@ -9,11 +9,15 @@ import {
 } from 'typeorm';
 import { Company } from '../company/entities/company.entity';
 import { User } from '../users/entities/user.entity';
+import { Ticket } from '@/modules/tickets/ticket.entity';
 
 @Entity()
 export class Job {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @ManyToOne(() => Ticket, (ticket) => ticket.jobs)
+  ticket:Ticket
 
   @ManyToOne(() => Company, (company) => company.job)
   company: Company;
@@ -22,10 +26,10 @@ export class Job {
   user: User;
 
   @Column()
-  startTime: string; // 00:00 formatında girilecek
+  enterTime: string; // 00:00 formatında girilecek
 
   @Column()
-  endTime: string; // 00:00 formatında girilecek
+  exitTime: string; // 00:00 formatında girilecek
 
   @Column()
   extraTime: string;

@@ -29,7 +29,6 @@ export class AddressesService {
     const { provinceId, districtId, addressDetail, companyId, userId } = createAddressDto;
     const { district, province } = await this.findProvinceAndDistrict(provinceId, districtId);
     const { user, company } = await this.commonService.findUserOrCompany(userId, companyId);
-
     const address = new Address();
     address.addressDetail = addressDetail;
     address.province = province;
@@ -40,27 +39,37 @@ export class AddressesService {
     return await this.addressRepository.save(address);
   }
 
-
-  async UserAddressCreate(user: User, body: CreateAddressDto) {
-    const { provinceId, districtId, addressDetail } = body;
-    const { district, province } = await this.findProvinceAndDistrict(provinceId, districtId);
-
-    const userAddress = {
-      province,
-      district,
-      user,
-      addressDetail,
-    };
-
-    const address = this.addressRepository.create(userAddress);
-
+  async updateAddress(id: string, updateAddressDto: UpdateAddressDto): Promise<Address> {
+    const address = await this.findOne(id,['province', 'district']);
     if (!address) {
-      throw new BadRequestException('An error occurred while creating the address.');
+      throw new NotFoundException(`Address with ID ${id} not found`);
+    }
+    const { userId, companyId ,provinceId, districtId,addressDetail,addressStatus } = updateAddressDto;
+
+    if (provinceId && districtId) {
+      const { district, province } = await this.findProvinceAndDistrict(provinceId, districtId);
+      address.province = province;
+      address.district = district;
     }
 
-    return this.addressRepository.save(address);
-  }
+    if (addressDetail) {
+      address.addressDetail = addressDetail;
+    }
+    if (addressStatus) {
+      address.addressStatus = addressStatus;
+    }
+    if (userId || companyId) {
+      const { user, company } = await this.commonService.findUserOrCompany(userId, companyId);
+      address.user = user;
+      address.company = company;
+    }
+    console.log('After update:', address);
 
+    const updatedAddress = await this.addressRepository.save(address);
+    console.log('Saved address:', updatedAddress);
+
+    return updatedAddress;
+  }
 
   async findAll() {
     return this.addressRepository.find({
@@ -68,11 +77,11 @@ export class AddressesService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string,relations: string[] = []) {
     const address = await this.addressRepository.findOne(
       {
         where: { id },
-        relations: ['province', 'district', 'user', 'company'],
+        relations,
       },
     );
 
