@@ -7,11 +7,11 @@ import { Authorized } from '@/modules/company/entities/authorized.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { Province } from '@/modules/provinces/entities/province.entity';
 import { District } from '@/modules/provinces/entities/district.entity';
-import { Auth } from '@/auth/entities/auth.entity';
-import { AuthService } from '@/auth/auth.service';
 import { AddressesService } from '@/modules/addresses/addresses.service';
 import { CommonModule } from '@/modules/common/common.module';
 import { User } from '@/modules/users/entities/user.entity';
+import { AuthService } from '@/modules/auth/auth.service';
+import { Auth } from '@/modules/auth/entities/auth.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Company, Authorized, Address, Province, District,Auth,User]),CommonModule],

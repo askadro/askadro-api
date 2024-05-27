@@ -9,9 +9,9 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { CreateAddressDto } from '@/modules/addresses/dto/create-address.dto';
-import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
 import { CreateAuthorizedDto } from '@/modules/company/dtos/create-authorized.dto';
 import { Type } from 'class-transformer';
+import { CreateAuthDto } from '@/modules/auth/dto/create-auth.dto';
 
 export class CreateCompanyDto {
   @IsString()

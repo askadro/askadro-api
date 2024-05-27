@@ -18,8 +18,8 @@ import { userGenderEnum } from '@/modules/users/enums/user.gender.enum';
 import { UserStatusEnum } from '@/modules/users/enums/user.status.enum';
 import { Job } from '@/modules/jobs/job.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
-import { Auth } from '@/auth/entities/auth.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
+import { Auth } from '@/modules/auth/entities/auth.entity';
 
 @Entity()
 @Index(['firstName', 'lastName'])

@@ -13,8 +13,7 @@ import { Authorized } from './authorized.entity';
 import { Job } from '../../jobs/job.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
-import { CreateAuthorizedDto } from '@/modules/company/dtos/create-authorized.dto';
-import { Auth } from '@/auth/entities/auth.entity';
+import { Auth } from '@/modules/auth/entities/auth.entity';
 
 @Entity()
 export class Company {

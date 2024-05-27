@@ -12,6 +12,7 @@ import { CreateJobsDto } from './dtos/create-jobs.dto';
 import { JobsService } from './jobs.service';
 import { Job } from './job.entity';
 import { path } from '@/constants/paths';
+import { UpdateJobDto } from '@/modules/jobs/dtos/update-jobs.dto';
 
 @Controller(path.job.main)
 export class JobsController {
@@ -37,7 +38,7 @@ export class JobsController {
   }
 
   @Patch(path.job.updateJob)
-  updateJob(@Param('id') id: string, @Body() body: Partial<Job>) {
+  updateJob(@Param('id') id: string, @Body() body: UpdateJobDto) {
     return this.jobsService.update(id, body);
   }
 

@@ -1,10 +1,9 @@
 import { BadRequestException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Auth } from '@/auth/entities/auth.entity';
 import { Repository } from 'typeorm';
-import { User } from '@/modules/users/entities/user.entity';
 import { CommonService } from '@/modules/common/common.service';
+import { Auth } from '@/modules/auth/entities/auth.entity';
 
 @Injectable()
 export class AuthService {

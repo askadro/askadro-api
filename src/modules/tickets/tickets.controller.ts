@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { path } from '@/constants/paths';
 import { TicketsService } from './tickets.service';
 import { CreateTicketDto } from './dtos/create-ticket.dto';
+import { UpdateTicketDto } from '@/modules/tickets/dtos/update-ticket.dto';
 
 @Controller('tickets')
 export class TicketsController {
@@ -19,7 +20,7 @@ export class TicketsController {
   }
 
   @Patch("/update/:id")
-  updateTicket(@Param("id") id: string,body:CreateTicketDto) {
+  updateTicket(@Param("id") id: string,@Body() body:UpdateTicketDto) {
     return this.ticketService.updateTicket(id,body)
   }
 

@@ -6,15 +6,12 @@ import { Authorized } from './entities/authorized.entity';
 import { I18nService } from 'nestjs-i18n';
 import { UpdateCompanyDto } from './dtos/update-company.dto';
 import { CreateCompanyDto } from '@/modules/company/dtos/create-company.dto';
-import { Province } from '@/modules/provinces/entities/province.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
-import { District } from '@/modules/provinces/entities/district.entity';
-import { Auth } from '@/auth/entities/auth.entity';
-import { AuthService } from '@/auth/auth.service';
 import { AddressesService } from '@/modules/addresses/addresses.service';
 import { CreateAuthorizedDto } from '@/modules/company/dtos/create-authorized.dto';
 import { UpdateAuthorizedDto } from '@/modules/company/dtos/update-authorized.dto';
-import { User } from '@/modules/users/entities/user.entity';
+import { AuthService } from '@/modules/auth/auth.service';
+import { Auth } from '@/modules/auth/entities/auth.entity';
 
 @Injectable()
 export class CompanyService {

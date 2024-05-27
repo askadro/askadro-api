@@ -6,7 +6,7 @@ import { Province } from './modules/provinces/entities/province.entity';
 import { District } from './modules/provinces/entities/district.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
-import { Auth } from '@/auth/entities/auth.entity';
+import { Auth } from '@/modules/auth/entities/auth.entity';
 
 
 export const Entities: [

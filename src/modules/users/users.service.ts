@@ -5,10 +5,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { IsNull, Not, Repository } from 'typeorm';
 import { Address } from '@/modules/addresses/entities/address.entity';
-import { Auth } from '@/auth/entities/auth.entity';
-import { UpdateAuthDto } from '@/auth/dto/update-auth.dto';
-import { AuthService } from '@/auth/auth.service';
 import { AddressesService } from '@/modules/addresses/addresses.service';
+import { Auth } from '@/modules/auth/entities/auth.entity';
+import { AuthService } from '@/modules/auth/auth.service';
+import { UpdateAuthDto } from '@/modules/auth/dto/update-auth.dto';
 
 @Injectable()
 export class UsersService {

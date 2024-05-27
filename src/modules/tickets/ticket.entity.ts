@@ -2,6 +2,7 @@ import { Column, PrimaryGeneratedColumn, Entity, ManyToOne, OneToOne, OneToMany 
 import { User } from '@/modules/users/entities/user.entity';
 import { Company } from '@/modules/company/entities/company.entity';
 import { Job } from '@/modules/jobs/job.entity';
+import { JobStatusEnum } from '@/enums/JobStatusEnum';
 
 @Entity()
 export class Ticket {
@@ -24,11 +25,11 @@ export class Ticket {
   exitTime:string
 
   @Column()
-  ticketDate:Date
+  ticketDate:string
 
   @Column('text')
   ticketNotes:string
 
-  @Column({default:"active" })
+  @Column({default:JobStatusEnum.CREATING})
   status:string
 }

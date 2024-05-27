@@ -5,7 +5,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { path } from '@/constants/paths';
 import { Bcrypt } from '@/utils/bcrypt';
-import { UpdateAuthDto } from '@/auth/dto/update-auth.dto';
+import { UpdateAuthDto } from '@/modules/auth/dto/update-auth.dto';
 
 
 @Controller('users')

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Ticket } from '@/modules/tickets/ticket.entity';
@@ -8,6 +8,7 @@ import { User } from '@/modules/users/entities/user.entity';
 import { Company } from '@/modules/company/entities/company.entity';
 import { CommonService } from '@/modules/common/common.service';
 import { UpdateTicketDto } from '@/modules/tickets/dtos/update-ticket.dto';
+import { JobStatusEnum } from '@/enums/JobStatusEnum';
 
 @Injectable()
 export class TicketsService {
@@ -28,6 +29,14 @@ export class TicketsService {
     const { userId, companyId, jobs, ...ticketData } = createTicketDto;
 
     const { user, company } = await this.commonService.findUserOrCompany(userId, companyId);
+
+    if(!user) {
+      throw new NotFoundException('User is required');
+    }
+
+    if(!companyId) {
+      throw new NotFoundException('CompanyId is required');
+    }
 
     const ticket = new Ticket();
     Object.assign(ticket, ticketData);
@@ -65,22 +74,30 @@ export class TicketsService {
   }
 
   async updateTicket(id: string, body: UpdateTicketDto): Promise<Ticket> {
+    if (!body) {
+      throw new BadRequestException(`Request body is missing`);
+    }
     const ticket = await this.getTicket(id);
     if (!ticket) {
       throw new NotFoundException(`Ticket with ID ${id} not found 25`);
     }
+    console.log(body);
     const { userId, companyId, jobs, ticketDate, ticketNotes, exitTime, enterTime } = body;
-
+    let userEntity:User = null
+    let companyEntity:Company = null
     if (userId || companyId) {
       const { user, company } = await this.commonService.findUserOrCompany(userId, companyId);
-      if (user) ticket.user = user;
-      if (company) ticket.company = company;
+      userEntity = user
+      companyEntity = company
+      if (userEntity) ticket.user = userEntity;
+      if (companyEntity) ticket.company = companyEntity;
     }
 
     if (ticketNotes) ticket.ticketNotes = ticketNotes;
     if (exitTime) ticket.exitTime = exitTime;
     if (enterTime) ticket.enterTime = enterTime;
     if (ticketDate) ticket.ticketDate = ticketDate;
+    ticket.status = JobStatusEnum.CREATING
 
     if (jobs) {
       // Assuming you want to replace all existing jobs with the new ones
@@ -88,6 +105,8 @@ export class TicketsService {
       for (const jobData of jobs) {
         const job = new Job();
         Object.assign(job, jobData);
+        job.user = userEntity
+        job.company = companyEntity
         job.ticket = ticket;
         ticket.jobs.push(job);
       }

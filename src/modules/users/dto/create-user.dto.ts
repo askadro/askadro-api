@@ -3,8 +3,8 @@ import { userGenderEnum } from '../enums/user.gender.enum';
 import { UserStatusEnum } from '../enums/user.status.enum';
 import { IsUnique } from '../../../utils/validations';
 import { CreateAddressDto } from '@/modules/addresses/dto/create-address.dto';
-import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
 import { Type } from 'class-transformer';
+import { CreateAuthDto } from '@/modules/auth/dto/create-auth.dto';
 
 export class CreateUserDto {
   @IsString({
