@@ -20,6 +20,7 @@ import { Job } from '@/modules/jobs/job.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { Auth } from '@/modules/auth/entities/auth.entity';
+import { TITLES } from '@/enums/titles';
 
 @Entity()
 @Index(['firstName', 'lastName'])
@@ -61,16 +62,23 @@ export class User {
   iban: string;
 
   @Column({
-    type: 'date',
     default: null,
   })
-  birthDate: Date;
+  birthDate: string;
 
   @Column({
     type: 'enum',
     enum: userGenderEnum,
   })
   gender: userGenderEnum;
+
+  @Column({
+    type: 'enum',
+    enum: TITLES,
+    array: true,
+    default: [TITLES.waiter],
+  })
+  titles: TITLES[];
 
   @Column({
     type: 'enum',

@@ -13,7 +13,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {
   }
 
-  @Post(path.users.userCreate)
+  @Post("/create")
   async create(@Body() body: CreateUserDto) {
     if (body.auth) {
       body.auth.password = Bcrypt.hash(body.auth.password);
@@ -44,14 +44,7 @@ export class UsersController {
 
   @Get(path.users.main)
   findAll() {
-    return this.usersService.findAll({
-      userAddress: {
-        address: {
-          city: true,
-          district: true,
-        },
-      },
-    });
+    return this.usersService.findAll();
   }
 
   @Get(path.users.deletedUsers)

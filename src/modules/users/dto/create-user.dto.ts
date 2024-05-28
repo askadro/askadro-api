@@ -1,10 +1,11 @@
-import { IsByteLength, IsEnum, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
+import { IsArray, IsByteLength, IsEnum, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 import { userGenderEnum } from '../enums/user.gender.enum';
 import { UserStatusEnum } from '../enums/user.status.enum';
 import { IsUnique } from '../../../utils/validations';
 import { CreateAddressDto } from '@/modules/addresses/dto/create-address.dto';
 import { Type } from 'class-transformer';
 import { CreateAuthDto } from '@/modules/auth/dto/create-auth.dto';
+import { TITLES } from '@/enums/titles';
 
 export class CreateUserDto {
   @IsString({
@@ -37,7 +38,7 @@ export class CreateUserDto {
   @IsString({
     message: 'doğum tarihi bir Date örneği olmalıdır',
   })
-  birthDate: Date;
+  birthDate: string;
 
   @IsUnique({
     tableName: 'user',
@@ -60,6 +61,11 @@ export class CreateUserDto {
   })
   @IsOptional()
   status: UserStatusEnum;
+
+  @IsOptional()
+  @IsArray()
+  @IsEnum(TITLES, { each: true })
+  titles: TITLES[];
 
   @IsOptional()
   @ValidateNested()

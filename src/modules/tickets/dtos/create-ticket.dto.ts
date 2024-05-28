@@ -27,6 +27,7 @@
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => CreateJobsDto)
+    @IsOptional()
     jobs: CreateJobsDto[];
 
     @IsString()

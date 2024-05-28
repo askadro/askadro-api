@@ -31,7 +31,7 @@ export class Job {
   @Column()
   exitTime: string; // 00:00 formatında girilecek
 
-  @Column()
+  @Column({default:"0"})
   extraTime: string;
 
   @AfterInsert()

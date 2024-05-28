@@ -9,6 +9,7 @@ import { Company } from '@/modules/company/entities/company.entity';
 import { CommonService } from '@/modules/common/common.service';
 import { UpdateTicketDto } from '@/modules/tickets/dtos/update-ticket.dto';
 import { JobStatusEnum } from '@/enums/JobStatusEnum';
+import { JobsService } from '@/modules/jobs/jobs.service';
 
 @Injectable()
 export class TicketsService {
@@ -22,6 +23,7 @@ export class TicketsService {
     @InjectRepository(Company)
     private readonly companyRepository: Repository<Company>,
     private readonly commonService: CommonService,
+    private readonly jobsService: JobsService
   ) {
   }
 
@@ -30,11 +32,11 @@ export class TicketsService {
 
     const { user, company } = await this.commonService.findUserOrCompany(userId, companyId);
 
-    if(!user) {
+    if (!user) {
       throw new NotFoundException('User is required');
     }
 
-    if(!companyId) {
+    if (!companyId) {
       throw new NotFoundException('CompanyId is required');
     }
 
@@ -81,14 +83,14 @@ export class TicketsService {
     if (!ticket) {
       throw new NotFoundException(`Ticket with ID ${id} not found 25`);
     }
-    console.log(body);
-    const { userId, companyId, jobs, ticketDate, ticketNotes, exitTime, enterTime } = body;
-    let userEntity:User = null
-    let companyEntity:Company = null
+
+    const { userId, companyId, jobs, ticketDate, ticketNotes, exitTime, enterTime, status } = body;
+    let userEntity: User = null;
+    let companyEntity: Company = null;
     if (userId || companyId) {
       const { user, company } = await this.commonService.findUserOrCompany(userId, companyId);
-      userEntity = user
-      companyEntity = company
+      userEntity = user;
+      companyEntity = company;
       if (userEntity) ticket.user = userEntity;
       if (companyEntity) ticket.company = companyEntity;
     }
@@ -97,20 +99,31 @@ export class TicketsService {
     if (exitTime) ticket.exitTime = exitTime;
     if (enterTime) ticket.enterTime = enterTime;
     if (ticketDate) ticket.ticketDate = ticketDate;
-    ticket.status = JobStatusEnum.CREATING
+    if (status) ticket.status = status;
 
-    if (jobs) {
-      // Assuming you want to replace all existing jobs with the new ones
-      ticket.jobs = [];
-      for (const jobData of jobs) {
-        const job = new Job();
-        Object.assign(job, jobData);
-        job.user = userEntity
-        job.company = companyEntity
-        job.ticket = ticket;
-        ticket.jobs.push(job);
+    if(jobs) {
+      for (const job of jobs) {
+       const updatedJob = await this.jobsService.update(job.id,job)
+        ticket.jobs.map((item) => {
+          if(item.id === job.id) {
+            return updatedJob
+          }
+        })
       }
     }
+    //
+    // if (jobs) {
+    //   // Assuming you want to replace all existing jobs with the new ones
+    //   ticket.jobs = [];
+    //   for (const jobData of jobs) {
+    //     const job = new Job();
+    //     Object.assign(job, jobData);
+    //     job.user = userEntity;
+    //     job.company = companyEntity;
+    //     job.ticket = ticket;
+    //     ticket.jobs.push(job);
+    //   }
+    // }
 
     return await this.jobRepository.save(ticket);
   }

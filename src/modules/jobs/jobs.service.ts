@@ -16,9 +16,7 @@ export class JobsService {
     const job = this.repo.create({
       company: company,
       user: user,
-      enterTime: body.enterTime,
-      exitTime: body.exitTime,
-      extraTime: body.extraTime,
+      ...body
     });
     return await this.repo.save(job);
   }
