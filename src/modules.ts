@@ -19,7 +19,8 @@ export const modules: [
   AddressesModule: typeof AddressesModule,
   Authorized: typeof Authorized,
   AuthModule: typeof AuthModule,
-  CommonModule: typeof CommonModule
+  CommonModule: typeof CommonModule,
+
 ] = [
   UsersModule,
   JobsModule,

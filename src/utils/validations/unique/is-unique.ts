@@ -1,22 +1,32 @@
-import { registerDecorator, ValidationOptions } from 'class-validator';
-import { IsUniqueConstraint } from "../index";
+import { registerDecorator, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments } from 'class-validator';
+import { DataSource } from 'typeorm';
+import { Injectable } from '@nestjs/common';
 
-export type IsUniqueConstraintOptions = {
-  tableName: string;
-  column: string;
+@Injectable()
+@ValidatorConstraint({ async: true })
+export class IsUniqueConstraint implements ValidatorConstraintInterface {
+  static dataSource: DataSource;
+
+  constructor() {
+    // Boş constructor
+  }
+
+  async validate(value: any, args: ValidationArguments) {
+    const [entityClass, property] = args.constraints;
+    const repository = IsUniqueConstraint.dataSource.getRepository(entityClass);
+    const record = await repository.findOne({ where: { [property]: value } });
+    return !record;
+  }
 }
 
-export function _IsUnique(options: IsUniqueConstraintOptions, validationOptions?: ValidationOptions) {
-
+export function IsUnique(entityClass: any, property: string, validationOptions?: ValidationOptions) {
   return function (object: Object, propertyName: string) {
     registerDecorator({
-      name: 'is-unique',
       target: object.constructor,
       propertyName: propertyName,
-      constraints: [options],
       options: validationOptions,
+      constraints: [entityClass, property],
       validator: IsUniqueConstraint,
     });
-
   };
 }

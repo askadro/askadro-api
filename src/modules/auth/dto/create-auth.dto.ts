@@ -1,69 +1,40 @@
-import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsOptional, IsString, MinLength, IsUUID } from 'class-validator';
+import { Auth } from '../entities/auth.entity';
 import { IsUnique } from '@/utils/validations';
-import { User } from '@/modules/users/entities/user.entity';
-import { Company } from '@/modules/company/entities/company.entity';
 
 export class CreateAuthDto {
-  @IsString({
-    message: 'Email adresi bir string olmalıdır',
-  })
-  @IsEmail({}, {
-    message: 'geçerli bir email adresi olmalıdır',
-  })
-  @IsUnique({
-    column: 'email',
-    tableName: 'auths',
-  }, {
-    message: 'bu email adresi zaten kayıtlı',
-  })
+  @IsString({ message: 'Email adresi bir string olmalıdır' })
+  @IsEmail({}, { message: 'Geçerli bir email adresi olmalıdır' })
+  @IsUnique(Auth, 'email', { message: 'Bu email adresi zaten kayıtlı' })
   @IsOptional()
   email?: string;
 
-  @IsString({
-    message: 'username bir String olmalıdır',
-  })
-  @IsUnique({
-    column: 'username',
-    tableName: 'auths',
-  })
+  @IsString({ message: 'Kullanıcı adı bir string olmalıdır' })
+  @IsUnique(Auth, 'username', { message: 'Bu kullanıcı adı zaten kayıtlı' })
   @IsOptional()
-  username: string;
+  username?: string;
 
-  @IsString({
-    message: 'sifre bir String olmalıdır',
-  })
-  @MinLength(4, {
-    message: 'sifre en az 4 karakter olmalıdır',
-  })
+  @IsString({ message: 'Şifre bir string olmalıdır' })
+  @MinLength(4, { message: 'Şifre en az 4 karakter olmalıdır' })
   password: string;
 
   @IsOptional()
-  @IsString({
-    message: 'salt bir String olmalıdır',
-  })
+  @IsString({ message: 'Salt bir string olmalıdır' })
   salt?: string;
 
   @IsOptional()
-  @IsString({
-    message: 'refreshToken bir String olmalıdır',
-  })
+  @IsString({ message: 'Refresh token bir string olmalıdır' })
   refreshToken?: string;
 
   @IsOptional()
-  @IsString({
-    message: 'refreshTokenExpiryTime bir Date olmalıdır',
-  })
+  @IsString({ message: 'Refresh token son kullanma tarihi bir tarih olmalıdır' })
   refreshTokenExpiryTime?: Date;
 
   @IsOptional()
-  @IsString({
-    message: 'Şirket id si olmalı',
-  })
-  companyId:string
+  @IsUUID('4', { message: 'Şirket ID geçerli bir UUID olmalıdır' })
+  companyId?: string;
 
   @IsOptional()
-  @IsString({
-    message: 'User id si olmalı',
-  })
-  userId:string
+  @IsUUID('4', { message: 'Kullanıcı ID geçerli bir UUID olmalıdır' })
+  userId?: string;
 }

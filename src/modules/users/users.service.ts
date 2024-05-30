@@ -35,9 +35,9 @@ export class UsersService {
     }
 
     // Create and associate auth if provided
-    if (auth) {
-      authEntity = await this.authService.create({ ...auth, userId: userEntity.id });
-    }
+    // if (auth) {
+    //   authEntity = await this.authService.create({ ...auth, userId: userEntity.id });
+    // }
 
     // Save the user entity which will cascade save address and auth if they exist
     return await this.userRepository.save({ ...user, address: addressEntity, auth: authEntity });

@@ -36,9 +36,9 @@ export class CompanyService {
       addressEntity = await this.addressService.create({ ...address, companyId: companyEntity.id });
     }
 
-    if (auth) {
-      authEntity = await this.authService.create({ ...auth, companyId: companyEntity.id });
-    }
+    // if (auth) {
+    //   authEntity = await this.authService.create({ ...auth, companyId: companyEntity.id });
+    // }
 
     if (authorized && Array.isArray(authorized)) {
       company.authorized = await Promise.all(

@@ -14,10 +14,10 @@ import {
 import { User } from '@/modules/users/entities/user.entity';
 import { Company } from '@/modules/company/entities/company.entity';
 import { DEFAULT_PW } from '@/constants/app';
+import { BaseEntity } from '@/common/entities/BaseEntity';
 
 @Entity('auths')
-export class Auth {
-
+export class Auth extends BaseEntity{
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -61,18 +61,6 @@ export class Auth {
     nullable: true,
   })
   refreshTokenExpiryTime?: Date;
-
-  @DeleteDateColumn({
-    type: 'timestamp',
-    default: null,
-  })
-  deletedAt: Date;
-
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', onUpdate: 'CURRENT_TIMESTAMP(6)' })
-  updatedAt: Date;
 
   @AfterInsert()
   logInsert() {

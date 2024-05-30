@@ -12,10 +12,13 @@ import { CommonModule } from '@/modules/common/common.module';
 import { User } from '@/modules/users/entities/user.entity';
 import { AuthService } from '@/modules/auth/auth.service';
 import { Auth } from '@/modules/auth/entities/auth.entity';
+import { AuthModule } from '@/modules/auth/auth.module';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Company, Authorized, Address, Province, District,Auth,User]),CommonModule],
+  imports: [TypeOrmModule.forFeature([Company, Authorized, Address, Province, District, Auth, User]), CommonModule, AuthModule],
   controllers: [CompanyController],
-  providers: [CompanyService,AuthService,AddressesService,CompanyService],
+  providers: [CompanyService, AuthService, AddressesService, CompanyService, JwtService],
 })
-export class CompanyModule {}
+export class CompanyModule {
+}

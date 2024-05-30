@@ -6,12 +6,24 @@ import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } fro
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Entities } from './entities';
-import { IsUniqueConstraint } from './utils/validations';
 import { modules } from '@/modules';
 import { AsMailerModule } from '@/modules/as-mailer/as-mailer.module';
 import { AsMailerService } from '@/modules/as-mailer/as-mailer.service';
-import { CommonService } from '@/modules/common/common.service';
 import { CommonModule } from './modules/common/common.module';
+import { IsUniqueConstraint } from '@/utils/validations/unique/is-unique';
+import { DataSource } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
+import { AuthService } from '@/modules/auth/auth.service';
+import { join } from 'path';
+import { UsersModule } from '@/modules/users/users.module';
+import { JobsModule } from '@/modules/jobs/jobs.module';
+import { CompanyModule } from '@/modules/company/company.module';
+import { TicketsModule } from '@/modules/tickets/tickets.module';
+import { ProvincesModule } from '@/modules/provinces/provinces.module';
+import { ConfigurationModule } from '@/configuration/configuration.module';
+import { AddressesModule } from '@/modules/addresses/addresses.module';
+import { Authorized } from '@/modules/company/entities/authorized.entity';
+import { AuthModule } from '@/modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -28,7 +40,7 @@ import { CommonModule } from './modules/common/common.module';
         port: configService.get('DB_PORT'),
         password: configService.get('DB_PASSWORD'),
         username: configService.get('DB_USERNAME'),
-        entities: Entities,
+        entities: [join(__dirname, '**', '*.entity.{ts,js}')],
         database: configService.get('DB_DATABASE'),
         synchronize: true, // prod da false olmalı
         logging: true,
@@ -53,10 +65,24 @@ import { CommonModule } from './modules/common/common.module';
       ],
     }),
     AsMailerModule,
-    ...modules,
-    CommonModule,
+    UsersModule,
+    JobsModule,
+    CompanyModule,
+    TicketsModule,
+    ProvincesModule,
+    ConfigurationModule,
+    AddressesModule,
+    Authorized,
+    AuthModule,
+    CommonModule
   ],
   controllers: [AppController],
-  providers: [AppService, IsUniqueConstraint, AsMailerService],
+  providers: [AppService, AsMailerService,IsUniqueConstraint,JwtService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private dataSource: DataSource) {}
+
+  onModuleInit() {
+    IsUniqueConstraint.dataSource = this.dataSource;
+  }
+}

@@ -6,6 +6,7 @@ import { CreateAddressDto } from '@/modules/addresses/dto/create-address.dto';
 import { Type } from 'class-transformer';
 import { CreateAuthDto } from '@/modules/auth/dto/create-auth.dto';
 import { TITLES } from '@/enums/titles';
+import { User } from '@/modules/users/entities/user.entity';
 
 export class CreateUserDto {
   @IsString({
@@ -14,15 +15,7 @@ export class CreateUserDto {
   @IsByteLength(11, 11, {
     message: 'kimlik numarası 11 haneli olmalıdır',
   })
-  @IsUnique(
-    {
-      tableName: 'user',
-      column: 'identity',
-    },
-    {
-      message: 'bu kimlik numarası zaten kayıtlı',
-    },
-  )
+  @IsUnique(User, 'email', { message: 'bu kimlik numarası zaten kayıtlı' })
   identity: string;
 
   @IsString({
@@ -40,12 +33,7 @@ export class CreateUserDto {
   })
   birthDate: string;
 
-  @IsUnique({
-    tableName: 'user',
-    column: 'iban',
-  }, {
-    message: 'bu IBAN numarası zaten kayıtlı',
-  })
+  @IsUnique(User, 'email', { message: 'bu IBAN numarası zaten kayıtlı' })
   @Length(20, 34, {
     message: 'IBAN numarası 20-34 haneli olmalıdır',
   })
