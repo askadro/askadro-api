@@ -12,7 +12,6 @@ import {
   AfterInsert,
   AfterUpdate,
   AfterRemove,
-  Relation,
 } from 'typeorm';
 import { userGenderEnum } from '@/modules/users/enums/user.gender.enum';
 import { UserStatusEnum } from '@/modules/users/enums/user.status.enum';

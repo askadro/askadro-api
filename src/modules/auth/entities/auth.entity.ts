@@ -1,20 +1,19 @@
 import {
   AfterInsert,
   AfterUpdate,
-  BeforeInsert,
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
+  AfterRemove,
   Entity,
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 import { User } from '@/modules/users/entities/user.entity';
 import { Company } from '@/modules/company/entities/company.entity';
 import { DEFAULT_PW } from '@/constants/app';
 import { BaseEntity } from '@/common/entities/BaseEntity';
+import { TITLES } from '@/enums/titles';
+import { ROLES } from '@/constants/permissions/roles';
 
 @Entity('auths')
 export class Auth extends BaseEntity{
@@ -62,6 +61,14 @@ export class Auth extends BaseEntity{
   })
   refreshTokenExpiryTime?: Date;
 
+  @Column({
+    type: 'enum',
+    enum: ROLES,
+    array: true,
+    default: [ROLES.user],
+  })
+  roles:ROLES[]
+
   @AfterInsert()
   logInsert() {
     this.logInfo('Inserted Auth with');
@@ -72,7 +79,7 @@ export class Auth extends BaseEntity{
     this.logInfo('Updated Auth with');
   }
 
-  @BeforeInsert()
+  @AfterRemove()
   logDelete() {
     this.logInfo('Deleted Auth with');
   }

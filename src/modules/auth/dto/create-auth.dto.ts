@@ -1,6 +1,7 @@
-import { IsEmail, IsOptional, IsString, MinLength, IsUUID } from 'class-validator';
+import { IsEmail, IsOptional, IsString, MinLength, IsUUID, IsArray, ArrayNotEmpty, IsEnum } from 'class-validator';
 import { Auth } from '../entities/auth.entity';
 import { IsUnique } from '@/utils/validations';
+import { ROLES } from '@/constants/permissions/roles';
 
 export class CreateAuthDto {
   @IsString({ message: 'Email adresi bir string olmalıdır' })
@@ -10,7 +11,7 @@ export class CreateAuthDto {
   email?: string;
 
   @IsString({ message: 'Kullanıcı adı bir string olmalıdır' })
-  @IsUnique(Auth, 'username', { message: 'Bu kullanıcı adı zaten kayıtlı' })
+  @IsUnique(Auth, 'username', { message: 'Bu kullanıcı adı zaten kayıtlı.' })
   @IsOptional()
   username?: string;
 
@@ -37,4 +38,9 @@ export class CreateAuthDto {
   @IsOptional()
   @IsUUID('4', { message: 'Kullanıcı ID geçerli bir UUID olmalıdır' })
   userId?: string;
+
+  @IsOptional()
+  @ArrayNotEmpty()
+  @IsEnum(ROLES,{ each: true })
+  roles:ROLES[]
 }

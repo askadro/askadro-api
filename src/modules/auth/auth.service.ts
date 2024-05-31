@@ -1,67 +1,55 @@
-import { BadRequestException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CommonService } from '@/modules/common/common.service';
 import { Auth } from '@/modules/auth/entities/auth.entity';
 import * as bcrypt from 'bcrypt';
 import { Bcrypt } from '@/utils/bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import * as process from 'node:process';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(Auth) private authRepository: Repository<Auth>,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {
   }
 
+
   async login(user: any) {
-    const payload = { username: user.username, sub: user.id };
-    return {
-      access_token: this.jwtService.sign(payload),
-      refresh_token: this.generateRefreshToken(user),
-    };
+    return this.createToken(user);
   }
 
   async create(body: CreateAuthDto) {
-    const { email, username, password, companyId, userId, refreshToken, refreshTokenExpiryTime, salt } = body;
-    if (email) {
-      const existingEmail = await this.authRepository.findOne({ where: { email } });
-      if (existingEmail) {
-        throw new BadRequestException('Bu email adresi zaten kayıtlı');
-      }
-    }
-
-    if (username) {
-      const existingUsername = await this.authRepository.findOne({ where: { username } });
-      if (existingUsername) {
-        throw new BadRequestException('Bu kullanıcı adı zaten kayıtlı');
-      }
-    }
+    const { password, companyId, userId } = body;
 
     const hashedPassword = Bcrypt.hash(password);
 
     const auth = this.authRepository.create({
-      email,
-      username,
+      ...body,
       password: hashedPassword,
-      salt,
-      refreshToken,
-      refreshTokenExpiryTime,
       company: companyId ? { id: companyId } : null,
       user: userId ? { id: userId } : null,
     });
 
-    return await this.authRepository.save(auth);
+    await this.authRepository.save(auth);
+    return this.createToken(auth);
   }
 
-  async updateRefreshToken(userId: string, refreshToken: string, refreshTokenExpiryTime: Date): Promise<Auth> {
-    const auth = await this.authRepository.findOne({ where: { user: { id: userId } } });
+  async updateRefreshToken(username: string, refreshToken: string): Promise<Auth> {
+    const auth = await this.authRepository.findOne({ where: { username } });
 
     if (!auth) {
       throw new BadRequestException('Kullanıcı bulunamadı');
     }
+    const refreshTokenExpiryTime = new Date(Date.now() + parseInt(this.configService.get('REFRESH_TOKEN_TIME')));
 
     auth.refreshToken = refreshToken;
     auth.refreshTokenExpiryTime = refreshTokenExpiryTime;
@@ -70,7 +58,7 @@ export class AuthService {
   }
 
   async logout(userId: string): Promise<Auth> {
-    const auth = await this.authRepository.findOne({ where: { user: { id: userId } } });
+    const auth = await this.authRepository.findOne({ where: { id: userId } });
 
     if (!auth) {
       throw new BadRequestException('Kullanıcı bulunamadı');
@@ -82,7 +70,36 @@ export class AuthService {
     return this.authRepository.save(auth);
   }
 
-  async validateUser(username: string, pass: string): Promise<any> {
+
+  private async generateRefreshToken(user: any) {
+    const payload = { username: user.username, sub: user.id };
+    return this.jwtService.sign(payload, { expiresIn: this.configService.get('EXPIRES_REFRESH') });
+  }
+
+  //
+  // async refreshToken(oldRefreshToken: string) {
+  //   const auth = await this.authRepository.findOne({ where: { refreshToken: oldRefreshToken } });
+  //
+  //   if (!auth) {
+  //     throw new UnauthorizedException('Invalid refresh token');
+  //   }
+  //
+  //   const newRefreshToken = await this.generateRefreshToken(auth.user);
+  //   const accessToken = this.jwtService.sign({ username: auth.username, sub: auth.id });
+  //
+  //   await this.updateRefreshToken(auth.user.id, newRefreshToken);
+  //
+  //   return {
+  //     access_token: accessToken,
+  //     refresh_token: newRefreshToken,
+  //   };
+  // }
+
+  async getAuths() {
+    return await this.authRepository.find();
+  }
+
+  async validateAuth(username: string, pass: string): Promise<any> {
     const user = await this.authRepository.findOne({ where: { username } });
     if (user && await bcrypt.compare(pass, user.password)) {
       const { password, ...result } = user;
@@ -91,13 +108,15 @@ export class AuthService {
     return null;
   }
 
-  private async generateRefreshToken(user: any) {
-    const refreshToken = this.jwtService.sign({ username: user.username, sub: user.id }, { expiresIn: '7d' });
-    const refreshTokenExpiryTime = new Date();
-    refreshTokenExpiryTime.setDate(refreshTokenExpiryTime.getDate() + 7);
+  private createToken(user: any) {
+    const payload = { username: user.username, sub: user.id, roles: user.roles };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
 
-    await this.updateRefreshToken(user.id, refreshToken, refreshTokenExpiryTime);
-    return refreshToken;
+  async refreshToken(user: any) {
+    return this.createToken(user);
   }
 
 }

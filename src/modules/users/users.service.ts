@@ -166,28 +166,28 @@ export class UsersService {
     return users;
   }
 
-  async updateUserAuth(userId: string, authData: UpdateAuthDto): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException('Kullanıcı bulunamadı.');
-    }
-
-    if (!authData) {
-      throw new BadRequestException('Yetkilendirme bilgisi eksik.');
-    }
-
-    const auth = await this.authRepository.findOne({ where: { user: user } });
-
-    if (!auth) {
-      throw new NotFoundException('Yetkilendirme bilgisi bulunamadı.');
-    }
-
-    try {
-      this.authRepository.merge(auth, authData);
-      await this.authRepository.save(auth);
-      return user;
-    } catch (error) {
-      throw new BadRequestException('Yetkilendirme bilgisi güncellenirken bir hata oluştu.');
-    }
-  }
+  // async updateUserAuth(userId: string, authData: UpdateAuthDto): Promise<User> {
+  //   const user = await this.userRepository.findOne({ where: { id: userId } });
+  //   if (!user) {
+  //     throw new NotFoundException('Kullanıcı bulunamadı.');
+  //   }
+  //
+  //   if (!authData) {
+  //     throw new BadRequestException('Yetkilendirme bilgisi eksik.');
+  //   }
+  //
+  //   const auth = await this.authRepository.findOne({ where: { user: user } });
+  //
+  //   if (!auth) {
+  //     throw new NotFoundException('Yetkilendirme bilgisi bulunamadı.');
+  //   }
+  //
+  //   try {
+  //     this.authRepository.merge(auth, authData);
+  //     await this.authRepository.save(auth);
+  //     return user;
+  //   } catch (error) {
+  //     throw new BadRequestException('Yetkilendirme bilgisi güncellenirken bir hata oluştu.');
+  //   }
+  // }
 }

@@ -13,7 +13,6 @@ import { CommonModule } from './modules/common/common.module';
 import { IsUniqueConstraint } from '@/utils/validations/unique/is-unique';
 import { DataSource } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { AuthService } from '@/modules/auth/auth.service';
 import { join } from 'path';
 import { UsersModule } from '@/modules/users/users.module';
 import { JobsModule } from '@/modules/jobs/jobs.module';
@@ -24,6 +23,7 @@ import { ConfigurationModule } from '@/configuration/configuration.module';
 import { AddressesModule } from '@/modules/addresses/addresses.module';
 import { Authorized } from '@/modules/company/entities/authorized.entity';
 import { AuthModule } from '@/modules/auth/auth.module';
+
 
 @Module({
   imports: [

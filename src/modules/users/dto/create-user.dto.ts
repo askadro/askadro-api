@@ -15,7 +15,7 @@ export class CreateUserDto {
   @IsByteLength(11, 11, {
     message: 'kimlik numarası 11 haneli olmalıdır',
   })
-  @IsUnique(User, 'email', { message: 'bu kimlik numarası zaten kayıtlı' })
+  @IsUnique(User, 'identity', { message: 'bu kimlik numarası zaten kayıtlı' })
   identity: string;
 
   @IsString({
@@ -33,7 +33,7 @@ export class CreateUserDto {
   })
   birthDate: string;
 
-  @IsUnique(User, 'email', { message: 'bu IBAN numarası zaten kayıtlı' })
+  @IsUnique(User, 'iban', { message: 'bu IBAN numarası zaten kayıtlı' })
   @Length(20, 34, {
     message: 'IBAN numarası 20-34 haneli olmalıdır',
   })
