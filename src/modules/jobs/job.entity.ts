@@ -7,32 +7,36 @@ import {
   AfterRemove,
   ManyToOne,
 } from 'typeorm';
-import { Company } from '../company/entities/company.entity';
 import { User } from '../users/entities/user.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
+import { BaseEntity } from '@/common/entities/BaseEntity';
+import { TITLES } from '@/enums/titles';
 
 @Entity()
-export class Job {
+export class Job extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @ManyToOne(() => Ticket, (ticket) => ticket.jobs)
-  ticket:Ticket
-
-  @ManyToOne(() => Company, (company) => company.job)
-  company: Company;
+  ticket: Ticket;
 
   @ManyToOne(() => User, (user) => user.job)
-  user: User;
+  users: User;
 
   @Column()
-  enterTime: string; // 00:00 formatında girilecek
+  enterTime: Date; // 00:00 formatında girilecek
 
   @Column()
-  exitTime: string; // 00:00 formatında girilecek
+  exitTime: Date; // 00:00 formatında girilecek
 
-  @Column({default:"0"})
+  @Column({ default: '0' })
   extraTime: string;
+
+  @Column({ default: '0' })
+  extraPrice: string;
+
+  @Column()
+  title:string
 
   @AfterInsert()
   logInsert() {

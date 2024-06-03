@@ -8,7 +8,7 @@ import {
   Req,
   Res,
   UnauthorizedException,
-  Get,
+  Get, BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
@@ -17,6 +17,8 @@ import { LocalAuthGuard } from '@/modules/auth/quards/local-auth-guard';
 import { Response, Request } from 'express';
 import { Public } from '@/decorators/public.decorator';
 import { JwtAuthGuard } from '@/modules/auth/quards/jwt-auth-guard';
+import { User } from '@/modules/users/entities/user.entity';
+import { CreateUserDto } from '@/modules/users/dto/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -27,31 +29,25 @@ export class AuthController {
   @Post('login')
   async login(@Req() req:Request) {
     return this.authService.login(req.user)
-    // try {
-    //   const { access_token, refresh_token } = await this.authService.login(req.user);
-    //   res.cookie('access_token', access_token, { httpOnly: true });
-    //   return res.send({ access_token,refresh_token});
-    // } catch (error) {
-    //   throw new UnauthorizedException('Invalid credentials');
-    // }
   }
 
   @Post('register')
-  async register(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
+  async register(@Body() createUserDto: CreateUserDto) {
+    return this.authService.create(createUserDto);
   }
 
   @Put('update-refresh-token/:userId')
   async updateRefreshToken(
     @Param('userId') userId: string,
     @Body('refreshToken') refreshToken: string,
-  ): Promise<Auth> {
+  ): Promise<User> {
     return this.authService.updateRefreshToken(userId, refreshToken);
   }
 
-  @Post('logout/:userId')
-  async logout(@Param('userId') userId: string): Promise<Auth> {
-    return this.authService.logout(userId);
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  async logout(@Req() req:any): Promise<boolean> {
+    return this.authService.logout(req.user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -61,8 +57,19 @@ export class AuthController {
   }
 
   @Get('auths')
-  getAuths(): Promise<Auth[]> {
+  getAuths(): Promise<User[]> {
     return this.authService.getAuths();
+  }
+
+  @Post('validate-token')
+  async validateToken(@Body('token') token: string) {
+    const isValid = await this.authService.validateToken(token);
+
+    if (!isValid) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    return { valid: true };
   }
 
 }

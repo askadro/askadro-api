@@ -1,14 +1,14 @@
 import { IsArray, IsByteLength, IsEnum, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 import { userGenderEnum } from '../enums/user.gender.enum';
 import { UserStatusEnum } from '../enums/user.status.enum';
-import { IsUnique } from '../../../utils/validations';
+import { IsUnique } from '@/utils/validations';
 import { CreateAddressDto } from '@/modules/addresses/dto/create-address.dto';
 import { Type } from 'class-transformer';
 import { CreateAuthDto } from '@/modules/auth/dto/create-auth.dto';
 import { TITLES } from '@/enums/titles';
 import { User } from '@/modules/users/entities/user.entity';
 
-export class CreateUserDto {
+export class CreateUserDto extends CreateAuthDto {
   @IsString({
     message: 'kimlik numarası bir dize olmalıdır',
   })
@@ -59,9 +59,4 @@ export class CreateUserDto {
   @ValidateNested()
   @Type(() => CreateAddressDto)
   address?: CreateAddressDto;
-
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => CreateAuthDto)
-  auth?: CreateAuthDto;
 }

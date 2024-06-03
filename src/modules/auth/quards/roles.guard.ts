@@ -1,6 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ROLES } from '@/constants/permissions/roles';
+import { ROLES } from '@/constants/enums/roles';
+import { PermissionsPower } from '@/constants/enums/permissions';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -11,8 +12,18 @@ export class RolesGuard implements CanActivate {
     if (!roles) {
       return true;
     }
+
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-    return roles.some((role) => user.roles?.includes(role));
+
+    const userPower = Math.max(...user.roles.map((role: ROLES) => this.getRolePower(role)));
+    const requiredPower = Math.max(...roles.map(role => this.getRolePower(role)));
+
+    return userPower >= requiredPower;
+  }
+
+  private getRolePower(role: ROLES): number {
+    const rolePermission = PermissionsPower.find(r => r.title === role);
+    return rolePermission ? rolePermission.power : 0;
   }
 }

@@ -4,51 +4,38 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateJobsDto } from './dtos/create-jobs.dto';
 import { Job } from './job.entity';
 import { UpdateJobDto } from './dtos/update-jobs.dto';
-import { CommonService } from '@/modules/common/common.service';
+import { UsersService } from '@/modules/users/users.service';
 
 @Injectable()
 export class JobsService {
   constructor(@InjectRepository(Job) private repo: Repository<Job>,
-              private readonly commonService: CommonService,) {}
+              private readonly usersService: UsersService) {
+  }
 
   async create(body: CreateJobsDto) {
-    const {user,company} = await this.commonService.findUserOrCompany(body.userId,body.companyId)
+    const user = await this.usersService.findOne(body.userId);
     const job = this.repo.create({
-      company: company,
-      user: user,
-      ...body
+      users: user ? { id: user.id } : null,
+      ...body,
     });
     return await this.repo.save(job);
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, relations: string[] = ["users"]) {
     const job = await this.repo.findOne({
       where: { id },
-      relations: { user: true, company: true },
+      relations: relations,
     });
-    if (job) {
-      return job;
+    if (!job) {
+      throw new NotFoundException();
     }
-    throw new NotFoundException();
+    return job;
   }
 
   async find() {
     return await this.repo.find({
-      select: {
-        user: {
-          firstName: true,
-          lastName: true,
-          identity: true,
-          id: true,
-        },
-        company: {
-          id: true,
-          name: true,
-        },
-      },
       relations: {
-        company: true,
-        user: true,
+        users: true,
       },
     });
   }
@@ -67,11 +54,11 @@ export class JobsService {
     if (!job) {
       throw new NotFoundException();
     }
-    return this.repo.remove(job);
+    return this.repo.softRemove(job);
   }
 
   async filter(body: UpdateJobDto) {
-    const filteredJobs = await this.repo.find({
+    return await this.repo.find({
       // where: {
       //   user: body.userId,
       //   company: body.company,
@@ -79,6 +66,5 @@ export class JobsService {
       //   exitTime: body.exitTime,
       // },
     });
-    return filteredJobs;
   }
 }

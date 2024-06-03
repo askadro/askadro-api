@@ -3,9 +3,11 @@ import { User } from '@/modules/users/entities/user.entity';
 import { Company } from '@/modules/company/entities/company.entity';
 import { Job } from '@/modules/jobs/job.entity';
 import { JobStatusEnum } from '@/enums/JobStatusEnum';
+import { Auth } from '@/modules/auth/entities/auth.entity';
+import { BaseEntity } from '@/common/entities/BaseEntity';
 
 @Entity()
-export class Ticket {
+export class Ticket extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -19,13 +21,13 @@ export class Ticket {
   jobs: Job[];
 
   @Column()
-  enterTime:string
+  enterTime:Date
 
   @Column()
-  exitTime:string
+  exitTime:Date
 
   @Column()
-  ticketDate:string
+  ticketDate:Date
 
   @Column('text')
   ticketNotes:string

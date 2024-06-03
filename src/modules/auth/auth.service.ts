@@ -12,11 +12,14 @@ import { Bcrypt } from '@/utils/bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import * as process from 'node:process';
 import { ConfigService } from '@nestjs/config';
+import { CreateUserDto } from '@/modules/users/dto/create-user.dto';
+import { User } from '@/modules/users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(Auth) private authRepository: Repository<Auth>,
+    @InjectRepository(User) private userRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {
@@ -27,47 +30,43 @@ export class AuthService {
     return this.createToken(user);
   }
 
-  async create(body: CreateAuthDto) {
-    const { password, companyId, userId } = body;
+  async create(body: CreateUserDto) {
+    const { password } = body;
 
     const hashedPassword = Bcrypt.hash(password);
-
-    const auth = this.authRepository.create({
+    const user = this.userRepository.create({
       ...body,
       password: hashedPassword,
-      company: companyId ? { id: companyId } : null,
-      user: userId ? { id: userId } : null,
-    });
-
-    await this.authRepository.save(auth);
-    return this.createToken(auth);
+    })
+    await this.userRepository.save(user);
+    return this.createToken(user)
   }
 
-  async updateRefreshToken(username: string, refreshToken: string): Promise<Auth> {
-    const auth = await this.authRepository.findOne({ where: { username } });
+  async updateRefreshToken(username: string, refreshToken: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { username } });
 
-    if (!auth) {
+    if (!user) {
       throw new BadRequestException('Kullanıcı bulunamadı');
     }
     const refreshTokenExpiryTime = new Date(Date.now() + parseInt(this.configService.get('REFRESH_TOKEN_TIME')));
 
-    auth.refreshToken = refreshToken;
-    auth.refreshTokenExpiryTime = refreshTokenExpiryTime;
+    user.refreshToken = refreshToken;
+    user.refreshTokenExpiryTime = refreshTokenExpiryTime;
 
-    return this.authRepository.save(auth);
+    return this.userRepository.save(user);
   }
 
-  async logout(userId: string): Promise<Auth> {
-    const auth = await this.authRepository.findOne({ where: { id: userId } });
+  async logout(user: any): Promise<boolean> {
+    const _user = await this.userRepository.findOne({ where: { id: user.userId } });
 
-    if (!auth) {
+    if (!_user) {
       throw new BadRequestException('Kullanıcı bulunamadı');
     }
 
-    auth.refreshToken = null;
-    auth.refreshTokenExpiryTime = null;
+    _user.refreshToken = null;
+    _user.refreshTokenExpiryTime = null;
 
-    return this.authRepository.save(auth);
+    return true
   }
 
 
@@ -76,31 +75,12 @@ export class AuthService {
     return this.jwtService.sign(payload, { expiresIn: this.configService.get('EXPIRES_REFRESH') });
   }
 
-  //
-  // async refreshToken(oldRefreshToken: string) {
-  //   const auth = await this.authRepository.findOne({ where: { refreshToken: oldRefreshToken } });
-  //
-  //   if (!auth) {
-  //     throw new UnauthorizedException('Invalid refresh token');
-  //   }
-  //
-  //   const newRefreshToken = await this.generateRefreshToken(auth.user);
-  //   const accessToken = this.jwtService.sign({ username: auth.username, sub: auth.id });
-  //
-  //   await this.updateRefreshToken(auth.user.id, newRefreshToken);
-  //
-  //   return {
-  //     access_token: accessToken,
-  //     refresh_token: newRefreshToken,
-  //   };
-  // }
-
   async getAuths() {
-    return await this.authRepository.find();
+    return await this.userRepository.find();
   }
 
   async validateAuth(username: string, pass: string): Promise<any> {
-    const user = await this.authRepository.findOne({ where: { username } });
+    const user = await this.userRepository.findOne({ where: { username } });
     if (user && await bcrypt.compare(pass, user.password)) {
       const { password, ...result } = user;
       return result;
@@ -117,6 +97,22 @@ export class AuthService {
 
   async refreshToken(user: any) {
     return this.createToken(user);
+  }
+
+  async validateToken(token: string): Promise<boolean> {
+    try {
+      const decoded = this.jwtService.verify(token, {
+        secret: this.configService.get('JWT_SECRET'),
+      });
+
+      // Ek doğrulama işlemleri yapabilirsiniz (örn. kullanıcı veritabanında var mı?)
+      if (decoded) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
   }
 
 }

@@ -40,9 +40,6 @@ export class Company {
   @JoinColumn()
   address: Address;
 
-  @OneToMany(() => Job, (job: Job) => job.company)
-  job: Job[];
-
   @Column()
   registrationNumber: string; // sicil numarası
 

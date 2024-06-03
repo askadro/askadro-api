@@ -8,7 +8,8 @@ import { Address } from '@/modules/addresses/entities/address.entity';
 import { AddressesService } from '@/modules/addresses/addresses.service';
 import { Auth } from '@/modules/auth/entities/auth.entity';
 import { AuthService } from '@/modules/auth/auth.service';
-import { UpdateAuthDto } from '@/modules/auth/dto/update-auth.dto';
+import { Bcrypt } from '@/utils/bcrypt';
+import { DEFAULT_PW } from '@/constants/app';
 
 @Injectable()
 export class UsersService {
@@ -22,25 +23,26 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const { address, auth, ...userData } = createUserDto;
+    const { address, ...userData } = createUserDto;
+    const hashedPassword = Bcrypt.hash(userData.password || DEFAULT_PW);
     let addressEntity: Address = null;
-    let authEntity: Auth = null;
     let userEntity: User = null;
     // Create user entity
-    const user = this.userRepository.create(userData);
+    const user = this.userRepository.create({
+      ...userData,
+      password: hashedPassword,
+    });
     userEntity = await this.userRepository.save(user);
     // Create and associate address if provided
     if (address) {
       addressEntity = await this.addressService.create({ ...address, userId: userEntity.id });
     }
 
-    // Create and associate auth if provided
-    // if (auth) {
-    //   authEntity = await this.authService.create({ ...auth, userId: userEntity.id });
-    // }
+    return await this.userRepository.save({ ...user, address: addressEntity });
+  }
 
-    // Save the user entity which will cascade save address and auth if they exist
-    return await this.userRepository.save({ ...user, address: addressEntity, auth: authEntity });
+  async getProfile() {
+
   }
 
   async findUserOnlyOwnData(id: string) {
@@ -121,17 +123,9 @@ export class UsersService {
           enterTime: true,
           extraTime: true,
           exitTime: true,
-          company: {
-            id: true,
-            name: true,
-          },
         },
       },
-      relations: {
-        job: {
-          company: true,
-        },
-      },
+      relations: ['job'],
     });
 
     if (!jobUser) {

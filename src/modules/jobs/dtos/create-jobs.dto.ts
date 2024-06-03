@@ -11,19 +11,24 @@ export class CreateJobsDto {
   id: string;
 
   @IsString()
-  @IsOptional()
-  companyId: string;
-
-  @IsString()
-  @IsOptional()
   userId: string;
 
   @IsString()
-  enterTime: string; // 00:00 formatında girilecek
+  enterTime: Date; // 00:00 formatında girilecek
 
   @IsString()
-  exitTime: string; // 00:00 formatında girilecek
+  exitTime: Date; // 00:00 formatında girilecek
 
+  @IsString()
   @IsOptional()
   extraTime: string;
+
+  @IsOptional()
+  @IsString()
+  extraPrice: string;
+
+  @IsOptional()
+  @IsString()
+  title:string
+
 }

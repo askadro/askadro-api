@@ -4,26 +4,38 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { path } from '@/constants/paths';
-import { Bcrypt } from '@/utils/bcrypt';
-import { UpdateAuthDto } from '@/modules/auth/dto/update-auth.dto';
 import { JwtAuthGuard } from '@/modules/auth/quards/jwt-auth-guard';
 import { RolesGuard } from '@/modules/auth/quards/roles.guard';
 import { Roles } from '@/modules/auth/roles.decorator';
-import { ROLES } from '@/constants/permissions/roles';
+import { ROLES } from '@/constants/enums/roles';
+import { Serialize } from '@/interceptors/serialize.interceptor';
+import { UserDto } from '@/modules/users/dto/user.dto';
 
-
+@Serialize(UserDto)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {
   }
 
+
+  @Roles(ROLES.manager)
   @Post("/create")
   async create(@Body() body: CreateUserDto) {
-    if (body.auth) {
-      body.auth.password = Bcrypt.hash(body.auth.password);
-    }
-
     return this.usersService.create(body);
+  }
+
+  @Roles(ROLES.user)
+  @Get("/profile")
+  async getProfile(@Req() req:any) {
+    console.log("req");
+    return await this.usersService.findOne(req.user.userId)
+  }
+
+  @Roles(ROLES.user)
+  @Get()
+  findAll(@Req() req: any) {
+    return this.usersService.findAll();
   }
 
   @Patch(path.users.userUpdate)
@@ -36,12 +48,8 @@ export class UsersController {
     return await this.usersService.remove(id, soft);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(ROLES.admin, ROLES.manager)
-  @Get(path.users.main)
-  findAll(@Req() req: any) {
-    return this.usersService.findAll();
-  }
+
+
 
   @Get(path.users.deletedUsers)
   deletedUsers() {
@@ -68,7 +76,7 @@ export class UsersController {
   }
 
   @Patch(path.users.update_auth)
-  updateUserAuth(@Param("userId") id: string, @Body() body: UpdateAuthDto) {
+  updateUserAuth(@Param("userId") id: string, @Body() body: any) {
     // return this.usersService.updateUserAuth(id,body)
   }
 

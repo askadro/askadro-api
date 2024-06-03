@@ -13,7 +13,8 @@ import { Company } from '@/modules/company/entities/company.entity';
 import { DEFAULT_PW } from '@/constants/app';
 import { BaseEntity } from '@/common/entities/BaseEntity';
 import { TITLES } from '@/enums/titles';
-import { ROLES } from '@/constants/permissions/roles';
+import { ROLES } from '@/constants/enums/roles';
+import { Ticket } from '@/modules/tickets/ticket.entity';
 
 @Entity('auths')
 export class Auth extends BaseEntity{
@@ -22,7 +23,7 @@ export class Auth extends BaseEntity{
 
   @OneToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  ticket: Ticket;
 
   @OneToOne(() => Company, { nullable: true })
   @JoinColumn({ name: 'company_id' })

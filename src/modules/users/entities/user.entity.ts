@@ -11,31 +11,27 @@ import {
   UpdateDateColumn,
   AfterInsert,
   AfterUpdate,
-  AfterRemove,
+  AfterRemove, BeforeInsert,
 } from 'typeorm';
 import { userGenderEnum } from '@/modules/users/enums/user.gender.enum';
 import { UserStatusEnum } from '@/modules/users/enums/user.status.enum';
 import { Job } from '@/modules/jobs/job.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
-import { Auth } from '@/modules/auth/entities/auth.entity';
 import { TITLES } from '@/enums/titles';
+import { AuthEntity } from '@/common/entities/AuthEntity';
 
 @Entity()
 @Index(['firstName', 'lastName'])
-export class User {
+export class User extends AuthEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToMany(() => Job, (job: Job) => job.user)
+  @OneToMany(() => Job, (job: Job) => job.users)
   job: Job[];
 
   @OneToMany(() => Ticket, (ticket: Ticket) => ticket.user)
   ticket: Ticket[];
-
-  @OneToOne(() => Auth, {  nullable: true })
-  @JoinColumn()
-  auth: Auth;
 
   @OneToOne(() => Address, (address: Address) => address.user, { nullable: true })
   @JoinColumn()
@@ -86,17 +82,6 @@ export class User {
   })
   status: UserStatusEnum;
 
-  @DeleteDateColumn({
-    type: 'timestamp',
-    default: null,
-  })
-  public deletedAt: Date;
-
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
-  public createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', onUpdate: 'CURRENT_TIMESTAMP(6)' })
-  public updatedAt: Date;
 
   @AfterInsert()
   logInsert() {
@@ -111,5 +96,15 @@ export class User {
   @AfterRemove()
   logRemove() {
     console.log(`Remove User with id: ${this.id}`);
+  }
+
+  @BeforeInsert()
+  setDefaults() {
+    if (!this.username) {
+      this.username = this.identity;
+    }
+    if (!this.password) {
+      this.password = this.identity;
+    }
   }
 }

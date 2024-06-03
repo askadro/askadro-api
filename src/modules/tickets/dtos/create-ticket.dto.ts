@@ -5,13 +5,13 @@
 
   export class CreateTicketDto {
     @IsString()
-    enterTime: string;
+    enterTime: Date;
 
     @IsString()
-    exitTime: string;
+    exitTime: Date;
 
     @IsString()
-    ticketDate: string;
+    ticketDate: Date;
 
     @IsString()
     ticketNotes: string;
