@@ -62,15 +62,20 @@ export class TicketsService {
   }
 
   async getTicket(id: string): Promise<Ticket> {
-    const ticket = await this.ticketRepository.findOne({ where: { id }, relations: ['user', 'company', 'jobs'] });
+    const ticket = await this.ticketRepository.findOne({
+      where: { id },
+      relations: ['user', 'company', 'jobs', 'jobs.users'],
+    });
+
     if (!ticket) {
-      throw new NotFoundException(`Ticket with ID ${id} not found 58`);
+      throw new NotFoundException(`Ticket with ID ${id} not found`);
     }
+
     return ticket;
   }
 
   async getTickets(): Promise<Ticket[]> {
-    return await this.ticketRepository.find({relations:["user", "company"]});
+    return await this.ticketRepository.find({ relations: ['user', 'company'] });
   }
 
   async getTicketsWithRelation(): Promise<Ticket[]> {

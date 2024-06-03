@@ -53,6 +53,13 @@ export class JobDto {
 
   @Expose()
   extraPrice: string;
+
+  @Expose()
+  title:string
+
+  @Expose()
+  @Type(() => UserDto)
+  users: UserDto;
 }
 
 // Ticket DTO
@@ -76,7 +83,7 @@ export class TicketDto {
   status: string;
 
   @Expose()
-  createdAt:Date
+  createdAt: Date;
 
   @Expose()
   @Type(() => UserDto)

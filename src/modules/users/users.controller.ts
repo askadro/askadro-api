@@ -61,7 +61,7 @@ export class UsersController {
     return await this.usersService.userJobFindOne(id);
   }
 
-  @Get(path.users.userSearch)
+  @Get('user-search/:query')
   async userSearch(@Param('query') query: string) {
     const queryTrim: string = query.trim();
 
