@@ -10,7 +10,6 @@ import {
 import { User } from '../users/entities/user.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { BaseEntity } from '@/common/entities/BaseEntity';
-import { TITLES } from '@/enums/titles';
 
 @Entity()
 export class Job extends BaseEntity {

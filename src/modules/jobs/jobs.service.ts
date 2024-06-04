@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateJobsDto } from './dtos/create-jobs.dto';
@@ -21,7 +21,7 @@ export class JobsService {
     return await this.repo.save(job);
   }
 
-  async findOne(id: string, relations: string[] = ["users"]) {
+  async findOne(id: string, relations: string[] = ['users']) {
     const job = await this.repo.findOne({
       where: { id },
       relations: relations,
@@ -33,28 +33,46 @@ export class JobsService {
   }
 
   async find() {
-    return await this.repo.find({
-      relations: {
-        users: true,
-      },
-    });
+    return await this.repo.find();
   }
 
   async update(id: string, attrs: UpdateJobDto) {
     const job = await this.findOne(id);
     if (!job) {
-      throw new Error('Job not found');
+      throw new NotFoundException('Job not found');
     }
     Object.assign(job, attrs);
     return this.repo.save(job);
   }
 
   async remove(id: string) {
-    const job = await this.findOne(id);
+    const job = await this.repo.findOne({
+      where: { id },
+    });
+    console.log(job);
     if (!job) {
       throw new NotFoundException();
     }
     return this.repo.softRemove(job);
+  }
+
+  async addJobForTicket(body: CreateJobsDto[]) {
+    console.log(body);
+    if (!body) return 'no body';
+    const jobs = body.map((job: CreateJobsDto) => this.repo.create({
+      ...job,
+      ticket: { id: job.ticketId },
+      users: { id: job.userId },
+    }));
+
+    if (!jobs) {
+      throw new BadRequestException('Job not create');
+    }
+    try {
+      return await this.repo.save(jobs);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
   async filter(body: UpdateJobDto) {

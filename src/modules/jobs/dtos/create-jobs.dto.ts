@@ -14,10 +14,14 @@ export class CreateJobsDto {
   userId: string;
 
   @IsString()
-  enterTime: Date; // 00:00 formatında girilecek
+  @IsOptional()
+  ticketId:string
 
   @IsString()
-  exitTime: Date; // 00:00 formatında girilecek
+  enterTime: Date;
+
+  @IsString()
+  exitTime: Date;
 
   @IsString()
   @IsOptional()

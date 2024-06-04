@@ -32,7 +32,7 @@ export class UsersController {
     return await this.usersService.findOne(req.user.userId)
   }
 
-  @Roles(ROLES.user)
+  @Roles(ROLES.manager)
   @Get()
   findAll(@Req() req: any) {
     return this.usersService.findAll();
