@@ -1,4 +1,5 @@
 import {
+  IsEmail,
   IsMobilePhone,
   IsNumberString,
   IsOptional,
@@ -34,6 +35,9 @@ export class CreateCompanyDto {
   @Length(3)
   shortName: string | undefined;
 
+  @IsString()
+  @IsEmail()
+  email: string;
 
   @IsNumberString()
   registrationNumber: string;// sicil numarası

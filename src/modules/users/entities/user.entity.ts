@@ -44,6 +44,9 @@ export class User extends AuthEntity {
   })
   identity: string;
 
+  @Column({nullable:true})
+  phone: string;
+
   @Column()
   firstName: string;
 

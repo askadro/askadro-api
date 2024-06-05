@@ -35,6 +35,7 @@ export class UsersController {
   @Roles(ROLES.manager)
   @Get()
   findAll(@Req() req: any) {
+    console.log(req.user);
     return this.usersService.findAll();
   }
 

@@ -15,10 +15,10 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Post('/send-email')
-  sendEmail(@Body() sendEmail: SendEmailDto,
-  ): Promise<any> {
-
-    return this.asMailerService.sendEmail(sendEmail);
-  }
+  // @Post('/send-email')
+  // sendEmail(@Body() sendEmail: SendEmailDto,
+  // ): Promise<any> {
+  //
+  //   return this.asMailerService.sendEmail(sendEmail);
+  // }
 }

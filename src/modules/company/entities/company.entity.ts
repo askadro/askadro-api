@@ -29,6 +29,9 @@ export class Company {
   @Column({ nullable: true })
   shortName: string;
 
+  @Column()
+  email: string;
+
   @OneToMany(() => Authorized, (authorized: Authorized) => authorized.company)
   authorized: Authorized[];
 

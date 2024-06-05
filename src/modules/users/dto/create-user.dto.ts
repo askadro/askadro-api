@@ -1,4 +1,13 @@
-import { IsArray, IsByteLength, IsEnum, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsByteLength,
+  IsEnum,
+  IsMobilePhone,
+  IsOptional,
+  IsString,
+  Length,
+  ValidateNested,
+} from 'class-validator';
 import { userGenderEnum } from '../enums/user.gender.enum';
 import { UserStatusEnum } from '../enums/user.status.enum';
 import { IsUnique } from '@/utils/validations';
@@ -27,6 +36,10 @@ export class CreateUserDto extends CreateAuthDto {
     message: 'soyadı bir dize olmalıdır',
   })
   lastName: string;
+
+  @IsString()
+  @IsMobilePhone('tr-TR')
+  phone: string;
 
   @IsString({
     message: 'doğum tarihi bir Date örneği olmalıdır',

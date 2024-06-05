@@ -4,48 +4,35 @@ import { Address, AttachmentLikeObject } from '@nestjs-modules/mailer/dist/inter
 
 export class SendEmailDto {
 
-  @IsNotEmpty(
-    {
-      message: 'Sender not found',
-    },
-  )
   @IsOptional()
   sender?: Address;
 
-  @IsNotEmpty(
-    {
-      message: 'Recipients not found',
-    },
-  )
-  recipients: Address[];
+  @IsOptional()
+  recipients?: string[];
 
-  @IsNotEmpty(
-    {
-      message: 'Subject not found',
-    },
-  )
-  subject: string;
+  @IsOptional()
+  subject?: string;
 
-  @IsNotEmpty(
-    {
-      message: 'Text or html not found',
-    },
-  )
-  text: string;
+  @IsOptional()
+  text?: string;
 
-  @IsNotEmpty(
-    {
-      message: 'Text or html not found',
-    },
-  )
+  @IsOptional()
   html?: string;
 
-  @IsNotEmpty(
-    {
-      message: 'Attachments not found',
-    },
-  )
+  @IsOptional()
   @IsOptional()
   attachments?: AttachmentLikeObject[];
+
+  @IsOptional()
+  @IsNotEmpty()
+  personel?: {
+    firstName: string;
+    lastName: string;
+    birthDate: Date;
+    identity: string;
+    phone: string;
+    title:string,
+    id:string
+  }[];
 
 }
