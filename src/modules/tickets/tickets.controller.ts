@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { path } from '@/constants/paths';
 import { TicketsService } from './tickets.service';
 import { CreateTicketDto } from './dtos/create-ticket.dto';
@@ -12,7 +12,12 @@ import { User } from '@/modules/users/entities/user.entity';
 import { Job } from '@/modules/jobs/job.entity';
 import { ConfigService } from '@nestjs/config';
 import { DEFAULT_APP_NAME } from '@nestjs/schematics';
+import { JwtAuthGuard } from '@/modules/auth/quards/jwt-auth-guard';
+import { RolesGuard } from '@/modules/auth/quards/roles.guard';
+import { Roles } from '@/modules/auth/roles.decorator';
+import { ROLES } from '@/constants/enums/roles';
 
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Serialize(TicketDto)
 @Controller('tickets')
 export class TicketsController {
@@ -23,31 +28,37 @@ export class TicketsController {
   ) {
   }
 
+  @Roles(ROLES.manager)
   @Post('new')
   createTicket(@Body() body: CreateTicketDto) {
     return this.ticketService.create(body);
   }
 
+  @Roles(ROLES.manager)
   @Get('/with-job')
   getTicketWithRelation() {
     return this.ticketService.getTicketsWithRelation();
   }
 
-  @Get('/only-ticket')
-  getTickets() {
-    return this.ticketService.getTickets();
+  @Roles(ROLES.manager)
+  @Post('/only-ticket')
+  getTickets(@Body() body:{startDate: Date, endDate: Date}) {
+    return this.ticketService.getTickets(body);
   }
 
+  @Roles(ROLES.manager)
   @Get('/:id')
   getTicket(@Param('id') id: string) {
     return this.ticketService.getTicket(id);
   }
 
+  @Roles(ROLES.manager)
   @Patch('/update/:id')
   updateTicket(@Param('id') id: string, @Body() body: UpdateTicketDto) {
     return this.ticketService.updateTicket(id, body);
   }
 
+  @Roles(ROLES.manager)
   @Post('/send-email/:id')
   async sendEmail(@Param('id') id: string, @Body() body: SendEmailDto): Promise<any> {
     const ticket = await this.ticketService.getTicket(id);

@@ -12,7 +12,7 @@ import { User } from '@/modules/users/entities/user.entity';
 import { Company } from '@/modules/company/entities/company.entity';
 import { DEFAULT_PW } from '@/constants/app';
 import { BaseEntity } from '@/common/entities/BaseEntity';
-import { TITLES } from '@/enums/titles';
+import { TITLES } from '@/constants/enums/titles';
 import { ROLES } from '@/constants/enums/roles';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 

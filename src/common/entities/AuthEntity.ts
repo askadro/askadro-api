@@ -7,12 +7,14 @@ export abstract class AuthEntity extends BaseEntity{
   @Column({
     default: null,
     nullable: true,
+    unique: true,
   })
   email: string;
 
   @Column({
     default: null,
     nullable: true,
+    unique: true,
   })
   username: string;
 

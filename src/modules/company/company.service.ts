@@ -12,33 +12,35 @@ import { CreateAuthorizedDto } from '@/modules/company/dtos/create-authorized.dt
 import { UpdateAuthorizedDto } from '@/modules/company/dtos/update-authorized.dto';
 import { AuthService } from '@/modules/auth/auth.service';
 import { Auth } from '@/modules/auth/entities/auth.entity';
+import { Bcrypt } from '@/utils/bcrypt';
+import { DEFAULT_PW } from '@/constants/app';
 
 @Injectable()
 export class CompanyService {
   constructor(
     @InjectRepository(Company) private comp: Repository<Company>,
     @InjectRepository(Authorized) private authorizedRepository: Repository<Authorized>,
-    private readonly authService: AuthService,
     private readonly addressService: AddressesService,
   ) {
   }
 
   async create(body: CreateCompanyDto) {
-    const { auth, address, authorized, ...companyData } = body;
-    let authEntity: Auth = null;
+    const { authorized, provinceId, districtId, addressStatus, addressDetail, ...companyData } = body;
     let companyEntity: Company = null;
     let addressEntity: Address = null;
-
-    const company = this.comp.create(companyData);
+    const hashedPassword = Bcrypt.hash(companyData.password || DEFAULT_PW);
+    const company = this.comp.create({ ...companyData, password: hashedPassword });
     companyEntity = await this.comp.save(company);
 
-    if (address) {
-      addressEntity = await this.addressService.create({ ...address, companyId: companyEntity.id });
+    if (provinceId && districtId) {
+      addressEntity = await this.addressService.create({
+        provinceId,
+        districtId,
+        addressStatus,
+        addressDetail,
+        companyId: companyEntity.id,
+      });
     }
-
-    // if (auth) {
-    //   authEntity = await this.authService.create({ ...auth, companyId: companyEntity.id });
-    // }
 
     if (authorized && Array.isArray(authorized)) {
       company.authorized = await Promise.all(
@@ -46,7 +48,7 @@ export class CompanyService {
       );
     }
 
-    return await this.comp.save({ ...companyEntity,address:addressEntity,auth:authEntity, });
+    return await this.comp.save({ ...companyEntity, address: addressEntity });
   }
 
   async createAuthorized(authorized: CreateAuthorizedDto): Promise<Authorized> {
@@ -80,18 +82,18 @@ export class CompanyService {
   }
 
   async findOne(id: string, relations: object = {}) {
-    const auths = await this.comp.findOne({
+    const company = await this.comp.findOne({
       where: { id },
       relations,
     });
-    if (auths) {
-      return auths;
+    if (company) {
+      return company;
     }
     throw new NotFoundException();
   }
 
   async find() {
-    const auths = await this.comp.find();
+    const auths = await this.comp.find({relations:["address","address.province","address.district"]});
     if (auths) {
       return auths;
     }

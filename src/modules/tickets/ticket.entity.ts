@@ -2,7 +2,7 @@ import { Column, PrimaryGeneratedColumn, Entity, ManyToOne, OneToOne, OneToMany 
 import { User } from '@/modules/users/entities/user.entity';
 import { Company } from '@/modules/company/entities/company.entity';
 import { Job } from '@/modules/jobs/job.entity';
-import { JobStatusEnum } from '@/enums/JobStatusEnum';
+import { JobStatusEnum } from '@/constants/enums/JobStatusEnum';
 import { Auth } from '@/modules/auth/entities/auth.entity';
 import { BaseEntity } from '@/common/entities/BaseEntity';
 

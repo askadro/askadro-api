@@ -1,6 +1,6 @@
 import { userGenderEnum } from '@/modules/users/enums/user.gender.enum';
 import { UserStatusEnum } from '@/modules/users/enums/user.status.enum';
-import { TITLES } from '@/enums/titles';
+import { TITLES } from '@/constants/enums/titles';
 import { CreateAddressDto } from '@/modules/addresses/dto/create-address.dto';
 import { Expose } from 'class-transformer';
 

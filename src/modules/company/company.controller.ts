@@ -16,10 +16,6 @@ export class CompanyController {
   @Post(path.company.create)
   @UseInterceptors(CompanyCreate)
   async createCompany(@Body() body: CreateCompanyDto) {
-    if (body.auth) {
-      body.auth.password = Bcrypt.hash(body.auth.password);
-    }
-
     return await this.companyService.create(body);
   }
 
@@ -37,7 +33,7 @@ export class CompanyController {
 
   @Get(path.company.getOneCompany)
   async getCompany(@Param('id') id: string) {
-    return await this.companyService.findOne(id, { authorized: true,address:true,auth:true });
+    return await this.companyService.findOne(id, { authorized: true,address:true });
   }
 
   @Patch(path.company.updateCompany)

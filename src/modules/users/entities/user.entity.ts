@@ -18,7 +18,7 @@ import { UserStatusEnum } from '@/modules/users/enums/user.status.enum';
 import { Job } from '@/modules/jobs/job.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
-import { TITLES } from '@/enums/titles';
+import { TITLES } from '@/constants/enums/titles';
 import { AuthEntity } from '@/common/entities/AuthEntity';
 
 @Entity()
@@ -37,14 +37,13 @@ export class User extends AuthEntity {
   @JoinColumn()
   address: Address;
 
-
   @Column({
     length: 11,
     unique: true,
   })
   identity: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true, unique: true })
   phone: string;
 
   @Column()

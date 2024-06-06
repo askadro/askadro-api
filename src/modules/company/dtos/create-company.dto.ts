@@ -1,9 +1,9 @@
 import {
-  IsEmail,
-  IsMobilePhone,
+  IsEmail, IsEnum,
+  IsMobilePhone, IsNotEmpty,
   IsNumberString,
   IsOptional,
-  IsString,
+  IsString, IsUUID,
   Length,
   MaxLength,
   MinLength,
@@ -13,8 +13,9 @@ import { CreateAddressDto } from '@/modules/addresses/dto/create-address.dto';
 import { CreateAuthorizedDto } from '@/modules/company/dtos/create-authorized.dto';
 import { Type } from 'class-transformer';
 import { CreateAuthDto } from '@/modules/auth/dto/create-auth.dto';
+import { AddressStatusEnum } from '@/modules/addresses/enums/address.status.enum';
 
-export class CreateCompanyDto {
+export class CreateCompanyDto  extends CreateAuthDto {
   @IsString()
   @MaxLength(100, {
     message:
@@ -49,15 +50,21 @@ export class CreateCompanyDto {
   @IsNumberString()
   totalWorkingTime: string;
 
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => CreateAddressDto)
-  address?: CreateAddressDto;
+  @IsNotEmpty()
+  @IsUUID()
+  provinceId: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  districtId: string;
 
   @IsOptional()
-  @ValidateNested()
-  @Type(() => CreateAuthDto)
-  auth?:CreateAuthDto
+  @IsString()
+  addressDetail?: string;
+
+  @IsOptional()
+  @IsEnum(AddressStatusEnum)
+  addressStatus?: AddressStatusEnum;
 
   @IsOptional()
   @ValidateNested()

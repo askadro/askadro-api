@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { TITLES } from '@/enums/titles';
+import { TITLES } from '@/constants/enums/titles';
 
 
 @Entity()

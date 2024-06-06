@@ -14,9 +14,11 @@ import { Auth } from '@/modules/auth/entities/auth.entity';
 import { AuthService } from '@/modules/auth/auth.service';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { JwtService } from '@nestjs/jwt';
+import { Job } from '@/modules/jobs/job.entity';
+import { Ticket } from '@/modules/tickets/ticket.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Address, Auth,Province,District,Company]),CommonModule,AuthModule],
+  imports: [TypeOrmModule.forFeature([User, Address, Auth,Province,District,Company, Job,Ticket]),CommonModule,AuthModule],
   controllers: [UsersController],
   providers: [UsersService,CommonService,AddressesService,JwtService],
   exports: [UsersService],

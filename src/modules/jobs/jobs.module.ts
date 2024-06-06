@@ -7,9 +7,10 @@ import { CommonService } from '@/modules/common/common.service';
 import { User } from '@/modules/users/entities/user.entity';
 import { Company } from '@/modules/company/entities/company.entity';
 import { UsersModule } from '@/modules/users/users.module';
+import { Ticket } from '@/modules/tickets/ticket.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Job,User,Company]),UsersModule],
+  imports: [TypeOrmModule.forFeature([Job,User,Company,Ticket]),UsersModule],
   controllers: [JobsController],
   providers: [JobsService,CommonService], // constructor da vermemiz gereken parametreler
   exports: [JobsService], // bu service içeriğini diğer modulelerde kullanılabilir yapar

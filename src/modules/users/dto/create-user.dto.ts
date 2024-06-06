@@ -2,9 +2,9 @@ import {
   IsArray,
   IsByteLength,
   IsEnum,
-  IsMobilePhone,
+  IsMobilePhone, IsNotEmpty,
   IsOptional,
-  IsString,
+  IsString, IsUUID,
   Length,
   ValidateNested,
 } from 'class-validator';
@@ -14,8 +14,9 @@ import { IsUnique } from '@/utils/validations';
 import { CreateAddressDto } from '@/modules/addresses/dto/create-address.dto';
 import { Type } from 'class-transformer';
 import { CreateAuthDto } from '@/modules/auth/dto/create-auth.dto';
-import { TITLES } from '@/enums/titles';
+import { TITLES } from '@/constants/enums/titles';
 import { User } from '@/modules/users/entities/user.entity';
+import { AddressStatusEnum } from '@/modules/addresses/enums/address.status.enum';
 
 export class CreateUserDto extends CreateAuthDto {
   @IsString({
@@ -69,7 +70,20 @@ export class CreateUserDto extends CreateAuthDto {
   titles: TITLES[];
 
   @IsOptional()
-  @ValidateNested()
-  @Type(() => CreateAddressDto)
-  address?: CreateAddressDto;
+  @IsNotEmpty({message:"Şehir bilgisi giriniz"})
+  @IsUUID()
+  provinceId?: string;
+
+  @IsOptional()
+  @IsNotEmpty({message:"Semt bilgisi giriniz"})
+  @IsUUID()
+  districtId?: string;
+
+  @IsOptional()
+  @IsString()
+  addressDetail?: string;
+
+  @IsOptional()
+  @IsEnum(AddressStatusEnum)
+  addressStatus?: AddressStatusEnum;
 }

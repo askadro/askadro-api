@@ -23,7 +23,7 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const { address, ...userData } = createUserDto;
+    const { addressStatus, addressDetail, provinceId, districtId, ...userData } = createUserDto;
     const hashedPassword = Bcrypt.hash(userData.password || DEFAULT_PW);
     let addressEntity: Address = null;
     let userEntity: User = null;
@@ -34,8 +34,14 @@ export class UsersService {
     });
     userEntity = await this.userRepository.save(user);
     // Create and associate address if provided
-    if (address) {
-      addressEntity = await this.addressService.create({ ...address, userId: userEntity.id });
+    if (provinceId && districtId) {
+      addressEntity = await this.addressService.create({
+        addressStatus,
+        addressDetail,
+        provinceId,
+        districtId,
+        userId: userEntity.id,
+      });
     }
 
     return await this.userRepository.save({ ...user, address: addressEntity });

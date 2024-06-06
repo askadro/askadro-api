@@ -15,7 +15,7 @@ import { path } from '@/constants/paths';
 import { UpdateJobDto } from '@/modules/jobs/dtos/update-jobs.dto';
 import { JwtAuthGuard } from '@/modules/auth/quards/jwt-auth-guard';
 import { RolesGuard } from '@/modules/auth/quards/roles.guard';
-import { TITLES } from '@/enums/titles';
+import { TITLES } from '@/constants/enums/titles';
 import { Roles } from '@/modules/auth/roles.decorator';
 import { ROLES } from '@/constants/enums/roles';
 
@@ -37,7 +37,7 @@ export class JobsController {
     return this.jobsService.update(id, body);
   }
 
-  @Roles(ROLES.owner)
+  @Roles(ROLES.manager)
   @Get('/:id')
   async getJob(@Param('id') id: string): Promise<Job> {
     const job = await this.jobsService.findOne(id);

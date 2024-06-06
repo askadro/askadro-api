@@ -14,9 +14,11 @@ import { Job } from '../../jobs/job.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { Auth } from '@/modules/auth/entities/auth.entity';
+import { AuthEntity } from '@/common/entities/AuthEntity';
+import { BaseEntity } from '@/common/entities/BaseEntity';
 
 @Entity()
-export class Company {
+export class Company extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -35,10 +37,6 @@ export class Company {
   @OneToMany(() => Authorized, (authorized: Authorized) => authorized.company)
   authorized: Authorized[];
 
-  @OneToOne(() => Auth, {  nullable: true })
-  @JoinColumn()
-  auth: Auth;
-
   @OneToOne(() => Address, (address: Address) => address.user, { nullable: true })
   @JoinColumn()
   address: Address;
@@ -54,15 +52,6 @@ export class Company {
 
   @Column()
   totalWorkingTime: string;
-
-  @UpdateDateColumn()
-  updatedDate: Date;
-
-  @DeleteDateColumn()
-  deletedDate: Date;
-
-  @CreateDateColumn()
-  createdDate: Date;
 
   @OneToMany(() => Ticket, (ticket: Ticket) => ticket.company )
   ticket:Ticket[]

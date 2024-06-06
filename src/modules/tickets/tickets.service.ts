@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, In, Repository } from 'typeorm';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { CreateTicketDto } from '@/modules/tickets/dtos/create-ticket.dto';
 import { Job } from '@/modules/jobs/job.entity';
@@ -9,6 +9,7 @@ import { Company } from '@/modules/company/entities/company.entity';
 import { CommonService } from '@/modules/common/common.service';
 import { UpdateTicketDto } from '@/modules/tickets/dtos/update-ticket.dto';
 import { JobsService } from '@/modules/jobs/jobs.service';
+import { JobStatusEnum } from '@/constants/enums/JobStatusEnum';
 
 @Injectable()
 export class TicketsService {
@@ -74,8 +75,24 @@ export class TicketsService {
     return ticket;
   }
 
-  async getTickets(): Promise<Ticket[]> {
-    return await this.ticketRepository.find({ relations: ['user', 'company'] });
+  async getTickets(body: { startDate: Date, endDate: Date }): Promise<Ticket[]> {
+    let { startDate, endDate } = body;
+    if (!startDate) {
+      startDate = new Date();
+      startDate.setMonth(startDate.getMonth() - 1);
+    }
+    // Varsayılan olarak bugünün tarihini alın
+    if (!endDate) {
+      endDate = new Date();
+    }
+    return await this.ticketRepository.find({
+      where: {
+        status: In([JobStatusEnum.CREATING, JobStatusEnum.WAITING]),
+        ticketDate: Between(startDate, endDate),
+      },
+      relations: ['user', 'company'],
+      order: { ticketDate: 'ASC' },
+    });
   }
 
   async getTicketsWithRelation(): Promise<Ticket[]> {

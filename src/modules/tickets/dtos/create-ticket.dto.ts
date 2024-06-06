@@ -1,7 +1,7 @@
   import { IsString, IsUUID, IsArray, ValidateNested, IsDate, IsEnum, IsOptional } from 'class-validator';
   import { Type } from 'class-transformer';
   import { CreateJobsDto } from '@/modules/jobs/dtos/create-jobs.dto';
-  import { JobStatusEnum } from '@/enums/JobStatusEnum';
+  import { JobStatusEnum } from '@/constants/enums/JobStatusEnum';
 
   export class CreateTicketDto {
     @IsString()
