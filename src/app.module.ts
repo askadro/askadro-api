@@ -34,12 +34,12 @@ import { AuthModule } from '@/modules/auth/auth.module';
         configService: ConfigService,
       ): Promise<TypeOrmModuleOptions> => ({
         type: 'postgres',
-        host: configService.get('DB_HOST'),
-        port: configService.get('DB_PORT'),
-        password: configService.get('POSTGRES_PASSWORD'),
-        username: configService.get('POSTGRES_USER'),
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        password: configService.get<string>('POSTGRES_PASSWORD'),
+        username: configService.get<string>('POSTGRES_USER'),
         entities: [join(__dirname, '**', '*.entity.{ts,js}')],
-        database: configService.get('POSTGRES_DB'),
+        database: configService.get<string>('POSTGRES_DB'),
         synchronize: false, // prod da false olmalı
         autoLoadEntities:true,
         logging: true,
