@@ -5,8 +5,6 @@ import * as path from 'path';
 import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { Entities } from './entities';
-import { modules } from '@/modules';
 import { AsMailerModule } from '@/modules/as-mailer/as-mailer.module';
 import { AsMailerService } from '@/modules/as-mailer/as-mailer.service';
 import { CommonModule } from './modules/common/common.module';
@@ -28,7 +26,7 @@ import { AuthModule } from '@/modules/auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ['.env.local', '.env'],
+      envFilePath: ['.env','.env.local'],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -36,13 +34,14 @@ import { AuthModule } from '@/modules/auth/auth.module';
         configService: ConfigService,
       ): Promise<TypeOrmModuleOptions> => ({
         type: 'postgres',
-        host: configService.get('HOST'),
+        host: configService.get('DB_HOST'),
         port: configService.get('DB_PORT'),
-        password: configService.get('DB_PASSWORD'),
-        username: configService.get('DB_USERNAME'),
+        password: configService.get('POSTGRES_PASSWORD'),
+        username: configService.get('POSTGRES_USER'),
         entities: [join(__dirname, '**', '*.entity.{ts,js}')],
-        database: configService.get('DB_DATABASE'),
-        synchronize: true, // prod da false olmalı
+        database: configService.get('POSTGRES_DB'),
+        synchronize: false, // prod da false olmalı
+        autoLoadEntities:true,
         logging: true,
       }),
       inject: [ConfigService],

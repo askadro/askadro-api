@@ -12,7 +12,23 @@ services:
     volumes:
       - nestjs-crm-postgres:/data/postgres
     env_file:
-      - docker.env
+      - .env
+
+#  api:
+#    restart: unless-stopped
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      target: dev
+#    ports:
+#      - '5062:5062'
+#    depends_on:
+#      - postgres
+#    env_file:
+#      - .env
+#    volumes:
+#      - ./src:/app/src
+#
 
 # services:
 
