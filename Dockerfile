@@ -6,6 +6,8 @@ WORKDIR /app
 RUN apk add --no-cache python3 make g++
 
 COPY package*.json ./
+COPY package-lock.json ./
+
 RUN npm config set fetch-retry-mintimeout 200000 && npm config set fetch-retry-maxtimeout 1200000
 
 # Bağımlılıkları yükleyin
