@@ -11,7 +11,6 @@ RUN npm config set fetch-retry-mintimeout 200000 && npm config set fetch-retry-m
 
 # Bağımlılıkları yükleyin
 RUN npm install --ignore-scripts -g npm@10.8.1 && npm i --ignore-scripts -g rimraf
-RUN npm ci
 
 # Kodları kopyalayın ve projeyi derleyin
 COPY . .
