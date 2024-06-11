@@ -6,6 +6,7 @@ volumes:
 services:
   postgres:
     container_name: crm-postgres
+    restart: always
     image: postgres
     ports:
       - '5431:5432'
@@ -13,22 +14,31 @@ services:
       - nestjs-crm-postgres:/data/postgres
     env_file:
       - .env
+    networks:
+      - mynetwork
 
-#  api:
-#    restart: unless-stopped
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#      target: dev
-#    ports:
-#      - '5062:5062'
-#    depends_on:
-#      - postgres
-#    env_file:
-#      - .env
-#    volumes:
-#      - ./src:/app/src
-#
+  api:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '5062:5062'
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+    networks:
+      - mynetwork
+
+
+networks:
+  mynetwork:
+    driver: bridge
+
+
 
 # services:
 

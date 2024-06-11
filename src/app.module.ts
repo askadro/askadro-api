@@ -26,7 +26,7 @@ import { AuthModule } from '@/modules/auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ['.env','.env.local'],
+      envFilePath: ['.env', '.env.local'],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -40,8 +40,8 @@ import { AuthModule } from '@/modules/auth/auth.module';
         username: configService.get<string>('POSTGRES_USER'),
         entities: [join(__dirname, '**', '*.entity.{ts,js}')],
         database: configService.get<string>('POSTGRES_DB'),
-        synchronize: false, // prod da false olmalı
-        autoLoadEntities:true,
+        synchronize: true, // prod da false olmalı
+        autoLoadEntities: true,
         logging: true,
       }),
       inject: [ConfigService],
@@ -73,13 +73,14 @@ import { AuthModule } from '@/modules/auth/auth.module';
     AddressesModule,
     Authorized,
     AuthModule,
-    CommonModule
+    CommonModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AsMailerService,IsUniqueConstraint,JwtService],
+  providers: [AppService, AsMailerService, IsUniqueConstraint, JwtService],
 })
 export class AppModule {
-  constructor(private dataSource: DataSource) {}
+  constructor(private dataSource: DataSource) {
+  }
 
   onModuleInit() {
     IsUniqueConstraint.dataSource = this.dataSource;
