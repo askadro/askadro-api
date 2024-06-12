@@ -1,29 +1,8 @@
-# İlk aşama: Yapı oluşturma
-FROM node:22 AS build
-WORKDIR /app
+FROM node:16-alpine
+WORKDIR /usr/src/app
+COPY yarn.lock ./
+COPY package.json ./
+RUN yarn install
 COPY . .
-RUN npm config set fetch-retry-mintimeout 200000 && npm config set fetch-retry-maxtimeout 1200000
-
-# Bağımlılıkları yükleyin
-RUN npm install --ignore-scripts -g npm@10.8.1
-RUN npm install --ignore-scripts  -g @nestjs/cli
-RUN npm install --ignore-scripts -g rimraf
-RUN npm install --ignore-scripts
-# Kodları kopyalayın ve projeyi derleyin
-
-RUN npm run build
-
-# İkinci aşama: Çalıştırma
-FROM node:22
-WORKDIR /app
-
-# Gerekli paketleri yükleyin
-RUN apk add --no-cache python3 make g++
-
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/node_modules ./node_modules
-COPY package*.json ./
-
-EXPOSE 5062
-
-CMD ["npm", "run", "start:prod"]
+RUN yarn build
+CMD [ "node", "dist/main.js" ]
