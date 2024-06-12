@@ -18,6 +18,7 @@ services:
       - mynetwork
 
   api:
+    container_name: askadro-api
     restart: unless-stopped
     build:
       context: .
@@ -37,36 +38,3 @@ services:
 networks:
   mynetwork:
     driver: bridge
-
-
-
-# services:
-
-#   # PostgreSQL Veritabanı
-#   postgres:
-#     image: postgres
-#     restart: always
-#     ports:
-#       - "5432:5432"
-#     volumes:
-#       - ./postgres-data:/var/lib/postgresql/data
-#     environment:
-#       POSTGRES_PASSWORD: 24262060
-#       POSTGRES_USERNAME: postgres
-#       POSTGRES_DATABASE: askadrovip
-
-#   # NestJS Uygulaması
-#   nestjs:
-#     build: .
-#     ports:
-#       - "3000:3000"
-#     depends_on: 
-#       - postgres 
-#     volumes:
-#        - ./src:/app/src 
-#     environment:
-#       POSTGRES_HOST: postgres
-#       POSTGRES_PORT: 5432
-#       POSTGRES_USERNAME: postgres
-#       POSTGRES_PASSWORD: 24262060
-#       POSTGRES_DATABASE: askadrovip

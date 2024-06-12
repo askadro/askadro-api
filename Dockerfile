@@ -6,11 +6,11 @@ WORKDIR /app
 RUN apk add --no-cache python3 make g++
 
 COPY package*.json ./
-
 RUN npm config set fetch-retry-mintimeout 200000 && npm config set fetch-retry-maxtimeout 1200000
 
 # Bağımlılıkları yükleyin
 RUN npm install --ignore-scripts -g npm@10.8.1 && npm i --ignore-scripts -g rimraf
+RUN npm ci
 
 # Kodları kopyalayın ve projeyi derleyin
 COPY . .
