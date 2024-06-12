@@ -1,8 +1,7 @@
 FROM node:16-alpine
 WORKDIR /usr/src/app
-COPY yarn.lock ./
-COPY package.json ./
-RUN yarn install
+COPY package*.json ./
+RUN npm install
 COPY . .
-RUN yarn build
+RUN npm run build
 CMD [ "node", "dist/main.js" ]
