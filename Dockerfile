@@ -9,7 +9,7 @@ RUN npm install --ignore-scripts -g npm@10.8.1
 RUN npm install --ignore-scripts  -g @nestjs/cli
 RUN npm install --ignore-scripts -g rimraf
 # Kodları kopyalayın ve projeyi derleyin
-RUN npm install
+RUN npm install --ignore-scripts
 RUN npm run build
 
 # İkinci aşama: Çalıştırma
