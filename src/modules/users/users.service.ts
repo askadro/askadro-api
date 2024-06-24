@@ -43,7 +43,6 @@ export class UsersService {
         userId: userEntity.id,
       });
     }
-
     return await this.userRepository.save({ ...user, address: addressEntity });
   }
 
@@ -58,7 +57,7 @@ export class UsersService {
   async getUserById(id: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: ['address', 'address.province', 'address.district', 'auth'],
+      relations: ['address', 'address.province', 'address.district'],
     });
 
     if (!user) {
@@ -118,28 +117,7 @@ export class UsersService {
     return users;
   }
 
-  async userJobFindOne(id: string) {
-    const jobUser = await this.userRepository.findOne({
-      where: {
-        id,
-      },
-      select: {
-        job: {
-          id: true,
-          enterTime: true,
-          extraTime: true,
-          exitTime: true,
-        },
-      },
-      relations: ['job'],
-    });
 
-    if (!jobUser) {
-      throw new NotFoundException('Job user bulunamadı.');
-    }
-
-    return jobUser;
-  }
 
   async findOne(id: string, relations: object = {}): Promise<User> {
     const user: User = await this.userRepository.findOne({
@@ -154,40 +132,4 @@ export class UsersService {
     return user;
   }
 
-  async userSearch(query: string) {
-    const users = await this.userRepository.createQueryBuilder('user')
-      .where('CONCAT(user.firstName, \' \', user.lastName) ilike :fullName', { fullName: `%${query}%` })
-      .getMany();
-
-    if (!users) {
-      throw new NotFoundException('Kullanıcılar bulunamadı.');
-    }
-
-    return users;
-  }
-
-  // async updateUserAuth(userId: string, authData: UpdateAuthDto): Promise<User> {
-  //   const user = await this.userRepository.findOne({ where: { id: userId } });
-  //   if (!user) {
-  //     throw new NotFoundException('Kullanıcı bulunamadı.');
-  //   }
-  //
-  //   if (!authData) {
-  //     throw new BadRequestException('Yetkilendirme bilgisi eksik.');
-  //   }
-  //
-  //   const auth = await this.authRepository.findOne({ where: { user: user } });
-  //
-  //   if (!auth) {
-  //     throw new NotFoundException('Yetkilendirme bilgisi bulunamadı.');
-  //   }
-  //
-  //   try {
-  //     this.authRepository.merge(auth, authData);
-  //     await this.authRepository.save(auth);
-  //     return user;
-  //   } catch (error) {
-  //     throw new BadRequestException('Yetkilendirme bilgisi güncellenirken bir hata oluştu.');
-  //   }
-  // }
 }

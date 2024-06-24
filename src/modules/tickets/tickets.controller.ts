@@ -64,14 +64,13 @@ export class TicketsController {
     const ticket = await this.ticketService.getTicket(id);
     const company = await this.companyService.findOne(ticket.company.id);
     const personel = ticket.jobs?.map((u: Job) => ({
-      firstName: u.users.firstName,
-      lastName: u.users.lastName,
-      email: u.users.email,
-      birthDate: new Date(u.users.birthDate),
-      identity: u.users.identity,
-      phone: u.users.phone,
+      firstName: u.staff.firstName,
+      lastName: u.staff.lastName,
+      birthDate: new Date(u.staff.birthDate),
+      identity: u.staff.identity,
+      phone: u.staff.phone,
       title: u.title,
-      id: u.users.id,
+      id: u.staff.id,
     }));
 
     return this.asMailerService.sendEmailForTicket({

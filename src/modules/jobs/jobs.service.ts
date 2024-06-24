@@ -13,9 +13,9 @@ export class JobsService {
   }
 
   async create(body: CreateJobsDto) {
-    const user = await this.usersService.findOne(body.userId);
+    const user = await this.usersService.findOne(body.staffId);
     const job = this.repo.create({
-      users: user ? { id: user.id } : null,
+      staff: user ? { id: user.id } : null,
       ...body,
     });
     return await this.repo.save(job);
@@ -62,7 +62,7 @@ export class JobsService {
     const jobs = body.map((job: CreateJobsDto) => this.repo.create({
       ...job,
       ticket: { id: job.ticketId },
-      users: { id: job.userId },
+      staff: { id: job.staffId },
     }));
 
     if (!jobs) {

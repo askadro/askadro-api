@@ -4,56 +4,33 @@ import {
   Column,
   OneToOne,
   JoinColumn,
-  Index,
+  OneToMany,
   AfterInsert,
   AfterUpdate,
-  AfterRemove
+  AfterRemove,
 } from 'typeorm';
 import { userGenderEnum } from '@/modules/users/enums/user.gender.enum';
+import { UserStatusEnum } from '@/modules/users/enums/user.status.enum';
+import { Job } from '@/modules/jobs/job.entity';
+import { Ticket } from '@/modules/tickets/ticket.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
-import { DEFAULT_PW } from '@/constants/app';
-import { ROLES } from '@/constants/enums/roles';
+import { TITLES } from '@/constants/enums/titles';
 import { BaseEntity } from '@/common/entities/BaseEntity';
-import { UserStatusEnum } from '@/constants/enums/userStatusEnum';
+import { Timesheet } from '@/modules/staff/entities/timesheet.entity';
 
 @Entity()
-@Index(['firstName', 'lastName'])
-export class User extends BaseEntity {
+export class Staff extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({
-    unique: true,
-  })
-  email: string;
+  @OneToMany(() => Timesheet, (timesheet) => timesheet.staff)
+  timesheets: Timesheet[];
 
-  @Column({
-    default:DEFAULT_PW,
-  })
-  password: string;
+  @OneToMany(() => Job, (job: Job) => job.staff)
+  job: Job[];
 
-  @Column({
-    nullable: true,
-  })
-  salt?: string;
-
-  @Column({
-    nullable: true,
-  })
-  refreshToken?: string;
-
-  @Column({
-    type: 'timestamp',
-    nullable: true,
-  })
-  refreshTokenExpiryTime?: Date;
-
-  @Column({
-    type: 'enum',
-    enum: ROLES,
-    default: [ROLES.user],
-  })
-  roles:ROLES
+  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.staff)
+  ticket: Ticket[];
 
   @OneToOne(() => Address, (address: Address) => address.user, { nullable: true })
   @JoinColumn()
@@ -91,6 +68,13 @@ export class User extends BaseEntity {
   })
   gender: userGenderEnum;
 
+  @Column({
+    type: 'enum',
+    enum: TITLES,
+    array: true,
+    default: [TITLES.waiter],
+  })
+  titles: TITLES[];
 
   @Column({
     type: 'enum',

@@ -9,32 +9,32 @@ services:
     restart: always
     image: postgres
     ports:
-      - '5431:5432'
+      - '5432:5432'
     volumes:
       - nestjs-crm-postgres:/data/postgres
     env_file:
       - .env
-    networks:
-      - mynetwork
-
-  api:
-    container_name: askadro-api
-    restart: unless-stopped
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - '5062:5062'
-    depends_on:
-      - postgres
-    env_file:
-      - .env
-    volumes:
-      - ./src:/app/src
-    networks:
-      - mynetwork
-
-
-networks:
-  mynetwork:
-    driver: bridge
+#    networks:
+#      - mynetwork
+#
+#  askadro-crm:
+#    container_name: askadro-crm
+#    restart: unless-stopped
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - '5062:5062'
+#    depends_on:
+#      - postgres
+#    env_file:
+#      - .env
+#    volumes:
+#      - ./src:/app/src
+#    networks:
+#      - mynetwork
+#
+#
+#networks:
+#  mynetwork:
+#    driver: bridge

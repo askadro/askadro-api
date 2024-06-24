@@ -6,16 +6,11 @@ import {
   Put,
   UseGuards,
   Req,
-  Res,
-  UnauthorizedException,
   Get, BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { Auth } from '@/modules/auth/entities/auth.entity';
 import { LocalAuthGuard } from '@/modules/auth/quards/local-auth-guard';
-import { Response, Request } from 'express';
-import { Public } from '@/decorators/public.decorator';
+import { Request } from 'express';
 import { JwtAuthGuard } from '@/modules/auth/quards/jwt-auth-guard';
 import { User } from '@/modules/users/entities/user.entity';
 import { CreateUserDto } from '@/modules/users/dto/create-user.dto';

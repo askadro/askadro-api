@@ -49,7 +49,7 @@ export class TicketsService {
     const jobEntities = jobs.map(jobData => {
       return this.jobRepository.create({
         ...jobData,
-        users: { id: jobData.userId },
+        staff: { id: jobData.staffId },
         ticket: { id: savedTicket.id },
       });
     });

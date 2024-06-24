@@ -21,6 +21,7 @@ import { ConfigurationModule } from '@/configuration/configuration.module';
 import { AddressesModule } from '@/modules/addresses/addresses.module';
 import { Authorized } from '@/modules/company/entities/authorized.entity';
 import { AuthModule } from '@/modules/auth/auth.module';
+import { StaffModule } from '@/modules/staff/staff.module';
 
 
 @Module({
@@ -35,14 +36,14 @@ import { AuthModule } from '@/modules/auth/auth.module';
       ): Promise<TypeOrmModuleOptions> => ({
         type: 'postgres',
         host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
+        port: configService.get<number>('DB_PORT',5432),
         password: configService.get<string>('POSTGRES_PASSWORD'),
         username: configService.get<string>('POSTGRES_USER'),
         entities: [join(__dirname, '**', '*.entity.{ts,js}')],
         database: configService.get<string>('POSTGRES_DB'),
         synchronize: true, // prod da false olmalı
         autoLoadEntities: true,
-        logging: true,
+        // logging: true,
       }),
       inject: [ConfigService],
     }),
@@ -74,6 +75,7 @@ import { AuthModule } from '@/modules/auth/auth.module';
     Authorized,
     AuthModule,
     CommonModule,
+    StaffModule,
   ],
   controllers: [AppController],
   providers: [AppService, AsMailerService, IsUniqueConstraint, JwtService],

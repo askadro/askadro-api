@@ -10,6 +10,7 @@ import {
 import { User } from '../users/entities/user.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { BaseEntity } from '@/common/entities/BaseEntity';
+import { Staff } from '@/modules/staff/entities/staff.entity';
 
 @Entity()
 export class Job extends BaseEntity {
@@ -19,8 +20,8 @@ export class Job extends BaseEntity {
   @ManyToOne(() => Ticket, (ticket) => ticket.jobs)
   ticket: Ticket;
 
-  @ManyToOne(() => User, (user) => user.job)
-  users: User;
+  @ManyToOne(() => Staff, (staff) => staff.job)
+  staff: Staff;
 
   @Column()
   enterTime: Date; // 00:00 formatında girilecek

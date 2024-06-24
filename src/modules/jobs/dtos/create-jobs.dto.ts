@@ -11,7 +11,7 @@ export class CreateJobsDto {
   id: string;
 
   @IsString()
-  userId: string;
+  staffId: string;
 
   @IsString()
   @IsOptional()

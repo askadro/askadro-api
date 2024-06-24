@@ -18,7 +18,6 @@ import { User } from '@/modules/users/entities/user.entity';
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(Auth) private authRepository: Repository<Auth>,
     @InjectRepository(User) private userRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -42,8 +41,8 @@ export class AuthService {
     return this.createToken(user)
   }
 
-  async updateRefreshToken(username: string, refreshToken: string): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { username } });
+  async updateRefreshToken(identity: string, refreshToken: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { identity } });
 
     if (!user) {
       throw new BadRequestException('Kullanıcı bulunamadı');
@@ -79,8 +78,8 @@ export class AuthService {
     return await this.userRepository.find();
   }
 
-  async validateAuth(username: string, pass: string): Promise<any> {
-    const user = await this.userRepository.findOne({ where: { username } });
+  async validateAuth(identity: string, pass: string): Promise<any> {
+    const user = await this.userRepository.findOne({ where: { identity } });
     if (user && await bcrypt.compare(pass, user.password)) {
       const { password, ...result } = user;
       return result;

@@ -12,27 +12,24 @@ import { Serialize } from '@/interceptors/serialize.interceptor';
 import { UserDto } from '@/modules/users/dto/user.dto';
 
 @Serialize(UserDto)
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {
   }
 
 
-  @Roles(ROLES.manager)
   @Post("/create")
   async create(@Body() body: CreateUserDto) {
+    console.log(new Date().toISOString());
     return this.usersService.create(body);
   }
 
-  @Roles(ROLES.user)
   @Get("/profile")
   async getProfile(@Req() req:any) {
     console.log("req");
     return await this.usersService.findOne(req.user.userId)
   }
 
-  @Roles(ROLES.manager)
   @Get()
   findAll(@Req() req: any) {
     console.log(req.user);
@@ -49,38 +46,14 @@ export class UsersController {
     return await this.usersService.remove(id, soft);
   }
 
-
-
-
   @Get(path.users.deletedUsers)
   deletedUsers() {
     return this.usersService.deletedUsers();
   }
 
-  @Get(path.users.userJob)
-  async userJobFindOne(@Param('id') id: string): Promise<User> {
-    return await this.usersService.userJobFindOne(id);
-  }
-
-  @Get('user-search/:query')
-  async userSearch(@Param('query') query: string) {
-    const queryTrim: string = query.trim();
-
-    const queryLower: string = queryTrim.toLowerCase();
-
-    return await this.usersService.userSearch(queryLower);
-  }
-
-  @Get(path.users.user)
+  @Get('user/:id')
   findOne(@Param('id') id: string) {
     return this.usersService.getUserById(id);
   }
-
-  @Patch(path.users.update_auth)
-  updateUserAuth(@Param("userId") id: string, @Body() body: any) {
-    // return this.usersService.updateUserAuth(id,body)
-  }
-
-
 
 }
