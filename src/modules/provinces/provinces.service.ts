@@ -14,6 +14,22 @@ export class ProvincesService {
     @InjectRepository(District) private districtRepository: Repository<District>,
   ) {}
 
+  async findOneProvince(id: string): Promise<Province> {
+    const province = await this.provincesRepository.findOne({where:{id}})
+    if(!province) {
+      throw new NotFoundException(`Province ${id} not found`);
+    }
+    return province
+  }
+
+  async findOneDistrict(id: string): Promise<District> {
+    const district = await this.districtRepository.findOne({where:{id}})
+    if(!district) {
+      throw new NotFoundException(`Province ${id} not found`);
+    }
+    return district
+  }
+
   async create() {
     try {
 

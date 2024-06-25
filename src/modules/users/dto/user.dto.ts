@@ -1,5 +1,5 @@
-import { userGenderEnum } from '@/modules/users/enums/user.gender.enum';
-import { UserStatusEnum } from '@/modules/users/enums/user.status.enum';
+import { userGenderEnum } from '@/constants/enums/user.gender.enum';
+import { StaffStatusEnum } from '@/constants/enums/staffStatusEnum';
 import { TITLES } from '@/constants/enums/titles';
 import { CreateAddressDto } from '@/modules/addresses/dto/create-address.dto';
 import { Expose } from 'class-transformer';
@@ -22,9 +22,15 @@ export class UserDto {
   @Expose()
   gender: userGenderEnum;
   @Expose()
-  status: UserStatusEnum;
+  status: StaffStatusEnum;
   @Expose()
   titles: TITLES[];
   @Expose()
   address: CreateAddressDto;
+  @Expose()
+  access_token: string;
+  @Expose()
+  refreshToken: string;
+  @Expose()
+  refreshTokenExpiryTime: string;
 }

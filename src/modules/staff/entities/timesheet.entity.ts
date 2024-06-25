@@ -9,7 +9,7 @@ export class Timesheet extends BaseEntity {
   id: string;
 
   @Column()
-  date: string;
+  date: Date;
 
   @Column({ type: 'float', nullable: true })
   hoursWorked: number;

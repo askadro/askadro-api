@@ -10,8 +10,6 @@ import { Address } from '@/modules/addresses/entities/address.entity';
 import { AddressesService } from '@/modules/addresses/addresses.service';
 import { CreateAuthorizedDto } from '@/modules/company/dtos/create-authorized.dto';
 import { UpdateAuthorizedDto } from '@/modules/company/dtos/update-authorized.dto';
-import { AuthService } from '@/modules/auth/auth.service';
-import { Auth } from '@/modules/auth/entities/auth.entity';
 import { Bcrypt } from '@/utils/bcrypt';
 import { DEFAULT_PW } from '@/constants/app';
 
@@ -28,7 +26,7 @@ export class CompanyService {
     const { authorized, provinceId, districtId, addressStatus, addressDetail, ...companyData } = body;
     let companyEntity: Company = null;
     let addressEntity: Address = null;
-    const hashedPassword = Bcrypt.hash(companyData.password || DEFAULT_PW);
+    const hashedPassword = Bcrypt.hash(companyData.registrationNumber || DEFAULT_PW);
     const company = this.comp.create({ ...companyData, password: hashedPassword });
     companyEntity = await this.comp.save(company);
 
@@ -115,5 +113,9 @@ export class CompanyService {
       throw new NotFoundException();
     }
     return this.comp.remove(company);
+  }
+
+  async count(){
+    return await this.comp.count()
   }
 }

@@ -10,6 +10,7 @@ import { CommonService } from '@/modules/common/common.service';
 import { UpdateTicketDto } from '@/modules/tickets/dtos/update-ticket.dto';
 import { JobsService } from '@/modules/jobs/jobs.service';
 import { JobStatusEnum } from '@/constants/enums/JobStatusEnum';
+import { startOfMonth, startOfYear } from 'date-fns';
 
 @Injectable()
 export class TicketsService {
@@ -18,12 +19,6 @@ export class TicketsService {
     private readonly ticketRepository: Repository<Ticket>,
     @InjectRepository(Job)
     private readonly jobRepository: Repository<Job>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    @InjectRepository(Company)
-    private readonly companyRepository: Repository<Company>,
-    private readonly commonService: CommonService,
-    private readonly jobsService: JobsService,
   ) {
   }
 
@@ -65,7 +60,7 @@ export class TicketsService {
   async getTicket(id: string): Promise<Ticket> {
     const ticket = await this.ticketRepository.findOne({
       where: { id },
-      relations: ['user', 'company', 'jobs', 'jobs.users'],
+      relations: ['user', 'company', 'jobs', 'jobs.staff'],
     });
 
     if (!ticket) {
@@ -75,7 +70,7 @@ export class TicketsService {
     return ticket;
   }
 
-  async getTickets(body: { startDate: Date, endDate: Date }): Promise<Ticket[]> {
+  async getTicketsByDateRange(body: { startDate: Date, endDate: Date }): Promise<Ticket[]> {
     let { startDate, endDate } = body;
     if (!startDate) {
       startDate = new Date();
@@ -100,14 +95,7 @@ export class TicketsService {
   }
 
   async updateTicket(id: string, body: UpdateTicketDto): Promise<Ticket> {
-    if (!body) {
-      throw new BadRequestException(`Request body is missing`);
-    }
     const ticket = await this.getTicket(id);
-    if (!ticket) {
-      throw new NotFoundException(`Ticket with ID ${id} not found 25`);
-    }
-
     const { userId, companyId } = body;
     Object.assign(ticket, body);
     return await this.ticketRepository.save({
@@ -115,5 +103,24 @@ export class TicketsService {
       user: { id: userId },
       company: { id: companyId },
     });
+  }
+
+  async deleteTicket(id: string): Promise<void> {
+    const ticket = await this.getTicket(id)
+    if (!ticket) {
+      throw new NotFoundException(`Ticket with ID ${id} not found`);
+    }
+
+    await this.ticketRepository.delete(id);
+  }
+
+  async counts() {
+    const today = new Date();
+    const firstDayOfCurrentMonth = startOfMonth(today);
+    const ticketThisMountCount = await this.ticketRepository.count({
+      where: { ticketDate: Between(firstDayOfCurrentMonth, today) },
+    });
+    const ticketAllTimeCount = await this.ticketRepository.count({});
+    return { ticketThisMountCount, ticketAllTimeCount };
   }
 }

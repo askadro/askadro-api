@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Search, Query } from '@nestjs/common';
 import { StaffService } from './staff.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
@@ -6,41 +6,52 @@ import { Staff } from '@/modules/staff/entities/staff.entity';
 import { Timesheet } from '@/modules/staff/entities/timesheet.entity';
 import { CreateTimesheetDto } from '@/modules/staff/dto/create-timesheet.dto';
 import { UpdateTimesheetDto } from '@/modules/staff/dto/update-timesheet.dto';
+import { SearchStaffDto } from '@/modules/staff/dto/searc-staff.dto';
+import { GetTimesheetsDto } from '@/modules/staff/dto/get-timesheet.dto';
 
 @Controller('staff')
 export class StaffController {
   constructor(private readonly staffService: StaffService) {
   }
 
-  @Post()
+  @Post('new')
   async createStaff(@Body() createStaffDto: CreateStaffDto) {
     return this.staffService.create(createStaffDto);
   }
 
-  @Put(':id')
-  async updateStaff(@Param('id') id: string, @Body() updateStaffDto: CreateStaffDto) {
+  @Put('update/:id')
+  async updateStaff(@Param('id') id: string, @Body() updateStaffDto: UpdateStaffDto) {
     return this.staffService.update(id, updateStaffDto);
   }
 
-  @Get()
-  findAll(): Promise<Staff[]> {
+  @Delete('delete/:id')
+  async deleteStaff(@Param('id') id: string, @Body() soft: string) {
+    return this.staffService.remove(id, soft);
+  }
+
+  @Post('search')
+  async searchStaff(@Body() searchStaffDto: SearchStaffDto): Promise<Staff[]> {
+    return this.staffService.searchStaff(searchStaffDto);
+  }
+
+  @Get('all')
+  findAll(): Promise<[Staff[], number]> {
     return this.staffService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Staff> {
-    return this.staffService.findOne(id);
+    return this.staffService.findOne(id, [ "job", "timesheets" ]);
   }
 
-  @Post(':id/timesheet')
+  @Post('add/timesheet')
   createTimesheet(
-    @Param('id') id: string,
     @Body() createTimesheetDto: CreateTimesheetDto,
   ): Promise<Timesheet> {
-    return this.staffService.createTimesheet(id, createTimesheetDto);
+    return this.staffService.createTimesheet(createTimesheetDto);
   }
 
-  @Put('timesheet/:id')
+  @Put('update/timesheet/:id')
   updateTimesheet(
     @Param('id') id: string,
     @Body() updateTimesheetDto: UpdateTimesheetDto,
@@ -48,4 +59,13 @@ export class StaffController {
     return this.staffService.updateTimesheet(id, updateTimesheetDto);
   }
 
+  @Delete('delete/timesheet/:id')
+  deleteTimesheet(@Param('id') id: string) {
+    return this.staffService.deleteTimesheet(id);
+  }
+
+  @Post('timesheets')
+  async getTimesheetsByCompanyAndMonth(@Body() getTimesheetsDto: GetTimesheetsDto): Promise<any> {
+    return this.staffService.getTimesheetsByCompanyAndMonth(getTimesheetsDto);
+  }
 }

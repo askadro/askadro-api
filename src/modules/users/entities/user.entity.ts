@@ -7,9 +7,9 @@ import {
   Index,
   AfterInsert,
   AfterUpdate,
-  AfterRemove
+  AfterRemove, BeforeInsert,
 } from 'typeorm';
-import { userGenderEnum } from '@/modules/users/enums/user.gender.enum';
+import { userGenderEnum } from '@/constants/enums/user.gender.enum';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { DEFAULT_PW } from '@/constants/app';
 import { ROLES } from '@/constants/enums/roles';
@@ -26,6 +26,11 @@ export class User extends BaseEntity {
     unique: true,
   })
   email: string;
+
+  @Column({
+    unique: true,
+  })
+  username:string
 
   @Column({
     default:DEFAULT_PW,
@@ -113,5 +118,12 @@ export class User extends BaseEntity {
   @AfterRemove()
   logRemove() {
     console.log(`Remove User with id: ${this.id}`);
+  }
+
+  @BeforeInsert()
+  setDefaults(){
+    if(!this.username) {
+      this.username = this.identity;
+    }
   }
 }

@@ -1,20 +1,14 @@
 import {
   BeforeInsert,
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity, JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 import { Authorized } from './authorized.entity';
-import { Job } from '../../jobs/job.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
-import { Auth } from '@/modules/auth/entities/auth.entity';
-import { AuthEntity } from '@/common/entities/AuthEntity';
 import { BaseEntity } from '@/common/entities/BaseEntity';
 import { Timesheet } from '@/modules/staff/entities/timesheet.entity';
 

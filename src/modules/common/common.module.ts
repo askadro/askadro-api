@@ -8,9 +8,15 @@ import { CommonService } from '@/modules/common/common.service';
 import { CommonController } from '@/modules/common/common.controller';
 import { Job } from '@/modules/jobs/job.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
+import { Staff } from '@/modules/staff/entities/staff.entity';
+import { JobsService } from '@/modules/jobs/jobs.service';
+import { TicketsService } from '@/modules/tickets/tickets.service';
+import { CompanyService } from '@/modules/company/company.service';
+import { UsersService } from '@/modules/users/users.service';
+import { StaffService } from '@/modules/staff/staff.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User,Company,Province,District,Job,Ticket])],
+  imports: [TypeOrmModule.forFeature([User,Company,Staff,Province,District,Job,Ticket])],
   providers: [CommonService],
   exports: [CommonService],
   controllers: [CommonController]

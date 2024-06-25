@@ -1,6 +1,6 @@
 import { AddressStatusEnum } from '@/modules/addresses/enums/address.status.enum';
 import { IsString, IsEmail, IsEnum, IsUUID, IsOptional, Length, IsDateString, IsNotEmpty } from 'class-validator';
-import { userGenderEnum } from '@/modules/users/enums/user.gender.enum';
+import { userGenderEnum } from '@/constants/enums/user.gender.enum';
 import { ROLES } from '@/constants/enums/roles';
 import { UserStatusEnum } from '@/constants/enums/userStatusEnum';
 
@@ -8,6 +8,10 @@ export class CreateUserDto {
   @IsEmail()
   @IsOptional()
   email?: string;
+
+  @IsOptional()
+  @IsString()
+  username: string;
 
   @IsString()
   password: string;
@@ -28,12 +32,12 @@ export class CreateUserDto {
   roles: ROLES;
 
   @IsOptional()
-  @IsNotEmpty({message:"Şehir bilgisi giriniz"})
+  @IsNotEmpty({ message: 'Şehir bilgisi giriniz' })
   @IsUUID()
   provinceId?: string;
 
   @IsOptional()
-  @IsNotEmpty({message:"Semt bilgisi giriniz"})
+  @IsNotEmpty({ message: 'Semt bilgisi giriniz' })
   @IsUUID()
   districtId?: string;
 

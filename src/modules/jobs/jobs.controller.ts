@@ -13,10 +13,10 @@ import { JobsService } from './jobs.service';
 import { Job } from './job.entity';
 import { path } from '@/constants/paths';
 import { UpdateJobDto } from '@/modules/jobs/dtos/update-jobs.dto';
-import { JwtAuthGuard } from '@/modules/auth/quards/jwt-auth-guard';
-import { RolesGuard } from '@/modules/auth/quards/roles.guard';
+import { JwtAuthGuard } from '@/modules/users/quards/jwt-auth-guard';
+import { RolesGuard } from '@/modules/users/quards/roles.guard';
 import { TITLES } from '@/constants/enums/titles';
-import { Roles } from '@/modules/auth/roles.decorator';
+import { Roles } from '@/modules/users/roles.decorator';
 import { ROLES } from '@/constants/enums/roles';
 
 @UseGuards(JwtAuthGuard, RolesGuard)

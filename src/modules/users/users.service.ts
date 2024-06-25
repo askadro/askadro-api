@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,8 +6,6 @@ import { User } from './entities/user.entity';
 import { IsNull, Not, Repository } from 'typeorm';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { AddressesService } from '@/modules/addresses/addresses.service';
-import { Auth } from '@/modules/auth/entities/auth.entity';
-import { AuthService } from '@/modules/auth/auth.service';
 import { Bcrypt } from '@/utils/bcrypt';
 import { DEFAULT_PW } from '@/constants/app';
 
@@ -15,9 +13,6 @@ import { DEFAULT_PW } from '@/constants/app';
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(Auth) private authRepository: Repository<Auth>,
-    @InjectRepository(Address) private addressRepository: Repository<Address>,
-    private readonly authService: AuthService,
     private readonly addressService: AddressesService,
   ) {
   }
@@ -46,13 +41,6 @@ export class UsersService {
     return await this.userRepository.save({ ...user, address: addressEntity });
   }
 
-  async getProfile() {
-
-  }
-
-  async findUserOnlyOwnData(id: string) {
-    return await this.userRepository.findOne({ where: { id: id } });
-  }
 
   async getUserById(id: string): Promise<User> {
     const user = await this.userRepository.findOne({
@@ -67,10 +55,7 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException('Kullanıcı bulunamadı.');
-    }
+    const user = await this.findOne(id);
     Object.assign(user, updateUserDto);
     return this.userRepository.save(user);
   }
@@ -80,18 +65,16 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('Kullanıcı bulunamadı.');
     }
-    if (soft === 'true') {
-      const softDelete = await this.userRepository.softDelete(id);
-
-      if (!softDelete.affected) {
-        throw new NotFoundException('Kullanıcı bulunamadı.');
-      }
+    if (soft) {
+      await this.userRepository.softDelete(id);
+      return user;
+    } else {
+      await this.userRepository.remove(user);
       return user;
     }
-    return await this.userRepository.remove(user);
   }
 
-  async findAll(relations: object = {}) {
+  async findAll(relations: string[] = []) {
     const users = await this.userRepository.find({
       relations,
     });
@@ -104,22 +87,15 @@ export class UsersService {
   }
 
   async deletedUsers(): Promise<User[]> {
-    const users: User[] = await this.userRepository.find({
+    return this.userRepository.find({
       where: {
         deletedAt: Not(IsNull()),
       },
       withDeleted: true,
     });
-
-    if (!users) {
-      throw new NotFoundException('Kullanıcılar bulunamadı.');
-    }
-    return users;
   }
 
-
-
-  async findOne(id: string, relations: object = {}): Promise<User> {
+  async findOne(id: string, relations: string[] = []): Promise<User> {
     const user: User = await this.userRepository.findOne({
       where: {
         id: id,

@@ -10,13 +10,21 @@ import { District } from '@/modules/provinces/entities/district.entity';
 import { CommonService } from '@/modules/common/common.service';
 import { Job } from '@/modules/jobs/job.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
+import { Staff } from '@/modules/staff/entities/staff.entity';
+import { UsersService } from '@/modules/users/users.service';
+import { CompanyService } from '@/modules/company/company.service';
+import { StaffService } from '@/modules/staff/staff.service';
+import { ProvincesModule } from '@/modules/provinces/provinces.module';
+import { ProvincesService } from '@/modules/provinces/provinces.service';
+import { CommonModule } from '@/modules/common/common.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Address, User, Company, Province, District,Job,Ticket]),
+    TypeOrmModule.forFeature([Address, Province, District])
   ],
   controllers: [AddressesController],
-  providers: [AddressesService,CommonService],
+  providers: [AddressesService],
   exports: [AddressesService],
 })
-export class AddressesModule {}
+export class AddressesModule {
+}

@@ -9,8 +9,8 @@ import {
   AfterUpdate,
   AfterRemove,
 } from 'typeorm';
-import { userGenderEnum } from '@/modules/users/enums/user.gender.enum';
-import { UserStatusEnum } from '@/modules/users/enums/user.status.enum';
+import { userGenderEnum } from '@/constants/enums/user.gender.enum';
+import { StaffStatusEnum } from '@/constants/enums/staffStatusEnum';
 import { Job } from '@/modules/jobs/job.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
@@ -78,10 +78,10 @@ export class Staff extends BaseEntity {
 
   @Column({
     type: 'enum',
-    enum: UserStatusEnum,
-    default: UserStatusEnum.ACTIVE,
+    enum: StaffStatusEnum,
+    default: StaffStatusEnum.ACTIVE,
   })
-  status: UserStatusEnum;
+  status: StaffStatusEnum;
 
 
   @AfterInsert()

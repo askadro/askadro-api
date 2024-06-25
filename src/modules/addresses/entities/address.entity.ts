@@ -4,6 +4,7 @@ import { Province } from '@/modules/provinces/entities/province.entity';
 import { District } from '@/modules/provinces/entities/district.entity';
 import { User } from '@/modules/users/entities/user.entity';
 import { Company } from '@/modules/company/entities/company.entity';
+import { Staff } from '@/modules/staff/entities/staff.entity';
 
 @Entity('addresses')
 export class Address {
@@ -25,6 +26,10 @@ export class Address {
   @OneToOne(() => Company, (company: Company) => company.address, { nullable: true })
   @JoinColumn({ name: 'companyId' })
   company: Relation<Company>;
+
+  @OneToOne(() => Staff, (staff: Staff) => staff.address, { nullable: true })
+  @JoinColumn({ name: 'staffId' })
+  staff: Relation<Staff>;
 
   @Column({
     type: 'text',

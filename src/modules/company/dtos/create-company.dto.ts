@@ -12,10 +12,9 @@ import {
 import { CreateAddressDto } from '@/modules/addresses/dto/create-address.dto';
 import { CreateAuthorizedDto } from '@/modules/company/dtos/create-authorized.dto';
 import { Type } from 'class-transformer';
-import { CreateAuthDto } from '@/modules/auth/dto/create-auth.dto';
 import { AddressStatusEnum } from '@/modules/addresses/enums/address.status.enum';
 
-export class CreateCompanyDto  extends CreateAuthDto {
+export class CreateCompanyDto {
   @IsString()
   @MaxLength(100, {
     message:

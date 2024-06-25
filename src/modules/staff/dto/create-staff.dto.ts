@@ -1,10 +1,11 @@
-import { IsString, IsEnum, IsUUID, IsOptional, IsArray, Length, IsDateString } from 'class-validator';
-import { userGenderEnum } from '@/modules/users/enums/user.gender.enum';
-import { UserStatusEnum } from '@/modules/users/enums/user.status.enum';
+import { IsString, IsEnum, IsUUID, IsOptional, IsArray, Length, IsDateString, IsNotEmpty } from 'class-validator';
+import { userGenderEnum } from '@/constants/enums/user.gender.enum';
+import { StaffStatusEnum } from '@/constants/enums/staffStatusEnum';
 import { TITLES } from '@/constants/enums/titles';
 import { Job } from '@/modules/jobs/job.entity';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { Address } from '@/modules/addresses/entities/address.entity';
+import { AddressStatusEnum } from '@/modules/addresses/enums/address.status.enum';
 
 export class CreateStaffDto {
   @IsUUID()
@@ -52,7 +53,25 @@ export class CreateStaffDto {
   @IsOptional()
   titles?: TITLES[];
 
-  @IsEnum(UserStatusEnum)
+  @IsEnum(StaffStatusEnum)
   @IsOptional()
-  status?: UserStatusEnum;
+  status?: StaffStatusEnum;
+
+  @IsOptional()
+  @IsNotEmpty({ message: 'Şehir bilgisi giriniz' })
+  @IsUUID()
+  provinceId?: string;
+
+  @IsOptional()
+  @IsNotEmpty({ message: 'Semt bilgisi giriniz' })
+  @IsUUID()
+  districtId?: string;
+
+  @IsOptional()
+  @IsString()
+  addressDetail?: string;
+
+  @IsOptional()
+  @IsEnum(AddressStatusEnum)
+  addressStatus?: AddressStatusEnum;
 }

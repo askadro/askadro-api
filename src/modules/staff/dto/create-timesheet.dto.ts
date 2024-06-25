@@ -1,17 +1,19 @@
-import { IsNotEmpty, IsDateString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsDateString, IsNumber, IsUUID, IsString } from 'class-validator';
 
 export class CreateTimesheetDto {
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
+  @IsUUID()
   staffId: string;
 
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
+  @IsUUID()
   companyId: string;
 
   @IsNotEmpty()
   @IsDateString()
-  date: string;
+  date: Date;
 
   @IsNumber()
   hoursWorked: number;

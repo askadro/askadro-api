@@ -20,13 +20,13 @@ import { ProvincesModule } from '@/modules/provinces/provinces.module';
 import { ConfigurationModule } from '@/configuration/configuration.module';
 import { AddressesModule } from '@/modules/addresses/addresses.module';
 import { Authorized } from '@/modules/company/entities/authorized.entity';
-import { AuthModule } from '@/modules/auth/auth.module';
 import { StaffModule } from '@/modules/staff/staff.module';
 
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal:true,
       envFilePath: ['.env', '.env.local'],
     }),
     TypeOrmModule.forRootAsync({
@@ -73,7 +73,6 @@ import { StaffModule } from '@/modules/staff/staff.module';
     ConfigurationModule,
     AddressesModule,
     Authorized,
-    AuthModule,
     CommonModule,
     StaffModule,
   ],

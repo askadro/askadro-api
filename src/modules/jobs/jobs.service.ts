@@ -1,39 +1,49 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateJobsDto } from './dtos/create-jobs.dto';
 import { Job } from './job.entity';
 import { UpdateJobDto } from './dtos/update-jobs.dto';
 import { UsersService } from '@/modules/users/users.service';
+import { startOfMonth, startOfYear } from 'date-fns';
 
 @Injectable()
 export class JobsService {
-  constructor(@InjectRepository(Job) private repo: Repository<Job>,
-              private readonly usersService: UsersService) {
+  constructor(
+    @InjectRepository(Job) private jobRepository: Repository<Job>,
+    private readonly usersService: UsersService) {
   }
 
   async create(body: CreateJobsDto) {
     const user = await this.usersService.findOne(body.staffId);
-    const job = this.repo.create({
+    const job = this.jobRepository.create({
       staff: user ? { id: user.id } : null,
       ...body,
     });
-    return await this.repo.save(job);
+    return await this.jobRepository.save(job);
   }
 
-  async findOne(id: string, relations: string[] = ['users']) {
-    const job = await this.repo.findOne({
-      where: { id },
-      relations: relations,
-    });
+  async findOne(id: string): Promise<Job> {
+    const job = await this.jobRepository.findOne({ where: { id } });
     if (!job) {
-      throw new NotFoundException();
+      throw new NotFoundException('Job not found.');
     }
     return job;
   }
 
+  // async findOne(id: string, relations: string[] = ['users']) {
+  //   const job = await this.jobRepository.findOne({
+  //     ,
+  //     relations: relations,
+  //   });
+  //   if (!job) {
+  //     throw new NotFoundException();
+  //   }
+  //   return job;
+  // }
+
   async find() {
-    return await this.repo.find();
+    return await this.jobRepository.find();
   }
 
   async update(id: string, attrs: UpdateJobDto) {
@@ -42,41 +52,31 @@ export class JobsService {
       throw new NotFoundException('Job not found');
     }
     Object.assign(job, attrs);
-    return this.repo.save(job);
+    return this.jobRepository.save(job);
   }
 
   async remove(id: string) {
-    const job = await this.repo.findOne({
-      where: { id },
-    });
-    console.log(job);
-    if (!job) {
-      throw new NotFoundException();
-    }
-    return this.repo.softRemove(job);
+    const job = await this.findOne(id);
+    return this.jobRepository.softRemove(job);
   }
 
   async addJobForTicket(body: CreateJobsDto[]) {
-    console.log(body);
     if (!body) return 'no body';
-    const jobs = body.map((job: CreateJobsDto) => this.repo.create({
+    const jobEntities = body.map((job: CreateJobsDto) => this.jobRepository.create({
       ...job,
       ticket: { id: job.ticketId },
       staff: { id: job.staffId },
     }));
 
-    if (!jobs) {
+    if (!jobEntities) {
       throw new BadRequestException('Job not create');
     }
-    try {
-      return await this.repo.save(jobs);
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
+    return await this.jobRepository.save(jobEntities);
+
   }
 
   async filter(body: UpdateJobDto) {
-    return await this.repo.find({
+    return await this.jobRepository.find({
       // where: {
       //   user: body.userId,
       //   company: body.company,
@@ -84,5 +84,24 @@ export class JobsService {
       //   exitTime: body.exitTime,
       // },
     });
+  }
+
+  async counts() {
+    const today = new Date();
+    const firstDayOfCurrentMonth = startOfMonth(today);
+    const firstDayCurrentYear = startOfYear(today);
+    const oneMountJobs = await this.jobRepository.count({
+      where: {
+        createdAt: Between(firstDayOfCurrentMonth, today),
+      },
+    });
+    const oneYearJobs = await this.jobRepository.count({
+      where: {
+        createdAt: Between(firstDayCurrentYear, today),
+      },
+    });
+    const allJobs = await this.jobRepository.count({});
+
+    return { oneMountJobs, oneYearJobs, allJobs };
   }
 }

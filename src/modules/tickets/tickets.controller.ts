@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { path } from '@/constants/paths';
 import { TicketsService } from './tickets.service';
 import { CreateTicketDto } from './dtos/create-ticket.dto';
@@ -12,9 +12,9 @@ import { User } from '@/modules/users/entities/user.entity';
 import { Job } from '@/modules/jobs/job.entity';
 import { ConfigService } from '@nestjs/config';
 import { DEFAULT_APP_NAME } from '@nestjs/schematics';
-import { JwtAuthGuard } from '@/modules/auth/quards/jwt-auth-guard';
-import { RolesGuard } from '@/modules/auth/quards/roles.guard';
-import { Roles } from '@/modules/auth/roles.decorator';
+import { JwtAuthGuard } from '@/modules/users/quards/jwt-auth-guard';
+import { RolesGuard } from '@/modules/users/quards/roles.guard';
+import { Roles } from '@/modules/users/roles.decorator';
 import { ROLES } from '@/constants/enums/roles';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -43,13 +43,18 @@ export class TicketsController {
   @Roles(ROLES.manager)
   @Post('/only-ticket')
   getTickets(@Body() body:{startDate: Date, endDate: Date}) {
-    return this.ticketService.getTickets(body);
+    return this.ticketService.getTicketsByDateRange(body);
   }
 
   @Roles(ROLES.manager)
   @Get('/:id')
   getTicket(@Param('id') id: string) {
     return this.ticketService.getTicket(id);
+  }
+
+  @Delete("delete/:id")
+  deleteTicket(@Param('id') id: string) {
+    return this.ticketService.deleteTicket(id);
   }
 
   @Roles(ROLES.manager)

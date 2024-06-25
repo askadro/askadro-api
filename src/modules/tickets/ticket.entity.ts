@@ -1,9 +1,7 @@
-import { Column, PrimaryGeneratedColumn, Entity, ManyToOne, OneToOne, OneToMany } from 'typeorm';
-import { User } from '@/modules/users/entities/user.entity';
+import { Column, PrimaryGeneratedColumn, Entity, ManyToOne,  OneToMany } from 'typeorm';
 import { Company } from '@/modules/company/entities/company.entity';
 import { Job } from '@/modules/jobs/job.entity';
 import { JobStatusEnum } from '@/constants/enums/JobStatusEnum';
-import { Auth } from '@/modules/auth/entities/auth.entity';
 import { BaseEntity } from '@/common/entities/BaseEntity';
 import { Staff } from '@/modules/staff/entities/staff.entity';
 

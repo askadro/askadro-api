@@ -1,16 +1,12 @@
 import {
   BadRequestException,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Auth } from '@/modules/auth/entities/auth.entity';
 import * as bcrypt from 'bcrypt';
 import { Bcrypt } from '@/utils/bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import * as process from 'node:process';
 import { ConfigService } from '@nestjs/config';
 import { CreateUserDto } from '@/modules/users/dto/create-user.dto';
 import { User } from '@/modules/users/entities/user.entity';
@@ -41,8 +37,8 @@ export class AuthService {
     return this.createToken(user)
   }
 
-  async updateRefreshToken(identity: string, refreshToken: string): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { identity } });
+  async updateRefreshToken(username: string, refreshToken: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { username } });
 
     if (!user) {
       throw new BadRequestException('Kullanıcı bulunamadı');
@@ -78,8 +74,8 @@ export class AuthService {
     return await this.userRepository.find();
   }
 
-  async validateAuth(identity: string, pass: string): Promise<any> {
-    const user = await this.userRepository.findOne({ where: { identity } });
+  async validateAuth(username: string, pass: string): Promise<any> {
+    const user = await this.userRepository.findOne({ where: { username } });
     if (user && await bcrypt.compare(pass, user.password)) {
       const { password, ...result } = user;
       return result;
@@ -87,10 +83,11 @@ export class AuthService {
     return null;
   }
 
-  private createToken(user: any) {
+  private async createToken(user: any) {
     const payload = { username: user.username, sub: user.id, roles: user.roles };
+    console.log("log: ",JSON.stringify(payload));
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token:await this.jwtService.signAsync(payload),
     };
   }
 
@@ -101,7 +98,7 @@ export class AuthService {
   async validateToken(token: string): Promise<boolean> {
     try {
       const decoded = this.jwtService.verify(token, {
-        secret: this.configService.get('JWT_SECRET'),
+        secret: this.configService.get('SECRET_KEY_JWT'),
       });
 
       // Ek doğrulama işlemleri yapabilirsiniz (örn. kullanıcı veritabanında var mı?)

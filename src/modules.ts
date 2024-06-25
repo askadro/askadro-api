@@ -7,7 +7,6 @@ import { ConfigurationModule } from '@/configuration/configuration.module';
 import { AddressesModule } from '@/modules/addresses/addresses.module';
 import { Authorized } from '@/modules/company/entities/authorized.entity';
 import { CommonModule } from '@/modules/common/common.module';
-import { AuthModule } from '@/modules/auth/auth.module';
 
 export const modules: [
   UsersModule: typeof UsersModule,
@@ -18,7 +17,6 @@ export const modules: [
   ConfigurationModule: typeof ConfigurationModule,
   AddressesModule: typeof AddressesModule,
   Authorized: typeof Authorized,
-  AuthModule: typeof AuthModule,
   CommonModule: typeof CommonModule,
 
 ] = [
@@ -30,6 +28,5 @@ export const modules: [
   ConfigurationModule,
   AddressesModule,
   Authorized,
-  AuthModule,
   CommonModule
 ];

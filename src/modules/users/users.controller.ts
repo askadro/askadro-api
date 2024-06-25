@@ -1,22 +1,47 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post, Put,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { path } from '@/constants/paths';
-import { JwtAuthGuard } from '@/modules/auth/quards/jwt-auth-guard';
-import { RolesGuard } from '@/modules/auth/quards/roles.guard';
-import { Roles } from '@/modules/auth/roles.decorator';
+import { JwtAuthGuard } from '@/modules/users/quards/jwt-auth-guard';
+import { RolesGuard } from '@/modules/users/quards/roles.guard';
+import { Roles } from '@/modules/users/roles.decorator';
 import { ROLES } from '@/constants/enums/roles';
 import { Serialize } from '@/interceptors/serialize.interceptor';
 import { UserDto } from '@/modules/users/dto/user.dto';
+import { LocalAuthGuard } from '@/modules/users/quards/local-auth-guard';
+import { Request } from 'express';
+import { AuthService } from '@/modules/users/auth.service';
 
 @Serialize(UserDto)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {
+  constructor(private readonly usersService: UsersService, private readonly authService: AuthService) {
   }
 
+  @UseGuards(LocalAuthGuard)
+  @Post('login')
+  async login(@Req() req:Request) {
+    return this.authService.login(req.user)
+  }
+
+  // @Post('register')
+  // async register(@Body() createUserDto: CreateUserDto) {
+  //   return this.authService.create(createUserDto);
+  // }
 
   @Post("/create")
   async create(@Body() body: CreateUserDto) {
@@ -54,6 +79,38 @@ export class UsersController {
   @Get('user/:id')
   findOne(@Param('id') id: string) {
     return this.usersService.getUserById(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  async logout(@Req() req:any): Promise<boolean> {
+    return this.authService.logout(req.user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('refresh')
+  async refreshToken(@Req() req:Request) {
+    return this.authService.refreshToken(req.user);
+  }
+
+  @Post('validate-token')
+  async validateToken(@Body('token') token: string) {
+    const isValid = await this.authService.validateToken(token);
+
+    if (!isValid) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    return { valid: true };
+  }
+
+
+  @Put('update-refresh-token/:userId')
+  async updateRefreshToken(
+    @Param('userId') userId: string,
+    @Body('refreshToken') refreshToken: string,
+  ): Promise<User> {
+    return this.authService.updateRefreshToken(userId, refreshToken);
   }
 
 }
