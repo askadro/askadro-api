@@ -29,7 +29,6 @@ export class StaffService {
   }
 
 
-
 //in postman
   async create(createStaffDto: CreateStaffDto): Promise<Staff> {
     const { addressStatus, addressDetail, provinceId, districtId, ...staffData } = createStaffDto;
@@ -53,8 +52,28 @@ export class StaffService {
   }
 
   async update(id: string, updateStaffDto: UpdateStaffDto): Promise<Staff> {
-    await this.staffRepository.update(id, updateStaffDto);
-    return this.staffRepository.findOne({ where: { id } });
+    const {addressStatus,addressDetail,districtId,provinceId,...staffData} = updateStaffDto;
+    let addressEntity: Address = null;
+    const addressInfo = {
+      addressStatus: addressStatus,
+      addressDetail: addressDetail,
+      provinceId: provinceId,
+      districtId: districtId,
+    };
+    const staff = await this.findOne(id, ['address']);
+    console.log(staff, updateStaffDto);
+
+    if (!staff) {
+      throw new NotFoundException(`Staff with ID ${id} not found`);
+    }
+    if (staff.address) {
+      addressEntity = await this.addressService.updateAddress(staff.address.id, addressInfo);
+    } else {
+      addressEntity = await this.addressService.create(addressInfo);
+    }
+
+    await this.staffRepository.update(id, { ...staffData, address: { id: addressEntity.id } });
+    return;
   }
 
 
@@ -78,7 +97,7 @@ export class StaffService {
           if (i !== j) {
             queryBuilder.orWhere(
               'staff.firstName ILIKE :firstName AND staff.lastName ILIKE :lastName',
-              { firstName: `%${queryParts[i]}%`, lastName: `%${queryParts[j]}%` }
+              { firstName: `%${queryParts[i]}%`, lastName: `%${queryParts[j]}%` },
             );
           }
         }
@@ -166,9 +185,9 @@ export class StaffService {
   async deleteTimesheet(id: string) {
     await this.timesheetRepository.delete(id);
     return {
-      result:true,
-      message:`Timesheet deleted successfully`,
-    }
+      result: true,
+      message: `Timesheet deleted successfully`,
+    };
   }
 
   async findTimesheet(id: string): Promise<Timesheet> {

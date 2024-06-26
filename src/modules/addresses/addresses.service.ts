@@ -35,13 +35,12 @@ export class AddressesService {
     if (!address) {
       throw new NotFoundException(`Address with ID ${id} not found`);
     }
-    const { userId, companyId, provinceId, districtId, addressDetail, addressStatus } = updateAddressDto;
+    const {provinceId, districtId, addressDetail, addressStatus } = updateAddressDto;
 
-    // if (provinceId && districtId) {
-    //   const { district, province } = await this.findProvinceAndDistrict(provinceId, districtId);
-    //   address.province = province;
-    //   address.district = district;
-    // }
+    if (provinceId && districtId) {
+      address.province.id = updateAddressDto.provinceId;
+      address.district.id = updateAddressDto.districtId;
+    }
 
     if (addressDetail) {
       address.addressDetail = addressDetail;
@@ -49,11 +48,7 @@ export class AddressesService {
     if (addressStatus) {
       address.addressStatus = addressStatus;
     }
-    // if (userId || companyId) {
-    //   const { user, company } = await this.commonService.findUserOrCompany(userId, companyId);
-    //   address.user = user;
-    //   address.company = company;
-    // }
+
     console.log('After update:', address);
 
     const updatedAddress = await this.addressRepository.save(address);
