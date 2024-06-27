@@ -66,6 +66,6 @@ export class StaffController {
 
   @Post('timesheets')
   async getTimesheetsByCompanyAndMonth(@Body() getTimesheetsDto: GetTimesheetsDto): Promise<any> {
-    return this.staffService.getTimesheetsByCompanyAndMonth(getTimesheetsDto);
+    return this.staffService.getTimesheetsByCompanyAndDate(getTimesheetsDto);
   }
 }

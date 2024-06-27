@@ -52,7 +52,7 @@ export class StaffService {
   }
 
   async update(id: string, updateStaffDto: UpdateStaffDto): Promise<Staff> {
-    const {addressStatus,addressDetail,districtId,provinceId,...staffData} = updateStaffDto;
+    const { addressStatus, addressDetail, districtId, provinceId, ...staffData } = updateStaffDto;
     let addressEntity: Address = null;
     const addressInfo = {
       addressStatus: addressStatus,
@@ -198,13 +198,14 @@ export class StaffService {
     return timesheet;
   }
 
-  async getTimesheetsByCompanyAndMonth(getTimesheetsDto: GetTimesheetsDto): Promise<any> {
-    const { companyId, month } = getTimesheetsDto;
+  async getTimesheetsByCompanyAndDate(getTimesheetsDto: GetTimesheetsDto): Promise<any> {
+    const { companyId, month, year } = getTimesheetsDto;
 
     const timesheets = await this.timesheetRepository.createQueryBuilder('timesheet')
       .innerJoinAndSelect('timesheet.staff', 'staff')
       .where('timesheet.companyId = :companyId', { companyId })
       .andWhere('EXTRACT(MONTH FROM timesheet.date) = :month', { month })
+      .andWhere('EXTRACT(YEAR FROM timesheet.date) = :year', { year })
       .getMany();
 
     const groupedTimesheets = timesheets.reduce((acc, timesheet) => {
@@ -215,12 +216,13 @@ export class StaffService {
           dates: [],
         };
       }
-      acc[staffId].dates.push(timesheet.date);
+      acc[staffId].dates.push({ date: timesheet.date, hours: timesheet.hoursWorked });
       return acc;
     }, {});
 
     return Object.values(groupedTimesheets);
   }
+
 
   async findOneByTimesheet(id: string): Promise<Staff> {
     return this.staffRepository.findOne({ where: { id }, relations: ['timesheets'] });

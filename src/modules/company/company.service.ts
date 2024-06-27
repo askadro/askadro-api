@@ -87,7 +87,7 @@ export class CompanyService {
     if (company) {
       return company;
     }
-    throw new NotFoundException();
+    throw new NotFoundException("Şirket bulunamadı");
   }
 
   async find() {
