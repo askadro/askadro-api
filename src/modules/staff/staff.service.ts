@@ -199,8 +199,10 @@ export class StaffService {
   }
 
   async getTimesheetsByCompanyAndDate(getTimesheetsDto: GetTimesheetsDto): Promise<any> {
-    const { companyId, month, year } = getTimesheetsDto;
-
+    const { companyId, date } = getTimesheetsDto;
+    const cDate = new Date(date);
+    const year = cDate.getFullYear();
+    const month = cDate.getMonth() + 1;
     const timesheets = await this.timesheetRepository.createQueryBuilder('timesheet')
       .innerJoinAndSelect('timesheet.staff', 'staff')
       .where('timesheet.companyId = :companyId', { companyId })
@@ -216,7 +218,7 @@ export class StaffService {
           dates: [],
         };
       }
-      acc[staffId].dates.push({ date: timesheet.date, hours: timesheet.hoursWorked });
+      acc[staffId].dates.push({ date: timesheet.date, hours: timesheet.hoursWorked, id: timesheet.id });
       return acc;
     }, {});
 

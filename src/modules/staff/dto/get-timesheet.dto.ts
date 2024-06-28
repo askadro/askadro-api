@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, Min, Max } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, Min, Max, IsDateString } from 'class-validator';
 
 export class GetTimesheetsDto {
   @IsNotEmpty()
@@ -6,14 +6,7 @@ export class GetTimesheetsDto {
   companyId: string;
 
   @IsNotEmpty()
-  @IsNumber()
-  @Min(1)
-  @Max(12)
-  month: number;
+  @IsDateString()
+  date: Date;
 
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(2015)
-  @Max(2050)
-  year:number
 }

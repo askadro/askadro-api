@@ -1,7 +1,4 @@
-import { IsOptional, IsNumber } from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateTimesheetDto } from '@/modules/staff/dto/create-timesheet.dto';
 
-export class UpdateTimesheetDto {
-  @IsOptional()
-  @IsNumber()
-  hoursWorked?: number;
-}
+export class UpdateTimesheetDto  extends PartialType(CreateTimesheetDto) {}

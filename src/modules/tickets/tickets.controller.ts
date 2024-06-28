@@ -28,25 +28,21 @@ export class TicketsController {
   ) {
   }
 
-  @Roles(ROLES.manager)
   @Post('new')
   createTicket(@Body() body: CreateTicketDto) {
     return this.ticketService.create(body);
   }
 
-  @Roles(ROLES.manager)
   @Get('/with-job')
   getTicketWithRelation() {
     return this.ticketService.getTicketsWithRelation();
   }
 
-  @Roles(ROLES.manager)
   @Post('/only-ticket')
   getTickets(@Body() body:{startDate: Date, endDate: Date}) {
     return this.ticketService.getTicketsByDateRange(body);
   }
 
-  @Roles(ROLES.manager)
   @Get('/:id')
   getTicket(@Param('id') id: string) {
     return this.ticketService.getTicket(id);
@@ -57,13 +53,11 @@ export class TicketsController {
     return this.ticketService.deleteTicket(id);
   }
 
-  @Roles(ROLES.manager)
   @Patch('/update/:id')
   updateTicket(@Param('id') id: string, @Body() body: UpdateTicketDto) {
     return this.ticketService.updateTicket(id, body);
   }
 
-  @Roles(ROLES.manager)
   @Post('/send-email/:id')
   async sendEmail(@Param('id') id: string, @Body() body: SendEmailDto): Promise<any> {
     const ticket = await this.ticketService.getTicket(id);
