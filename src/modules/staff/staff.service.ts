@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { Staff } from '@/modules/staff/entities/staff.entity';
-import { IsNull, Not, Repository } from 'typeorm';
+import { Between, IsNull, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Timesheet } from '@/modules/staff/entities/timesheet.entity';
 import { Company } from '@/modules/company/entities/company.entity';
@@ -15,6 +15,7 @@ import { SearchStaffDto } from '@/modules/staff/dto/searc-staff.dto';
 import { GetTimesheetsDto } from '@/modules/staff/dto/get-timesheet.dto';
 import { CompanyService } from '@/modules/company/company.service';
 import { ROLES } from '@/constants/enums/roles';
+import { formatISO } from 'date-fns';
 
 @Injectable()
 export class StaffService {
@@ -167,12 +168,16 @@ export class StaffService {
   async createTimesheet({ staffId, date, hoursWorked, companyId }: CreateTimesheetDto): Promise<Timesheet> {
     const staff = await this.findOne(staffId);
     const company = await this.companyService.findOne(companyId);
+    const utcDate = new Date(date);
+    const formattedDate = formatISO(utcDate);
+    console.log("saved date: ",date);
     const timesheet = this.timesheetRepository.create({
-      date,
+      date:formattedDate,
       hoursWorked,
       staff: { id: staff.id },
       company: { id: company.id },
     });
+    console.log("timesheet: ",timesheet);
     return this.timesheetRepository.save(timesheet);
   }
 
@@ -202,23 +207,30 @@ export class StaffService {
     const { companyId, date } = getTimesheetsDto;
     const cDate = new Date(date);
     const year = cDate.getFullYear();
-    const month = cDate.getMonth() + 1;
-    const timesheets = await this.timesheetRepository.createQueryBuilder('timesheet')
-      .innerJoinAndSelect('timesheet.staff', 'staff')
-      .where('timesheet.companyId = :companyId', { companyId })
-      .andWhere('EXTRACT(MONTH FROM timesheet.date) = :month', { month })
-      .andWhere('EXTRACT(YEAR FROM timesheet.date) = :year', { year })
-      .getMany();
+    const month = cDate.getMonth();
+
+    const startDate = new Date(year, month,1);
+    const endDate = new Date(year, month + 1, 0);
+
+    const timesheets = await this.timesheetRepository.find({
+      where: {
+        company: { id: companyId },
+        date: Between(startDate, endDate),
+      },
+      relations: ['staff'],
+    });
 
     const groupedTimesheets = timesheets.reduce((acc, timesheet) => {
       const staffId = timesheet.staff.id;
+      const dateWithAddedDay = new Date(timesheet.date);
+      dateWithAddedDay.setDate(dateWithAddedDay.getDate() + 1);
       if (!acc[staffId]) {
         acc[staffId] = {
           staff: timesheet.staff,
           dates: [],
         };
       }
-      acc[staffId].dates.push({ date: timesheet.date, hours: timesheet.hoursWorked, id: timesheet.id });
+      acc[staffId].dates.push({ date: dateWithAddedDay, hours: timesheet.hoursWorked, id: timesheet.id });
       return acc;
     }, {});
 
