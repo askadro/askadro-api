@@ -13,10 +13,15 @@ import { Authorized } from '@/modules/company/entities/authorized.entity';
 import { AddressesService } from '@/modules/addresses/addresses.service';
 import { Province } from '@/modules/provinces/entities/province.entity';
 import { District } from '@/modules/provinces/entities/district.entity';
+import { KeycloakConnectModule } from 'nest-keycloak-connect';
+import { ProviderConfigModule } from '@/modules/config/provider-config.module';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Staff,Timesheet,Company,Address,Authorized,Province,District]),AddressesModule],
+  imports: [TypeOrmModule.forFeature([Staff, Timesheet, Company, Address, Authorized, Province, District]),
+    AddressesModule,
+    CompanyModule],
   controllers: [StaffController],
-  providers: [StaffService,CompanyService,AddressesService],
+  providers: [StaffService, CompanyService, AddressesService],
 })
-export class StaffModule {}
+export class StaffModule {
+}

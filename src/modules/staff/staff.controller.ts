@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Search, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { StaffService } from './staff.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
@@ -8,6 +8,7 @@ import { CreateTimesheetDto } from '@/modules/staff/dto/create-timesheet.dto';
 import { UpdateTimesheetDto } from '@/modules/staff/dto/update-timesheet.dto';
 import { SearchStaffDto } from '@/modules/staff/dto/searc-staff.dto';
 import { GetTimesheetsDto } from '@/modules/staff/dto/get-timesheet.dto';
+import { Resource, RoleMatchingMode, Roles } from 'nest-keycloak-connect';
 
 @Controller('staff')
 export class StaffController {
@@ -34,6 +35,7 @@ export class StaffController {
     return this.staffService.searchStaff(searchStaffDto);
   }
 
+  @Roles({ roles: ['akv-admin-client'] })
   @Get('all')
   findAll(): Promise<[Staff[], number]> {
     return this.staffService.findAll();
@@ -41,7 +43,7 @@ export class StaffController {
 
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Staff> {
-    return this.staffService.findOne(id, [ "job", "timesheets" ]);
+    return this.staffService.findOne(id, ['job', 'timesheets']);
   }
 
   @Post('add/timesheet')

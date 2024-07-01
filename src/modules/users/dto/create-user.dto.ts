@@ -4,10 +4,11 @@ import { userGenderEnum } from '@/constants/enums/user.gender.enum';
 import { ROLES } from '@/constants/enums/roles';
 import { UserStatusEnum } from '@/constants/enums/userStatusEnum';
 
+
 export class CreateUserDto {
   @IsEmail()
   @IsOptional()
-  email?: string;
+  email: string;
 
   @IsOptional()
   @IsString()

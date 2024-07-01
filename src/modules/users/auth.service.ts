@@ -6,109 +6,90 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Bcrypt } from '@/utils/bcrypt';
-import { JwtService } from '@nestjs/jwt';
+// import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { CreateUserDto } from '@/modules/users/dto/create-user.dto';
 import { User } from '@/modules/users/entities/user.entity';
+import { HttpService } from '@nestjs/axios';
+import { CreateKcUserDto } from '@/modules/users/dto/create-kc-user.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
-    private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly httpService: HttpService,
   ) {
   }
 
 
-  async login(user: any) {
-    return this.createToken(user);
-  }
-
-  async create(body: CreateUserDto) {
-    const { password } = body;
-
-    const hashedPassword = Bcrypt.hash(password);
-    const user = this.userRepository.create({
-      ...body,
-      password: hashedPassword,
-    })
-    await this.userRepository.save(user);
-    return this.createToken(user)
-  }
-
-  async updateRefreshToken(username: string, refreshToken: string): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { username } });
-
-    if (!user) {
-      throw new BadRequestException('Kullanıcı bulunamadı');
-    }
-    const refreshTokenExpiryTime = new Date(Date.now() + parseInt(this.configService.get('REFRESH_TOKEN_TIME')));
-
-    user.refreshToken = refreshToken;
-    user.refreshTokenExpiryTime = refreshTokenExpiryTime;
-
-    return this.userRepository.save(user);
-  }
-
-  async logout(user: any): Promise<boolean> {
-    const _user = await this.userRepository.findOne({ where: { id: user.userId } });
-
-    if (!_user) {
-      throw new BadRequestException('Kullanıcı bulunamadı');
-    }
-
-    _user.refreshToken = null;
-    _user.refreshTokenExpiryTime = null;
-
-    return true
-  }
-
-
-  private async generateRefreshToken(user: any) {
-    const payload = { username: user.username, sub: user.id };
-    return this.jwtService.sign(payload, { expiresIn: this.configService.get('EXPIRES_REFRESH') });
-  }
-
-  async getAuths() {
-    return await this.userRepository.find();
-  }
-
-  async validateAuth(username: string, pass: string): Promise<any> {
-    const user = await this.userRepository.findOne({ where: { username } });
-    if (user && await bcrypt.compare(pass, user.password)) {
-      const { password, ...result } = user;
-      return result;
-    }
-    return null;
-  }
-
-  private async createToken(user: any) {
-    const payload = { username: user.username, sub: user.id, roles: user.roles };
-    console.log("log: ",JSON.stringify(payload));
-    return {
-      access_token:await this.jwtService.signAsync(payload),
+  async login(username: string, password: string) {
+    const data = {
+      client_id: this.configService.get<string>('KEYCLOAK_CLIENT_ID'),
+      username: username,
+      password: password,
+      grant_type: 'password',
+      client_secret: this.configService.get<string>('KEYCLOAK_CLIENT_SECRET'),
     };
+    const url = `${this.configService.get<string>('KEYCLOAK_AUTH_SERVER_URL')}/realms/${this.configService.get<string>('KEYCLOAK_REALM')}/protocol/openid-connect/token`;
+
+    const response = await this.httpService.post(url, new URLSearchParams(data).toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    }).toPromise();
+
+    return response.data;
   }
 
-  async refreshToken(user: any) {
-    return this.createToken(user);
+  async logout(refreshToken: string) {
+    const data = {
+      client_id: this.configService.get<string>('KEYCLOAK_CLIENT_ID'),
+      refresh_token: refreshToken,
+      client_secret: this.configService.get<string>('KEYCLOAK_CLIENT_SECRET'),
+    };
+
+    const url = `${this.configService.get<string>('KEYCLOAK_AUTH_SERVER_URL')}/realms/${this.configService.get<string>('KEYCLOAK_REALM')}/protocol/openid-connect/logout`;
+
+    const response = await this.httpService.post(url, new URLSearchParams(data).toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    }).toPromise();
+
+    return response.data;
   }
 
-  async validateToken(token: string): Promise<boolean> {
-    try {
-      const decoded = this.jwtService.verify(token, {
-        secret: this.configService.get('SECRET_KEY_JWT'),
-      });
+  async register( createKcUserDto: CreateKcUserDto,token:string) {
+    const {username, password, email, firstName, lastName} = createKcUserDto
+    const url = `${this.configService.get<string>('KEYCLOAK_AUTH_SERVER_URL')}/admin/realms/${this.configService.get<string>('KEYCLOAK_REALM')}/users`;
 
-      // Ek doğrulama işlemleri yapabilirsiniz (örn. kullanıcı veritabanında var mı?)
-      if (decoded) {
-        return true;
-      }
-      return false;
-    } catch (error) {
-      return false;
-    }
+    const data = {
+      username,
+      email,
+      firstName,
+      lastName,
+      enabled: true,
+      attributes:{},
+      groups:[],
+      emailVerified:"",
+      credentials: [
+        {
+          type: 'password',
+          value: password,
+          temporary: false,
+        },
+      ],
+    };
+    console.log(token,data);
+    const response = await this.httpService.post(url, data, {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'Authorization': token,
+      },
+    }).toPromise();
+
+    return response.data;
   }
 
+  async profile(){
+    const url = `${this.configService.get<string>('KEYCLOAK_AUTH_SERVER_URL')}/realms/${this.configService.get<string>('KEYCLOAK_REALM')}/attack-detection/brute-force/users`;
+
+  }
 }

@@ -12,12 +12,8 @@ import { User } from '@/modules/users/entities/user.entity';
 import { Job } from '@/modules/jobs/job.entity';
 import { ConfigService } from '@nestjs/config';
 import { DEFAULT_APP_NAME } from '@nestjs/schematics';
-import { JwtAuthGuard } from '@/modules/users/quards/jwt-auth-guard';
-import { RolesGuard } from '@/modules/users/quards/roles.guard';
-import { Roles } from '@/modules/users/roles.decorator';
 import { ROLES } from '@/constants/enums/roles';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Serialize(TicketDto)
 @Controller('tickets')
 export class TicketsController {

@@ -10,7 +10,6 @@ import { AsMailerService } from '@/modules/as-mailer/as-mailer.service';
 import { CommonModule } from './modules/common/common.module';
 import { IsUniqueConstraint } from '@/utils/validations/unique/is-unique';
 import { DataSource } from 'typeorm';
-import { JwtService } from '@nestjs/jwt';
 import { join } from 'path';
 import { UsersModule } from '@/modules/users/users.module';
 import { JobsModule } from '@/modules/jobs/jobs.module';
@@ -21,12 +20,21 @@ import { ConfigurationModule } from '@/configuration/configuration.module';
 import { AddressesModule } from '@/modules/addresses/addresses.module';
 import { Authorized } from '@/modules/company/entities/authorized.entity';
 import { StaffModule } from '@/modules/staff/staff.module';
+import { KeycloakConnectModule, AuthGuard, RoleGuard, ResourceGuard } from 'nest-keycloak-connect';
+import { APP_GUARD } from '@nestjs/core';
+import { KeycloakConfigService } from '@/modules/config/keycloak-config.service';
+import { ProviderConfigModule } from '@/modules/config/provider-config.module';
+import { GlobalHttpModule } from '@/modules/common/global-http.module';
 
 
 @Module({
   imports: [
+    KeycloakConnectModule.registerAsync({
+      useExisting: KeycloakConfigService,
+      imports: [ProviderConfigModule],
+    }),
     ConfigModule.forRoot({
-      isGlobal:true,
+      isGlobal: true,
       envFilePath: ['.env', '.env.local'],
     }),
     TypeOrmModule.forRootAsync({
@@ -36,7 +44,7 @@ import { StaffModule } from '@/modules/staff/staff.module';
       ): Promise<TypeOrmModuleOptions> => ({
         type: 'postgres',
         host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT',5432),
+        port: configService.get<number>('DB_PORT', 5432),
         password: configService.get<string>('POSTGRES_PASSWORD'),
         username: configService.get<string>('POSTGRES_USER'),
         entities: [join(__dirname, '**', '*.entity.{ts,js}')],
@@ -75,9 +83,22 @@ import { StaffModule } from '@/modules/staff/staff.module';
     Authorized,
     CommonModule,
     StaffModule,
+    GlobalHttpModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AsMailerService, IsUniqueConstraint, JwtService],
+  providers: [AppService, AsMailerService, IsUniqueConstraint,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ResourceGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard,
+    },],
 })
 export class AppModule {
   constructor(private dataSource: DataSource) {

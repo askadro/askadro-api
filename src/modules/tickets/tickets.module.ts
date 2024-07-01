@@ -15,17 +15,17 @@ import { CompanyModule } from '@/modules/company/company.module';
 import { CompanyService } from '@/modules/company/company.service';
 import { Authorized } from '@/modules/company/entities/authorized.entity';
 import { AddressesService } from '@/modules/addresses/addresses.service';
-import { JwtService } from '@nestjs/jwt';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { Province } from '@/modules/provinces/entities/province.entity';
 import { District } from '@/modules/provinces/entities/district.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Ticket,Job,User,Company,Authorized,Address,Province,District]),UsersModule,CompanyModule],
+  imports: [TypeOrmModule.forFeature([Ticket, Job, User, Company, Authorized, Address, Province, District]),
+    UsersModule, CompanyModule],
   controllers: [TicketsController],
-  providers: [TicketsService,CommonService,
-    JobsService,AsMailerService,ConfigService,CompanyService,AddressesService,JwtService],
-  exports:[TicketsService],
+  providers: [TicketsService, CommonService,
+    JobsService, AsMailerService, ConfigService, CompanyService, AddressesService],
+  exports: [TicketsService],
 })
 export class TicketsModule {
 }
