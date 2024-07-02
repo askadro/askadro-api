@@ -12,6 +12,8 @@ import { CreateUserDto } from '@/modules/users/dto/create-user.dto';
 import { User } from '@/modules/users/entities/user.entity';
 import { HttpService } from '@nestjs/axios';
 import { CreateKcUserDto } from '@/modules/users/dto/create-kc-user.dto';
+import { KeycloakConfigService } from '@/modules/config/keycloak-config.service';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +22,6 @@ export class AuthService {
     private readonly httpService: HttpService,
   ) {
   }
-
 
   async login(username: string, password: string) {
     const data = {
@@ -55,9 +56,12 @@ export class AuthService {
     return response.data;
   }
 
-  async register( createKcUserDto: CreateKcUserDto,token:string) {
-    const {username, password, email, firstName, lastName} = createKcUserDto
-    const url = `${this.configService.get<string>('KEYCLOAK_AUTH_SERVER_URL')}/admin/realms/${this.configService.get<string>('KEYCLOAK_REALM')}/users`;
+  async register(createKcUserDto: CreateKcUserDto, token: string) {
+    const { username, password, email, firstName, lastName } = createKcUserDto;
+    const baseUrl = this.configService.get<string>('KEYCLOAK_AUTH_SERVER_URL')
+    const realm = this.configService.get<string>('KEYCLOAK_REALM')
+
+    const url = `${baseUrl}/admin/realms/${realm}/users`;
 
     const data = {
       username,
@@ -65,9 +69,10 @@ export class AuthService {
       firstName,
       lastName,
       enabled: true,
-      attributes:{},
-      groups:[],
-      emailVerified:"",
+      attributes: {},
+      groups: [],
+      emailVerified: '',
+      requiredActions:[],
       credentials: [
         {
           type: 'password',
@@ -76,20 +81,30 @@ export class AuthService {
         },
       ],
     };
-    console.log(token,data);
+    console.log(token, data);
     const response = await this.httpService.post(url, data, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token,
+      },
+    }).toPromise();
+    console.log(response);
+    return response;
+  }
+
+  async profile(token: string) {
+    const baseUrl = this.configService.get<string>('KEYCLOAK_AUTH_SERVER_URL')
+    const realm = this.configService.get<string>('KEYCLOAK_REALM')
+
+    const url = `${baseUrl}/realms/${realm}/account`;
+
+    const response = await this.httpService.get(url, {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
         'Authorization': token,
       },
     }).toPromise();
-
     return response.data;
-  }
-
-  async profile(){
-    const url = `${this.configService.get<string>('KEYCLOAK_AUTH_SERVER_URL')}/realms/${this.configService.get<string>('KEYCLOAK_REALM')}/attack-detection/brute-force/users`;
-
   }
 }

@@ -16,14 +16,18 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from '@/modules/users/auth.service';
 import { PassportModule } from '@nestjs/passport';
 import { AddressesModule } from '@/modules/addresses/addresses.module';
-import { HttpModule, HttpService } from '@nestjs/axios';
+import { HttpModule,  } from '@nestjs/axios';
+import {
+  KeycloakConnectModule,
+} from 'nest-keycloak-connect';
+import { KeycloakService } from '@/modules/config/keycloakService';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Address, Province, District, Company, Job, Ticket]),
-    CommonModule, PassportModule, AddressesModule, HttpModule,
+    CommonModule, PassportModule, AddressesModule, HttpModule,KeycloakConnectModule
   ],
   controllers: [UsersController],
-  providers: [UsersService, CommonService,
+  providers: [UsersService, CommonService,KeycloakService,
     AuthService, ConfigService],
   exports: [UsersService],
 })

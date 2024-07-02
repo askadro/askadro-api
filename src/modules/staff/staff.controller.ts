@@ -35,7 +35,7 @@ export class StaffController {
     return this.staffService.searchStaff(searchStaffDto);
   }
 
-  @Roles({ roles: ['akv-admin-client'] })
+  @Roles({ roles: ['user'] })
   @Get('all')
   findAll(): Promise<[Staff[], number]> {
     return this.staffService.findAll();

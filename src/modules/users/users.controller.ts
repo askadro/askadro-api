@@ -20,41 +20,40 @@ import { Request } from 'express';
 import { AuthService } from '@/modules/users/auth.service';
 import { Public, Roles } from 'nest-keycloak-connect';
 import { CreateKcUserDto } from '@/modules/users/dto/create-kc-user.dto';
+import { KeycloakService } from '@/modules/config/keycloakService';
+import { KeycloakConfigService } from '@/modules/config/keycloak-config.service';
 
 // @Serialize(UserDto)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService, private readonly authService: AuthService) {
+  constructor(private readonly usersService: UsersService,
+              private readonly authService: AuthService,
+            ) {
   }
 
   @Public()
   @Post('login')
-  async login(@Req() req: Request) {
-    return this.authService.login('abysmall', '24262060');
+  async login(@Body() { username, password }: { username: string, password: string }) {
+    return this.authService.login(username, password);
   }
 
-  @Roles({ roles: ['user'] })
+  @Roles({ roles: ['admin'] })
   @Post('register')
   async register(@Body() createKcUserDto: CreateKcUserDto,
                  @Headers('authorization') authorization: string) {
     return this.authService.register(createKcUserDto, authorization);
   }
 
-  @Roles({ roles: ['admin'] })
-  @Post('profile')
-  async profile() {
-    return this.authService.profile();
+  @Roles({ roles: ['user'] })
+  @Get('profile')
+  async profile(@Headers('authorization') authorization: string) {
+    return this.authService.profile(authorization);
   }
 
   @Post('/create')
   async create(@Body() body: CreateUserDto) {
     console.log(new Date().toISOString());
     return this.usersService.create(body);
-  }
-
-  @Get('/profile')
-  async getProfile(@Req() req: any) {
-    return await this.usersService.findOne(req.user.userId);
   }
 
   @Get()
