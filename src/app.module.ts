@@ -43,13 +43,13 @@ import { GlobalHttpModule } from '@/modules/common/global-http.module';
         configService: ConfigService,
       ): Promise<TypeOrmModuleOptions> => ({
         type: 'postgres',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT', 5432),
-        password: configService.get<string>('POSTGRES_PASSWORD'),
+        host: configService.get<string>('POSTGRES_HOST'),
+        port: configService.get<number>('POSTGRES_PORT', 5432),
         username: configService.get<string>('POSTGRES_USER'),
-        entities: [join(__dirname, '**', '*.entity.{ts,js}')],
+        password: configService.get<string>('POSTGRES_PASSWORD'),
         database: configService.get<string>('POSTGRES_DB'),
-        synchronize: true, // prod da false olmalı
+        entities: [join(__dirname, '**', '*.entity.{ts,js}')],
+        synchronize: true, // Set to false in production
         autoLoadEntities: true,
         // logging: true,
       }),

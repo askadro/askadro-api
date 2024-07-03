@@ -8,12 +8,11 @@ import { TicketDto } from '@/modules/tickets/dtos/ticket.dto';
 import { SendEmailDto } from '@/modules/as-mailer/dto/send-email.dto';
 import { AsMailerService } from '@/modules/as-mailer/as-mailer.service';
 import { CompanyService } from '@/modules/company/company.service';
-import { User } from '@/modules/users/entities/user.entity';
 import { Job } from '@/modules/jobs/job.entity';
 import { ConfigService } from '@nestjs/config';
-import { DEFAULT_APP_NAME } from '@nestjs/schematics';
-import { ROLES } from '@/constants/enums/roles';
+import { Roles } from 'nest-keycloak-connect';
 
+@Roles({roles:["user"]})
 @Serialize(TicketDto)
 @Controller('tickets')
 export class TicketsController {

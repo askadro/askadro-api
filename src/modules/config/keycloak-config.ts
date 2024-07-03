@@ -3,7 +3,7 @@ import KcAdminClient from '@keycloak/keycloak-admin-client';
 
   const adminClientData = {
     baseUrl: process.env.KEYCLOAK_AUTH_SERVER_URL || 'http://localhost:8080',
-    realmName: process.env.KEYCLOAK_REALM,
+    realmName: process.env.KC_REALM_NAME,
     username: 'admin',
     password: '24262060',
     grantType: 'password',

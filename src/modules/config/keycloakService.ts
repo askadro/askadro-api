@@ -44,7 +44,7 @@ export class KeycloakService {
       const KCadmCli = (await this.dynamicKeycloakImport()).default;
       this.kcAdminClient = new KCadmCli({
         baseUrl: this.configService.get('KEYCLOAK_AUTH_SERVER_URL'),
-        realmName: this.configService.get('KEYCLOAK_REALM'),
+        realmName: this.configService.get('KC_REALM_NAME'),
       });
 
       // await this.kcAdminClient.auth({

@@ -2,7 +2,8 @@ import {
   Body,
   Controller,
   Delete,
-  Get, Headers,
+  Get,
+  Headers,
   Param,
   Patch,
   Post,
@@ -14,21 +15,17 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { path } from '@/constants/paths';
-import { Serialize } from '@/interceptors/serialize.interceptor';
-import { UserDto } from '@/modules/users/dto/user.dto';
-import { Request } from 'express';
 import { AuthService } from '@/modules/users/auth.service';
-import { Public, Roles } from 'nest-keycloak-connect';
+import { Public, Resource, Roles, Scopes } from 'nest-keycloak-connect';
 import { CreateKcUserDto } from '@/modules/users/dto/create-kc-user.dto';
-import { KeycloakService } from '@/modules/config/keycloakService';
-import { KeycloakConfigService } from '@/modules/config/keycloak-config.service';
 
-// @Serialize(UserDto)
+@Resource(User.name)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService,
-              private readonly authService: AuthService,
-            ) {
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly authService: AuthService,
+  ) {
   }
 
   @Public()
@@ -39,58 +36,64 @@ export class UsersController {
 
   @Roles({ roles: ['admin'] })
   @Post('register')
-  async register(@Body() createKcUserDto: CreateKcUserDto,
-                 @Headers('authorization') authorization: string) {
+  async register(
+    @Body() createKcUserDto: CreateKcUserDto,
+    @Headers('authorization') authorization: string,
+  ) {
     return this.authService.register(createKcUserDto, authorization);
   }
 
-  @Roles({ roles: ['user'] })
+  @Roles({ roles: ['user', 'admin'] })
   @Get('profile')
   async profile(@Headers('authorization') authorization: string) {
     return this.authService.profile(authorization);
   }
 
+  @Roles({ roles: ['admin'] })
   @Post('/create')
   async create(@Body() body: CreateUserDto) {
-    console.log(new Date().toISOString());
     return this.usersService.create(body);
   }
 
+  @Roles({ roles: ['user', 'admin'] })
   @Get()
   findAll(@Req() req: any) {
-    console.log(req.user);
     return this.usersService.findAll();
   }
 
+  @Roles({ roles: ['admin'] })
   @Patch(path.users.userUpdate)
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
     return this.usersService.update(id, updateUserDto);
   }
 
+  @Roles({ roles: ['admin'] })
   @Delete(path.users.userDelete)
   async remove(@Param('id') id: string, @Query('soft') soft: string): Promise<User> {
     return await this.usersService.remove(id, soft);
   }
 
+  @Roles({ roles: ['user', 'admin'] })
   @Get(path.users.deletedUsers)
-  deletedUsers() {
+  async deletedUsers() {
     return this.usersService.deletedUsers();
   }
 
+  @Roles({ roles: ['user', 'admin'] })
   @Get('user/:id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.usersService.getUserById(id);
   }
 
+  @Public()
   @Post('logout')
   async logout(@Req() req: any): Promise<boolean> {
     return this.authService.logout(req.user);
   }
 
-
   // @UseGuards(JwtAuthGuard)
   // @Post('refresh')
-  // async refreshToken(@Req() req:Request) {
+  // async refreshToken(@Req() req: Request) {
   //   return this.authService.refreshToken(req.user);
   // }
   //
@@ -105,7 +108,6 @@ export class UsersController {
   //   return { valid: true };
   // }
   //
-  //
   // @Put('update-refresh-token/:userId')
   // async updateRefreshToken(
   //   @Param('userId') userId: string,
@@ -113,5 +115,4 @@ export class UsersController {
   // ): Promise<User> {
   //   return this.authService.updateRefreshToken(userId, refreshToken);
   // }
-
 }

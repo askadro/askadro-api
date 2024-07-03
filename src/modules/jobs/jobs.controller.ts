@@ -6,15 +6,15 @@ import {
   Param,
   Post,
   NotFoundException,
-  Patch, Req, UseGuards,
+  Patch
 } from '@nestjs/common';
 import { CreateJobsDto } from './dtos/create-jobs.dto';
 import { JobsService } from './jobs.service';
 import { Job } from './job.entity';
-import { path } from '@/constants/paths';
 import { UpdateJobDto } from '@/modules/jobs/dtos/update-jobs.dto';
-import { TITLES } from '@/constants/enums/titles';
+import { Roles } from 'nest-keycloak-connect';
 
+@Roles({roles:["user"]})
 @Controller('jobs')
 export class JobsController {
   constructor(private jobsService: JobsService) {

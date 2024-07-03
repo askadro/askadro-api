@@ -4,10 +4,10 @@ import { CompanyService } from './company.service';
 import { UpdateCompanyDto } from './dtos/update-company.dto';
 import { path } from '@/constants/paths';
 import { CompanyCreate } from '@/decorators/company/create.decorator';
-import { Bcrypt } from '@/utils/bcrypt';
 import { UpdateAuthorizedDto } from '@/modules/company/dtos/update-authorized.dto';
+import { Roles } from 'nest-keycloak-connect';
 
-
+@Roles({roles:["user"]})
 @Controller(path.company.main)
 export class CompanyController {
   constructor(private companyService: CompanyService) {

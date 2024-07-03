@@ -21,13 +21,14 @@ import {
   KeycloakConnectModule,
 } from 'nest-keycloak-connect';
 import { KeycloakService } from '@/modules/config/keycloakService';
+import { KeycloakConfigService } from '@/modules/config/keycloak-config.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Address, Province, District, Company, Job, Ticket]),
     CommonModule, PassportModule, AddressesModule, HttpModule,KeycloakConnectModule
   ],
   controllers: [UsersController],
-  providers: [UsersService, CommonService,KeycloakService,
+  providers: [UsersService, CommonService,KeycloakService,KeycloakConfigService,
     AuthService, ConfigService],
   exports: [UsersService],
 })

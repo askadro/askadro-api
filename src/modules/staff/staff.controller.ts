@@ -10,6 +10,7 @@ import { SearchStaffDto } from '@/modules/staff/dto/searc-staff.dto';
 import { GetTimesheetsDto } from '@/modules/staff/dto/get-timesheet.dto';
 import { Resource, RoleMatchingMode, Roles } from 'nest-keycloak-connect';
 
+@Roles({roles:["user"]})
 @Controller('staff')
 export class StaffController {
   constructor(private readonly staffService: StaffService) {

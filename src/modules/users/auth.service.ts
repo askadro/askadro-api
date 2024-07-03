@@ -20,18 +20,24 @@ export class AuthService {
   constructor(
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
+    private readonly keycloakService: KeycloakConfigService,
   ) {
   }
 
+  baseUrl = this.configService.get<string>('KEYCLOAK_AUTH_SERVER_URL');
+  realm = this.configService.get<string>('KC_REALM_NAME');
+  clientId = this.configService.get<string>('KEYCLOAK_CLIENT_ID')
+
   async login(username: string, password: string) {
+    return this.keycloakService.getClientSecretKey()
     const data = {
-      client_id: this.configService.get<string>('KEYCLOAK_CLIENT_ID'),
+      client_id: this.clientId,
       username: username,
       password: password,
       grant_type: 'password',
       client_secret: this.configService.get<string>('KEYCLOAK_CLIENT_SECRET'),
     };
-    const url = `${this.configService.get<string>('KEYCLOAK_AUTH_SERVER_URL')}/realms/${this.configService.get<string>('KEYCLOAK_REALM')}/protocol/openid-connect/token`;
+    const url = `${this.baseUrl}/realms/${this.realm}/protocol/openid-connect/token`;
 
     const response = await this.httpService.post(url, new URLSearchParams(data).toString(), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -47,7 +53,7 @@ export class AuthService {
       client_secret: this.configService.get<string>('KEYCLOAK_CLIENT_SECRET'),
     };
 
-    const url = `${this.configService.get<string>('KEYCLOAK_AUTH_SERVER_URL')}/realms/${this.configService.get<string>('KEYCLOAK_REALM')}/protocol/openid-connect/logout`;
+    const url = `${this.configService.get<string>('KEYCLOAK_AUTH_SERVER_URL')}/realms/${this.configService.get<string>('KC_REALM_NAME')}/protocol/openid-connect/logout`;
 
     const response = await this.httpService.post(url, new URLSearchParams(data).toString(), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -58,10 +64,8 @@ export class AuthService {
 
   async register(createKcUserDto: CreateKcUserDto, token: string) {
     const { username, password, email, firstName, lastName } = createKcUserDto;
-    const baseUrl = this.configService.get<string>('KEYCLOAK_AUTH_SERVER_URL')
-    const realm = this.configService.get<string>('KEYCLOAK_REALM')
 
-    const url = `${baseUrl}/admin/realms/${realm}/users`;
+    const url = `${this.baseUrl}/admin/realms/${this.realm}/users`;
 
     const data = {
       username,
@@ -72,7 +76,7 @@ export class AuthService {
       attributes: {},
       groups: [],
       emailVerified: '',
-      requiredActions:[],
+      requiredActions: [],
       credentials: [
         {
           type: 'password',
@@ -93,10 +97,7 @@ export class AuthService {
   }
 
   async profile(token: string) {
-    const baseUrl = this.configService.get<string>('KEYCLOAK_AUTH_SERVER_URL')
-    const realm = this.configService.get<string>('KEYCLOAK_REALM')
-
-    const url = `${baseUrl}/realms/${realm}/account`;
+    const url = `${this.baseUrl}/realms/${this.realm}/account`;
 
     const response = await this.httpService.get(url, {
       headers: {
