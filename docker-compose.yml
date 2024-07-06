@@ -6,11 +6,18 @@ volumes:
 services:
   keycloak:
     container_name: keycloak-askadrovip
-    image: quay.io/keycloak/keycloak:25.0.1
+    image: quay.io/keycloak/keycloak:latest
     restart: always
-    command: ["start"]
-    env_file:
-      - .env
+    command: ["start-dev", '--import-realm']
+    environment:
+      KEYCLOAK_ADMIN: frintar
+      KEYCLOAK_ADMIN_PASSWORD: 24262060
+      KC_DB: postgres
+      KC_DB_PASSWORD: 24262060
+      KC_DB_USERNAME: postgres
+      KC_DB_SCHEMA: public
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KEYCLOAK_IMPORT: /opt/keycloak/data/import/realm-export.json -Dkeycloak.profile.feature.upload_scripts=enabled
     ports:
       - "8080:8080"
       - "8443:8443"
@@ -23,8 +30,7 @@ services:
 #      interval: 30s
 #      timeout: 10s
     volumes:
-      - ./keycloak/realm.json:/opt/keycloak/data/import/realm.json:ro
-      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
 
   postgres:
     container_name: postgres-askadrovip
@@ -54,11 +60,11 @@ services:
 #      dockerfile: Dockerfile
 #    ports:
 #      - '5062:5062'
-#    depends_on:
-##      keycloak:
-##        condition: service_healthy
-#      postgres:
-#        condition: service_healthy
+##    depends_on:
+###      keycloak:
+###        condition: service_healthy
+###      postgres:
+###        condition: service_healthy
 #    env_file:
 #      - .env
 #    volumes:

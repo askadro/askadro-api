@@ -4,9 +4,6 @@
   "ssl-required": "external",
   "resource": "askadrovip-api",
   "verify-token-audience": true,
-  "credentials": {
-    "secret": "4ffh7fd-1g48-1d46-16ds-1fdg643sdf"
-  },
   "confidential-port": 0,
   "policy-enforcer": {}
 }

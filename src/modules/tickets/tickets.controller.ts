@@ -12,7 +12,7 @@ import { Job } from '@/modules/jobs/job.entity';
 import { ConfigService } from '@nestjs/config';
 import { Roles } from 'nest-keycloak-connect';
 
-@Roles({roles:["user"]})
+@Roles({roles:["user","owner","chef"]})
 @Serialize(TicketDto)
 @Controller('tickets')
 export class TicketsController {

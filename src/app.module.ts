@@ -25,14 +25,18 @@ import { APP_GUARD } from '@nestjs/core';
 import { KeycloakConfigService } from '@/modules/config/keycloak-config.service';
 import { ProviderConfigModule } from '@/modules/config/provider-config.module';
 import { GlobalHttpModule } from '@/modules/common/global-http.module';
+import { AuthModule } from '@/modules/auth/auth.module';
+import { AccessTokenModule } from '@/modules/access-token/access-token.module';
+import { HttpRequestModule } from '@/modules/http-request/http-request.module';
 
 
 @Module({
   imports: [
-    KeycloakConnectModule.registerAsync({
-      useExisting: KeycloakConfigService,
-      imports: [ProviderConfigModule],
-    }),
+    // KeycloakConnectModule.registerAsync({
+    //   useExisting: KeycloakConfigService,
+    //   imports: [ProviderConfigModule],
+    // }),
+    // ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env', '.env.local'],
@@ -84,6 +88,9 @@ import { GlobalHttpModule } from '@/modules/common/global-http.module';
     CommonModule,
     StaffModule,
     GlobalHttpModule,
+    AuthModule,
+    AccessTokenModule,
+    HttpRequestModule
   ],
   controllers: [AppController],
   providers: [AppService, AsMailerService, IsUniqueConstraint,

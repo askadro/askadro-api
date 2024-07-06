@@ -27,15 +27,33 @@ export class AuthService {
   baseUrl = this.configService.get<string>('KEYCLOAK_AUTH_SERVER_URL');
   realm = this.configService.get<string>('KC_REALM_NAME');
   clientId = this.configService.get<string>('KEYCLOAK_CLIENT_ID')
+  secret = this.configService.get<string>('KEYCLOAK_CLIENT_SECRET')
+
+  async adminLogin(username: string, password: string) {
+    // return this.keycloakService.getClientSecretKey()
+    const data = {
+      client_id: "admin-cli",
+      username: username,
+      password: password,
+      grant_type: 'password'
+    };
+    const url = `${this.baseUrl}/realms/master/protocol/openid-connect/token`;
+
+    const response = await this.httpService.post(url, new URLSearchParams(data).toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    }).toPromise();
+
+    return response.data;
+  }
 
   async login(username: string, password: string) {
-    return this.keycloakService.getClientSecretKey()
+    // return this.keycloakService.getClientSecretKey()
     const data = {
       client_id: this.clientId,
       username: username,
       password: password,
       grant_type: 'password',
-      client_secret: this.configService.get<string>('KEYCLOAK_CLIENT_SECRET'),
+      client_secret: this.secret,
     };
     const url = `${this.baseUrl}/realms/${this.realm}/protocol/openid-connect/token`;
 
@@ -75,7 +93,7 @@ export class AuthService {
       enabled: true,
       attributes: {},
       groups: [],
-      emailVerified: '',
+      emailVerified: true,
       requiredActions: [],
       credentials: [
         {
@@ -85,15 +103,17 @@ export class AuthService {
         },
       ],
     };
-    console.log(token, data);
-    const response = await this.httpService.post(url, data, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': token,
-      },
-    }).toPromise();
-    console.log(response);
-    return response;
+    try {
+      const response = await this.httpService.post(url, data, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token,
+        },
+      }).toPromise();
+      return response.data
+    } catch (error) {
+      return error.message
+    }
   }
 
   async profile(token: string) {

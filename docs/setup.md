@@ -1,0 +1,1 @@
+    "start:dev": "nest build --webpack --webpackPath webpack-hmr.config.js --watch",
