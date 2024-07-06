@@ -10,7 +10,6 @@ import { Address } from '@/modules/addresses/entities/address.entity';
 import { AddressesService } from '@/modules/addresses/addresses.service';
 import { CreateAuthorizedDto } from '@/modules/company/dtos/create-authorized.dto';
 import { UpdateAuthorizedDto } from '@/modules/company/dtos/update-authorized.dto';
-import { Bcrypt } from '@/utils/bcrypt';
 import { DEFAULT_PW } from '@/constants/app';
 
 @Injectable()
@@ -26,7 +25,7 @@ export class CompanyService {
     const { authorized, provinceId, districtId, addressStatus, addressDetail, ...companyData } = body;
     let companyEntity: Company = null;
     let addressEntity: Address = null;
-    const hashedPassword = Bcrypt.hash(companyData.registrationNumber || DEFAULT_PW);
+    const hashedPassword = CryptoJS.SHA256(companyData.registrationNumber || DEFAULT_PW).toString(CryptoJS.enc.Hex);
     const company = this.comp.create({ ...companyData, password: hashedPassword });
     companyEntity = await this.comp.save(company);
 

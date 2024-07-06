@@ -1,27 +1,45 @@
-FROM node:21.2-alpine as Build
+# Kullanılan Node sürümünü ve çalışma dizinini ayarla
+FROM node:21.2-alpine AS build
 
-# Set working directory
+# Çalışma dizinini ayarla
 WORKDIR /app
+
+# Gereken dosyaları kopyala
 COPY package*.json ./
 COPY src src
 COPY tsconfig*.json ./
 
-RUN npm config set fetch-retry-mintimeout 200000 && npm config set fetch-retry-maxtimeout 1200000
-RUN npm install --ignore-scripts -g npm@10.2.4 && npm i --ignore-scripts -g rimraf
+# npm ayarlarını yap ve bağımlılıkları yükle
+RUN npm config set fetch-retry-mintimeout 200000 && \
+    npm config set fetch-retry-maxtimeout 1200000 && \
+    npm install --ignore-scripts -g rimraf && \
+    npm ci --ignore-scripts
 
-# Install dependencies
-RUN #npm install -g @nestjs/cli
-RUN npm ci --ignore-scripts && npm run prebuild && npm run build && npm prune --production
+# Ön yapılandırmayı ve yapıyı çalıştır
+RUN npm run prebuild && npm run build
 
+# Final aşaması: Küçük bir Node.js imajı kullan
 FROM node:21.2-alpine
-RUN apk upgrade --no-cache
+
+# Gereken paketleri yükle
+RUN apk add --no-cache make gcc g++ python3
+
+# Node kullanıcısına geç
 USER node
+
+# Çalışma dizinini ayarla
 WORKDIR /app
+
+# Zaman dilimini ayarla
 ENV TZ=Europe/Istanbul
+
+# Gerekli dosyaları kopyala
 COPY --from=build /app/dist dist
 COPY --from=build /app/node_modules node_modules
-# Expose the port the app runs on
+COPY --from=build /app/package*.json ./
+
+# Servis için gerekli portu aç
 EXPOSE 5062
 
-# Start the application
-CMD [ "node", "dist/main.js" ]
+# Uygulamayı başlat
+CMD ["node", "dist/main.js"]

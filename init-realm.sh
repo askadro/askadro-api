@@ -37,6 +37,7 @@ curl -s -X POST "http://localhost:8080/admin/realms/askadrovip-realm/clients" \
   -H "Content-Type: application/json" \
   -d "{
         \"clientId\": \"$KEYCLOAK_CLIENT_ID\",
+        \"clientSecret\": \"$KEYCLOAK_CLIENT_SECRET\",
         \"enabled\": true,
         \"publicClient\": true,
         \"redirectUris\": [\"*\"]

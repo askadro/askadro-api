@@ -6,8 +6,8 @@ import { User } from './entities/user.entity';
 import { IsNull, Not, Repository } from 'typeorm';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { AddressesService } from '@/modules/addresses/addresses.service';
-import { Bcrypt } from '@/utils/bcrypt';
 import { DEFAULT_PW } from '@/constants/app';
+import CryptoJS from 'crypto-js';
 
 @Injectable()
 export class UsersService {
@@ -19,7 +19,7 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const { addressStatus, addressDetail, provinceId, districtId, ...userData } = createUserDto;
-    const hashedPassword = Bcrypt.hash(userData.password || DEFAULT_PW);
+    const hashedPassword = CryptoJS.SHA256(userData.password || DEFAULT_PW).toString(CryptoJS.enc.Hex);
     let addressEntity: Address = null;
     let userEntity: User = null;
     // Create user entity

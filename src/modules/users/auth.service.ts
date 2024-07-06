@@ -1,19 +1,11 @@
 import {
-  BadRequestException,
   Injectable,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
-import { Bcrypt } from '@/utils/bcrypt';
-// import { JwtService } from '@nestjs/jwt';
+
 import { ConfigService } from '@nestjs/config';
-import { CreateUserDto } from '@/modules/users/dto/create-user.dto';
-import { User } from '@/modules/users/entities/user.entity';
 import { HttpService } from '@nestjs/axios';
 import { CreateKcUserDto } from '@/modules/users/dto/create-kc-user.dto';
 import { KeycloakConfigService } from '@/modules/config/keycloak-config.service';
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 
 @Injectable()
 export class AuthService {

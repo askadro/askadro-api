@@ -52,25 +52,23 @@ services:
       retries: 5
 
 
-#  askadro-crm:
-#    container_name: nestjs-askadrovip
-#    restart: unless-stopped
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    ports:
-#      - '5062:5062'
-##    depends_on:
-###      keycloak:
-###        condition: service_healthy
-###      postgres:
-###        condition: service_healthy
-#    env_file:
-#      - .env
-#    volumes:
-#      - ./src:/app/src
-#    networks:
-#      - mynetwork
+  askadro-crm:
+    container_name: nestjs-askadrovip
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '5062:5062'
+    depends_on:
+      - keycloak
+      - postgres
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+    networks:
+      - mynetwork
 
 
 networks:
