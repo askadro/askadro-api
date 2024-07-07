@@ -13,7 +13,7 @@ COPY tsconfig*.json ./
 RUN npm config set fetch-retry-mintimeout 200000 && \
     npm config set fetch-retry-maxtimeout 1200000 && \
     npm install --ignore-scripts -g rimraf && \
-    npm ci --ignore-scripts
+    npm install --ignore-scripts
 
 # Ön yapılandırmayı ve yapıyı çalıştır
 RUN npm run prebuild && npm run build
