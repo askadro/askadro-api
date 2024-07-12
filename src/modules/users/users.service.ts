@@ -7,19 +7,21 @@ import { IsNull, Not, Repository } from 'typeorm';
 import { Address } from '@/modules/addresses/entities/address.entity';
 import { AddressesService } from '@/modules/addresses/addresses.service';
 import { DEFAULT_PW } from '@/constants/app';
-import CryptoJS from 'crypto-js';
+import Bcrypt from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     private readonly addressService: AddressesService,
+    private readonly configService: ConfigService,
   ) {
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const { addressStatus, addressDetail, provinceId, districtId, ...userData } = createUserDto;
-    const hashedPassword = CryptoJS.SHA256(userData.password || DEFAULT_PW).toString(CryptoJS.enc.Hex);
+    const hashedPassword =await Bcrypt.hash(userData.password || DEFAULT_PW,this.configService.get("SALT_OR_ROUNDS"));
     let addressEntity: Address = null;
     let userEntity: User = null;
     // Create user entity

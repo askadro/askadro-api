@@ -11,6 +11,8 @@ import { AddressesService } from '@/modules/addresses/addresses.service';
 import { CreateAuthorizedDto } from '@/modules/company/dtos/create-authorized.dto';
 import { UpdateAuthorizedDto } from '@/modules/company/dtos/update-authorized.dto';
 import { DEFAULT_PW } from '@/constants/app';
+const bcrypt = require('bcrypt');
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CompanyService {
@@ -18,6 +20,7 @@ export class CompanyService {
     @InjectRepository(Company) private comp: Repository<Company>,
     @InjectRepository(Authorized) private authorizedRepository: Repository<Authorized>,
     private readonly addressService: AddressesService,
+    private readonly configService: ConfigService,
   ) {
   }
 
@@ -25,7 +28,7 @@ export class CompanyService {
     const { authorized, provinceId, districtId, addressStatus, addressDetail, ...companyData } = body;
     let companyEntity: Company = null;
     let addressEntity: Address = null;
-    const hashedPassword = CryptoJS.SHA256(companyData.registrationNumber || DEFAULT_PW).toString(CryptoJS.enc.Hex);
+    const hashedPassword =await bcrypt.hash(companyData.registrationNumber || DEFAULT_PW,this.configService.get("SALT_OR_ROUNDS"));
     const company = this.comp.create({ ...companyData, password: hashedPassword });
     companyEntity = await this.comp.save(company);
 
