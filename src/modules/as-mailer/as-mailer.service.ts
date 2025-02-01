@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SendEmailDto } from '@/modules/as-mailer/dto/send-email.dto';
 import { Address } from '@nestjs-modules/mailer/dist/interfaces/send-mail-options.interface';
 import { ConfigService } from '@nestjs/config';
-import { MailerService } from '@nestjs-modules/mailer';
+import { MailerService } from '@nestjs-modules/mailer/dist';
 import { Ticket } from '@/modules/tickets/ticket.entity';
 import { MAIL_TEXT } from '@/constants/mail/constants';
 

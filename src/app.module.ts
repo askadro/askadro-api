@@ -32,10 +32,10 @@ import { HttpRequestModule } from '@/modules/http-request/http-request.module';
 
 @Module({
   imports: [
-    // KeycloakConnectModule.registerAsync({
-    //   useExisting: KeycloakConfigService,
-    //   imports: [ProviderConfigModule],
-    // }),
+    KeycloakConnectModule.registerAsync({
+      useExisting: KeycloakConfigService,
+      imports: [ProviderConfigModule],
+    }),
     // ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,

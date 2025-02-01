@@ -22,7 +22,6 @@ export class AuthService {
   secret = this.configService.get<string>('KEYCLOAK_CLIENT_SECRET')
 
   async adminLogin(username: string, password: string) {
-    // return this.keycloakService.getClientSecretKey()
     const data = {
       client_id: "admin-cli",
       username: username,
@@ -39,7 +38,6 @@ export class AuthService {
   }
 
   async login(username: string, password: string) {
-    // return this.keycloakService.getClientSecretKey()
     const data = {
       client_id: this.clientId,
       username: username,
