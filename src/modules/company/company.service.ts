@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Company } from './entities/company.entity';
 import { Repository } from 'typeorm';
 import { Authorized } from './entities/authorized.entity';
-import { I18nService } from 'nestjs-i18n';
 import { UpdateCompanyDto } from './dtos/update-company.dto';
 import { CreateCompanyDto } from '@/modules/company/dtos/create-company.dto';
 import { Address } from '@/modules/addresses/entities/address.entity';
@@ -11,7 +10,7 @@ import { AddressesService } from '@/modules/addresses/addresses.service';
 import { CreateAuthorizedDto } from '@/modules/company/dtos/create-authorized.dto';
 import { UpdateAuthorizedDto } from '@/modules/company/dtos/update-authorized.dto';
 import { DEFAULT_PW } from '@/constants/app';
-const bcrypt = require('bcrypt');
+import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -28,7 +27,9 @@ export class CompanyService {
     const { authorized, provinceId, districtId, addressStatus, addressDetail, ...companyData } = body;
     let companyEntity: Company = null;
     let addressEntity: Address = null;
-    const hashedPassword =await bcrypt.hash(companyData.registrationNumber || DEFAULT_PW,this.configService.get("SALT_OR_ROUNDS"));
+    const saltOrRounds = 10;
+    const hashedPassword = await bcrypt.hash(companyData.registrationNumber, saltOrRounds);
+   // const hashedPassword =await bcrypt.hash(companyData.registrationNumber || DEFAULT_PW,this.configService.get("SALT_OR_ROUNDS") || 10);
     const company = this.comp.create({ ...companyData, password: hashedPassword });
     companyEntity = await this.comp.save(company);
 

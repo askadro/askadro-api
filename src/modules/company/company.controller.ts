@@ -1,18 +1,21 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Scope, UseInterceptors } from '@nestjs/common';
 import { CreateCompanyDto } from './dtos/create-company.dto';
 import { CompanyService } from './company.service';
 import { UpdateCompanyDto } from './dtos/update-company.dto';
 import { path } from '@/constants/paths';
 import { CompanyCreate } from '@/decorators/company/create.decorator';
 import { UpdateAuthorizedDto } from '@/modules/company/dtos/update-authorized.dto';
-import { Roles } from 'nest-keycloak-connect';
+import { Resource, Roles } from 'nest-keycloak-connect';
+import { Company } from '@/modules/company/entities/company.entity';
 
-@Roles({roles:["user"]})
+@Roles({roles:["user","owner"]})
+@Resource(Company.name)
 @Controller(path.company.main)
 export class CompanyController {
   constructor(private companyService: CompanyService) {
   }
 
+  @Roles({roles:["owner"]})
   @Post(path.company.create)
   @UseInterceptors(CompanyCreate)
   async createCompany(@Body() body: CreateCompanyDto) {
