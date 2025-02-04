@@ -54,10 +54,10 @@ export class AuthService {
     return response.data;
   }
 
-  async logout(refreshToken: string) {
+  async logout(accessToken: string) {
     const data = {
       client_id: this.configService.get<string>('KEYCLOAK_CLIENT_ID'),
-      refresh_token: refreshToken,
+      access_token: accessToken,
       client_secret: this.configService.get<string>('KEYCLOAK_CLIENT_SECRET'),
     };
 
@@ -117,5 +117,28 @@ export class AuthService {
       },
     }).toPromise();
     return response.data;
+  }
+
+  async refreshToken(refreshToken: string) {
+    const data = {
+      client_id: this.clientId,
+      refresh_token: refreshToken,
+      grant_type: 'refresh_token',
+      client_secret: this.secret,
+    };
+    const url = `${this.baseUrl}/realms/${this.realm}/protocol/openid-connect/token`;
+
+    try {
+      const response = await this.httpService.post(url, new URLSearchParams(data).toString(), {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      }).toPromise();
+
+      return response.data; // Yeni token bilgileri döner
+    } catch (error) {
+      // Hata oluşursa yakala ve logla
+      console.error('Token yenileme sırasında hata:', error.message);
+      throw new Error('Invalid refresh token. Cannot renew access token.');
+    }
+
   }
 }

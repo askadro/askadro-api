@@ -97,15 +97,14 @@ export class UsersController {
 
   @Public()
   @Post('logout')
-  async logout(@Req() req: any): Promise<boolean> {
-    return this.authService.logout(req.user);
+  async logout(@Body() accessToken:string): Promise<boolean> {
+    return this.authService.logout(accessToken);
   }
 
-  // @UseGuards(JwtAuthGuard)
-  // @Post('refresh')
-  // async refreshToken(@Req() req: Request) {
-  //   return this.authService.refreshToken(req.user);
-  // }
+  @Post('auth/refresh')
+  async refreshToken(@Body() refreshToken:string) {
+    return this.authService.refreshToken(refreshToken);
+  }
   //
   // @Post('validate-token')
   // async validateToken(@Body('token') token: string) {
