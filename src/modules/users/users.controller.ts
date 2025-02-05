@@ -55,11 +55,11 @@ export class UsersController {
   @Roles({ roles: ['user'] })
   @Get('profile')
   async profile(@Headers('authorization') authorization: string, @AuthenticatedUser() user: any) {
-    return user
+    return user;
     // this.authService.profile(authorization);
   }
 
-  @Roles({ roles: ['owner', "admin"] })
+  @Roles({ roles: ['owner', 'admin'] })
   @Post('/create')
   async create(@Body() body: CreateUserDto) {
     return this.usersService.create(body);
@@ -97,14 +97,16 @@ export class UsersController {
 
   @Public()
   @Post('logout')
-  async logout(@Body() accessToken:string): Promise<boolean> {
+  async logout(@Body() accessToken: string): Promise<boolean> {
     return this.authService.logout(accessToken);
   }
 
+  @Public()
   @Post('auth/refresh')
-  async refreshToken(@Body() refreshToken:string) {
+  async refreshToken(@Body() refreshToken: { token: string }) {
     return this.authService.refreshToken(refreshToken);
   }
+
   //
   // @Post('validate-token')
   // async validateToken(@Body('token') token: string) {

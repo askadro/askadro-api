@@ -48,6 +48,7 @@ export class StaffController {
     return this.staffService.findOne(id, ['job', 'timesheets']);
   }
 
+  @Roles({ roles: ['owner'] })
   @Post('add/timesheet')
   createTimesheet(
     @Body() createTimesheetDto: CreateTimesheetDto,
@@ -55,6 +56,7 @@ export class StaffController {
     return this.staffService.createTimesheet(createTimesheetDto);
   }
 
+  @Roles({ roles: ['owner'] })
   @Put('update/timesheet/:id')
   updateTimesheet(
     @Param('id') id: string,
@@ -63,11 +65,13 @@ export class StaffController {
     return this.staffService.updateTimesheet(id, updateTimesheetDto);
   }
 
+  @Roles({ roles: ['owner'] })
   @Delete('delete/timesheet/:id')
   deleteTimesheet(@Param('id') id: string) {
     return this.staffService.deleteTimesheet(id);
   }
 
+  @Roles({ roles: ['owner'] })
   @Post('timesheets')
   async getTimesheetsByCompanyAndMonth(@Body() getTimesheetsDto: GetTimesheetsDto): Promise<any> {
     return this.staffService.getTimesheetsByCompanyAndDate(getTimesheetsDto);

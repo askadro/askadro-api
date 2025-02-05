@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { CreateKcUserDto } from '@/modules/users/dto/create-kc-user.dto';
 import { KeycloakConfigService } from '@/modules/config/keycloak-config.service';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -18,15 +19,15 @@ export class AuthService {
 
   baseUrl = this.configService.get<string>('KEYCLOAK_AUTH_SERVER_URL');
   realm = this.configService.get<string>('KC_REALM_NAME');
-  clientId = this.configService.get<string>('KEYCLOAK_CLIENT_ID')
-  secret = this.configService.get<string>('KEYCLOAK_CLIENT_SECRET')
+  clientId = this.configService.get<string>('KEYCLOAK_CLIENT_ID');
+  secret = this.configService.get<string>('KEYCLOAK_CLIENT_SECRET');
 
   async adminLogin(username: string, password: string) {
     const data = {
-      client_id: "admin-cli",
+      client_id: 'admin-cli',
       username: username,
       password: password,
-      grant_type: 'password'
+      grant_type: 'password',
     };
     const url = `${this.baseUrl}/realms/master/protocol/openid-connect/token`;
 
@@ -100,9 +101,9 @@ export class AuthService {
           'Authorization': token,
         },
       }).toPromise();
-      return response.data
+      return response.data;
     } catch (error) {
-      return error.message
+      return error.message;
     }
   }
 
@@ -119,19 +120,24 @@ export class AuthService {
     return response.data;
   }
 
-  async refreshToken(refreshToken: string) {
+  async refreshToken(refreshToken: { token: string }) {
+    console.log(refreshToken);
+    const rToken = refreshToken.token;
     const data = {
       client_id: this.clientId,
-      refresh_token: refreshToken,
+      refresh_token: rToken,
       grant_type: 'refresh_token',
       client_secret: this.secret,
     };
     const url = `${this.baseUrl}/realms/${this.realm}/protocol/openid-connect/token`;
 
     try {
-      const response = await this.httpService.post(url, new URLSearchParams(data).toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      }).toPromise();
+      const response = await lastValueFrom(
+        this.httpService.post(url, new URLSearchParams(data).toString(), {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        }),
+      );
+
 
       return response.data; // Yeni token bilgileri döner
     } catch (error) {

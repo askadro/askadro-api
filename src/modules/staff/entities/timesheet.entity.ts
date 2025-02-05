@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Index } from 'typeorm';
 import { Staff } from './staff.entity';
 import { BaseEntity } from '@/common/entities/BaseEntity';
 import { Company } from '@/modules/company/entities/company.entity';
@@ -8,6 +8,7 @@ export class Timesheet extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Index()
   @Column()
   date: Date;
 
