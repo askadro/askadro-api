@@ -16,7 +16,6 @@
     @IsString()
     ticketNotes: string;
 
-    @IsUUID()
     @IsString()
     userId: string;
 

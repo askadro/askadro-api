@@ -76,4 +76,10 @@ export class StaffController {
   async getTimesheetsByCompanyAndMonth(@Body() getTimesheetsDto: GetTimesheetsDto): Promise<any> {
     return this.staffService.getTimesheetsByCompanyAndDate(getTimesheetsDto);
   }
+
+  @Roles({ roles: ['owner'] })
+  @Post('/multi-staff')
+  fetchStaffsWithIds(@Body() body: { ids: string[] }) {
+    return this.staffService.fetchTicketsWithIds(body.ids);
+  }
 }

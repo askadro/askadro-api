@@ -52,7 +52,7 @@ export class UsersController {
     return this.authService.register(createKcUserDto, authorization);
   }
 
-  @Roles({ roles: ['user'] })
+  @Roles({ roles: ['user', 'owner'] })
   @Get('profile')
   async profile(@Headers('authorization') authorization: string, @AuthenticatedUser() user: any) {
     return user;
@@ -65,7 +65,7 @@ export class UsersController {
     return this.usersService.create(body);
   }
 
-  @Roles({ roles: ['user'] })
+  @Roles({ roles: ['user', 'owner'] })
   @Get()
   findAll(@Req() req: any) {
     return this.usersService.findAll();

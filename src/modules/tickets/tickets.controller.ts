@@ -12,7 +12,7 @@ import { Job } from '@/modules/jobs/job.entity';
 import { ConfigService } from '@nestjs/config';
 import { Roles } from 'nest-keycloak-connect';
 
-@Roles({roles:["user","owner","chef"]})
+@Roles({ roles: ['user', 'owner', 'chef'] })
 @Serialize(TicketDto)
 @Controller('tickets')
 export class TicketsController {
@@ -34,7 +34,7 @@ export class TicketsController {
   }
 
   @Post('/only-ticket')
-  getTickets(@Body() body:{startDate: Date, endDate: Date}) {
+  getTickets(@Body() body: { startDate: Date, endDate: Date }) {
     return this.ticketService.getTicketsByDateRange(body);
   }
 
@@ -43,7 +43,7 @@ export class TicketsController {
     return this.ticketService.getTicket(id);
   }
 
-  @Delete("delete/:id")
+  @Delete('delete/:id')
   deleteTicket(@Param('id') id: string) {
     return this.ticketService.deleteTicket(id);
   }
@@ -69,9 +69,9 @@ export class TicketsController {
 
     return this.asMailerService.sendEmailForTicket({
       ...body,
-      recipients: [company.email,...body.recipients],
-      subject: body.subject || this.configService.get("MAIL_SUBJECT"),
-      text: body.text || "Selam",
+      recipients: [company.email, ...body.recipients],
+      subject: body.subject || this.configService.get('MAIL_SUBJECT'),
+      text: body.text || 'Selam',
       sender: body.sender ?? {
         name: this.configService.get('MAIL_FROM_NAME'),
         address: this.configService.get('MAIL_FROM_ADDRESS'),

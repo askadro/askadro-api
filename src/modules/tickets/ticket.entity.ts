@@ -1,4 +1,4 @@
-import { Column, PrimaryGeneratedColumn, Entity, ManyToOne,  OneToMany } from 'typeorm';
+import { Column, PrimaryGeneratedColumn, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { Company } from '@/modules/company/entities/company.entity';
 import { Job } from '@/modules/jobs/job.entity';
 import { JobStatusEnum } from '@/constants/enums/JobStatusEnum';
@@ -14,23 +14,26 @@ export class Ticket extends BaseEntity {
   staff: Staff;
 
   @ManyToOne(() => Company, (Company) => Company.ticket)
-  company:Company
+  company: Company;
 
   @OneToMany(() => Job, (job) => job.ticket, { cascade: true })
   jobs: Job[];
 
   @Column()
-  enterTime:Date
+  userId: string;
 
   @Column()
-  exitTime:Date
+  enterTime: Date;
 
   @Column()
-  ticketDate:Date
+  exitTime: Date;
+
+  @Column()
+  ticketDate: Date;
 
   @Column('text')
-  ticketNotes:string
+  ticketNotes: string;
 
-  @Column({default:JobStatusEnum.CREATING})
-  status:string
+  @Column({ default: JobStatusEnum.CREATING })
+  status: string;
 }

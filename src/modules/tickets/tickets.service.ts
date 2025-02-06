@@ -35,8 +35,8 @@ export class TicketsService {
 
     const createdTicket = await this.ticketRepository.save({
       ...ticketData,
-      user: { id: userId },
       company: { id: companyId },
+      userId: userId,
     });
 
     const savedTicket = await this.ticketRepository.save(createdTicket);
@@ -60,7 +60,7 @@ export class TicketsService {
   async getTicket(id: string): Promise<Ticket> {
     const ticket = await this.ticketRepository.findOne({
       where: { id },
-      relations: ['user', 'company', 'jobs', 'jobs.staff'],
+      relations: ['company', 'jobs', 'jobs.staff'],
     });
 
     if (!ticket) {
@@ -85,13 +85,13 @@ export class TicketsService {
         status: In([JobStatusEnum.CREATING, JobStatusEnum.WAITING]),
         ticketDate: Between(startDate, endDate),
       },
-      relations: ['user', 'company'],
+      relations: ['staff', 'company'],
       order: { ticketDate: 'ASC' },
     });
   }
 
   async getTicketsWithRelation(): Promise<Ticket[]> {
-    return this.ticketRepository.find({ relations: ['user', 'company', 'jobs'] });
+    return this.ticketRepository.find({ relations: ['company', 'jobs'] });
   }
 
   async updateTicket(id: string, body: UpdateTicketDto): Promise<Ticket> {
@@ -106,7 +106,7 @@ export class TicketsService {
   }
 
   async deleteTicket(id: string): Promise<void> {
-    const ticket = await this.getTicket(id)
+    const ticket = await this.getTicket(id);
     if (!ticket) {
       throw new NotFoundException(`Ticket with ID ${id} not found`);
     }

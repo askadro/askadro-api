@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { Staff } from '@/modules/staff/entities/staff.entity';
-import { Between, IsNull, Not, Repository } from 'typeorm';
+import { Between, In, IsNull, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Timesheet } from '@/modules/staff/entities/timesheet.entity';
 import { Company } from '@/modules/company/entities/company.entity';
@@ -240,6 +240,14 @@ export class StaffService {
 
   async findOneByTimesheet(id: string): Promise<Staff> {
     return this.staffRepository.findOne({ where: { id }, relations: ['timesheets'] });
+  }
+
+  async fetchTicketsWithIds(ids: string[]) {
+    return await this.staffRepository.find({
+      where: {
+        id: In(ids),
+      },
+    });
   }
 
 }
