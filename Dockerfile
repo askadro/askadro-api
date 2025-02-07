@@ -12,8 +12,11 @@ COPY tsconfig*.json ./
 # npm ayarlarını yap ve bağımlılıkları yükle
 RUN npm config set fetch-retry-mintimeout 200000 && \
     npm config set fetch-retry-maxtimeout 1200000 && \
-    npm install --ignore-scripts -g rimraf && \
-    npm install --ignore-scripts
+    npm install -g rimraf && \
+    npm install --ignore-scripts && \
+    npm rebuild
+
+RUN npm install @css-inline/css-inline-linux-x64-musl
 
 # Ön yapılandırmayı ve yapıyı çalıştır
 RUN npm run prebuild && npm run build
@@ -42,4 +45,4 @@ COPY --from=build /app/package*.json ./
 EXPOSE 5062
 
 # Uygulamayı başlat
-CMD ["node", "dist/main.js"]
+CMD ["npm", "run", "start:prod"]
